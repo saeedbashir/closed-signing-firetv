@@ -16,6 +16,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { StyleSheet, View } from 'react-native';
 import { KeplerVideoView, VideoPlayer } from '@amazon-devices/react-native-w3cmedia';
 import { Body, Metadata } from '../components/Text';
+import { TRANSPORT_HEIGHT, TransportControls } from '../components/TransportControls';
 import { captionPlacement, signerBox } from '../design/geometry';
 import { captionSize, colour, motion, signerOpacity, space } from '../design/tokens';
 import { SignerControls } from './SignerControls';
@@ -111,9 +112,32 @@ export const Player = ({
     [signTrack, prefs.signerCorner, prefs.signerSize],
   );
   const captions = useMemo(
-    () => captionPlacement(prefs.signerVisible ? box : null),
-    [box, prefs.signerVisible],
+    () =>
+      captionPlacement(
+        prefs.signerVisible ? box : null,
+        undefined,
+        undefined,
+        chromeVisible ? TRANSPORT_HEIGHT : 0,
+      ),
+    [box, prefs.signerVisible, chromeVisible],
   );
+
+  /**
+   * A clock, but only while anyone is looking at it.
+   *
+   * `currentTime` is read from the player rather than counted up locally, so a
+   * seek or a stall is reflected rather than drifted over. The interval only
+   * runs while the bar is on screen: a re-render four times a second behind a
+   * hidden bar is a cost paid for nothing, on a device with a budget.
+   */
+  const [positionMs, setPositionMs] = useState(0);
+  useEffect(() => {
+    if (!chromeVisible) return;
+    const read = () => setPositionMs(Math.round((mainRef.current.player?.currentTime ?? 0) * 1000));
+    read();
+    const id = setInterval(read, 250);
+    return () => clearInterval(id);
+  }, [chromeVisible, mainRef]);
 
   // Chrome appears on demand and leaves on its own.
   useEffect(() => {
@@ -286,6 +310,15 @@ export const Player = ({
             {cueText}
           </Body>
         </View>
+      ) : null}
+
+      {chromeVisible && !controlsOpen ? (
+        <TransportControls
+          title={manifest.title}
+          positionMs={positionMs}
+          durationMs={manifest.durationMs}
+          paused={main.player?.paused ?? true}
+        />
       ) : null}
 
       {controlsOpen ? (

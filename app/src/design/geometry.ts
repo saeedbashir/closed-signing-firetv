@@ -61,8 +61,21 @@ export function captionPlacement(
   signer: Box | null,
   screen: { width: number; height: number } = SCREEN,
   minTextWidth = 720,
+  /**
+   * Height of the transport bar when it is showing, 0 when it is not.
+   *
+   * Captions and transport controls both want the bottom of the screen. The
+   * signer at least stays put; the transport bar arrives and leaves while the
+   * viewer is reading, so captions lift over it and settle back.
+   */
+  chromeHeight = 0,
 ): CaptionPlacement {
-  const base = { bottom: safeArea.vertical, left: safeArea.horizontal, right: safeArea.horizontal };
+  const lift = Math.max(0, chromeHeight);
+  const base = {
+    bottom: safeArea.vertical + lift,
+    left: safeArea.horizontal,
+    right: safeArea.horizontal,
+  };
   if (!signer) return base;
 
   const signerBottom = signer.top + signer.height;
@@ -77,8 +90,9 @@ export function captionPlacement(
   const remaining = screen.width - shifted.left - shifted.right;
   if (remaining >= minTextWidth) return shifted;
 
-  // Too narrow beside the signer: go above it instead.
-  return { ...base, bottom: screen.height - signer.top + 24 };
+  // Too narrow beside the signer: go above it instead. Already clear of the
+  // transport bar, so no further lift.
+  return { ...base, bottom: Math.max(base.bottom, screen.height - signer.top + 24) };
 }
 
 /** Card position within a rail, used for the focus scroll offset. */
