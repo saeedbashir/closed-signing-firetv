@@ -19,6 +19,7 @@ import { Body, Metadata } from '../components/Text';
 import { captionPlacement, signerBox } from '../design/geometry';
 import { captionSize, colour, motion, signerOpacity, space } from '../design/tokens';
 import { SignerControls } from './SignerControls';
+import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
 import type { Preferences } from '../state/preferences';
 import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
 
@@ -77,12 +78,18 @@ export const Player = ({
   prefs,
   onPatch,
   onExit,
+  onOpenCaptionMenu,
+  onOpenSettings,
   sizeAndOpacityAvailable = true,
 }: {
   manifest: TitleManifest;
   prefs: Preferences;
   onPatch: (p: Partial<Preferences>) => void;
   onExit: (positionMs: number) => void;
+  /** Not yet built. Wired so the key works the day the screen lands. */
+  onOpenCaptionMenu?: () => void;
+  /** Not yet built. Wired so the key works the day the screen lands. */
+  onOpenSettings?: () => void;
   sizeAndOpacityAvailable?: boolean;
 }): React.JSX.Element => {
   const [controlsOpen, setControlsOpen] = useState(false);
@@ -139,7 +146,104 @@ export const Player = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => () => onExit(Math.round(position() * 1000)), [onExit, position]);
+  // Leaving happens exactly once, whether the viewer pressed Back or the screen
+  // went away underneath us.
+  //
+  // Two things had to be untangled here. `onExit` both saves the position and
+  // navigates, and it is created inline by the caller, so a cleanup that
+  // depended on it ran on every re-render of the app — meaning any preference
+  // change in the signer overlay quietly exited the player. And with nothing
+  // calling it, the player was a room with no door: reachable, not leavable.
+  //
+  // The latest callback is held in a ref so the unmount effect can depend on
+  // nothing, and a flag makes the call idempotent.
+  const exited = useRef(false);
+  const latest = useRef({ onExit, position });
+  latest.current = { onExit, position };
+
+  const leave = useCallback(() => {
+    if (exited.current) return;
+    exited.current = true;
+    const { onExit: exit, position: at } = latest.current;
+    exit(Math.round(at() * 1000));
+  }, []);
+
+  useEffect(() => () => leave(), [leave]);
+
+  /**
+   * Transport applies to both surfaces or to neither.
+   *
+   * They are independent players with independent clocks, so pausing one and
+   * not the other desynchronises the interpreter from the speech permanently —
+   * and a signer a few seconds out is worse than no signer, because it reads as
+   * fluent and means something else.
+   */
+  const bothSurfaces = useCallback(
+    (fn: (p: VideoPlayer) => void) => {
+      for (const r of [mainRef, signerRef]) {
+        const p = r.current.player;
+        if (p) fn(p);
+      }
+    },
+    [mainRef, signerRef],
+  );
+
+  const seekBy = useCallback(
+    (seconds: number) => {
+      const anchor = mainRef.current.player;
+      if (!anchor) return;
+      const target = Math.max(0, anchor.currentTime + seconds);
+      bothSurfaces((p) => {
+        p.currentTime = target;
+      });
+    },
+    [bothSurfaces, mainRef],
+  );
+
+  const onRemote = useCallback(
+    (action: RemoteAction) => {
+      switch (action) {
+        case 'playPause': {
+          const paused = mainRef.current.player?.paused ?? true;
+          bothSurfaces((p) => {
+            // play() rejects if the surface is not ready; that is a reason to
+            // leave it paused, not to take the screen down.
+            if (paused) p.play().catch(() => undefined);
+            else p.pause();
+          });
+          setChromeVisible(true);
+          break;
+        }
+        case 'seekBack':
+          seekBy(-SEEK_SECONDS);
+          setChromeVisible(true);
+          break;
+        case 'seekForward':
+          seekBy(SEEK_SECONDS);
+          setChromeVisible(true);
+          break;
+        case 'signerControls':
+          setControlsOpen(true);
+          break;
+        case 'captionMenu':
+          onOpenCaptionMenu?.();
+          break;
+        case 'toggleChrome':
+          setChromeVisible((v) => !v);
+          break;
+        case 'settings':
+          onOpenSettings?.();
+          break;
+        case 'back':
+          leave();
+          break;
+      }
+    },
+    [bothSurfaces, leave, mainRef, onOpenCaptionMenu, onOpenSettings, seekBy],
+  );
+
+  // While the overlay is open it owns the remote: Up and Down move its focus.
+  useRemote(onRemote, !controlsOpen);
 
   return (
     <View style={styles.root}>
