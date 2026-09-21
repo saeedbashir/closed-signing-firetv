@@ -23,6 +23,10 @@ import {
 } from './state/preferences';
 import { BUNDLED_CATALOGUE, BUNDLED_MANIFESTS } from './catalogue';
 
+/** Skips the browse screens and opens the first title directly, so the media
+ *  path can be verified from a script without a remote in hand. Off normally. */
+const DEV_AUTOPLAY = false;
+
 export const App = (): React.JSX.Element => {
   const [nav, dispatch] = useReducer(navReduce, initialNav);
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
@@ -42,9 +46,14 @@ export const App = (): React.JSX.Element => {
   // Launch resolves immediately with the bundled catalogue; a networked
   // catalogue would show the loading state and time out to the offline one.
   if (route.name === 'launch') {
+    const first = titles[0];
     dispatch({
       type: 'replace',
-      route: prefs.walkthroughSeen ? { name: 'home' } : { name: 'walkthrough' },
+      route: DEV_AUTOPLAY && first
+        ? { name: 'player', titleId: first.id, resumeMs: 0 }
+        : prefs.walkthroughSeen
+          ? { name: 'home' }
+          : { name: 'walkthrough' },
     });
     return <View style={styles.root} />;
   }

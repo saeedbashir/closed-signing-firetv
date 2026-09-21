@@ -22,6 +22,9 @@ import { SignerControls } from './SignerControls';
 import type { Preferences } from '../state/preferences';
 import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
 
+/** Set true to trace both surfaces in the device log, as Experiment 2 did. */
+const LOG_SURFACES = false;
+
 type Surface = { player: VideoPlayer | null; failed: boolean };
 
 /**
@@ -66,7 +69,7 @@ function useSurface(src: string | null, autoplay: boolean) {
     };
   }, [src, autoplay]);
 
-  return ref.current;
+  return ref;
 }
 
 export const Player = ({
@@ -87,11 +90,13 @@ export const Player = ({
   const [cueText] = useState('');
 
   const signTrack = useMemo(() => humanSignTracks(manifest)[0] ?? null, [manifest]);
-  const main = useSurface(manifest.video.main.url, true);
-  const signer = useSurface(
+  const mainRef = useSurface(manifest.video.main.url, true);
+  const signerRef = useSurface(
     prefs.signerVisible && signTrack ? signTrack.track.url : null,
     true,
   );
+  const main = mainRef.current;
+  const signer = signerRef.current;
 
   const box = useMemo(
     () =>
@@ -110,7 +115,29 @@ export const Player = ({
     return () => clearTimeout(t);
   }, [chromeVisible, controlsOpen]);
 
-  const position = useCallback(() => main.player?.currentTime ?? 0, [main.player]);
+  const position = useCallback(() => mainRef.current.player?.currentTime ?? 0, [mainRef]);
+
+  // The screen cannot be inspected from a script, so both surfaces can be
+  // reported to the device log once a second. Off by default; the cost is a
+  // log line per second per surface, which is noise in normal use.
+  useEffect(() => {
+    if (!LOG_SURFACES) return;
+    const id = setInterval(() => {
+      for (const [label, r] of [
+        ['main', mainRef],
+        ['signer', signerRef],
+      ] as const) {
+        const p = r.current.player;
+        console.log(
+          `PLAY ${label} ready=${p?.readyState ?? -1} t=${(p?.currentTime ?? 0).toFixed(2)}` +
+            ` paused=${p?.paused ?? true} failed=${r.current.failed}`,
+        );
+      }
+    }, 1000);
+    return () => clearInterval(id);
+    // Refs are stable; reading .current inside the interval is the point.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => () => onExit(Math.round(position() * 1000)), [onExit, position]);
 
