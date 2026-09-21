@@ -94,16 +94,47 @@ large, not enough to tune an edge detector on.
   plain blue backdrop, which is *easier* to fill than what is behind the tile — so
   here the over-growth distorts the difficulty score without changing the layout call.
 
-### What this means for the reverted fix
+### The fix was tried, measured, and does not work
 
-A border-snapping fix was tried earlier and reverted: it corrected the real Boston
-clip but regressed 4 of 6 synthetic layouts. On this evidence **the synthetic corpus
-was the misleading party.** Six generated layouts with clean rectangular insets on
-flat backdrops do not reproduce what real broadcasts do — a remote interpreter in a
-video-call tile, composited over a live picture that continues behind it.
+**This section previously recommended reinstating the reverted border-snapping fix and
+treating the synthetic harness as a guard rather than ground truth. That
+recommendation was wrong, and testing it is how we know.**
 
-The fix should be reinstated and the synthetic harness treated as a regression guard,
-not as ground truth. Real content is now available to score against.
+Border snapping was implemented and scored on both corpora. Each edge searched between
+the person box and the grown edge for the largest step in mean grey, and moved to it —
+inward as well as outward, which plain growth can never do.
+
+```
+corpus            baseline -> snapped
+synthetic (6)       0.617  ->  0.562     one side panel reclassified as a corner inset
+real (14)           0.629  ->  0.618     worst: clip 10, 480x360, 0.718 -> 0.543
+```
+
+**Worse on both.** The earlier revert was attributed to the synthetic corpus being
+unrepresentative; real content says the approach itself is wrong. Four real clips
+improved slightly and nine got worse. The largest single regression is the only clip at
+a different resolution, which suggests a band and margin fixed in pixels cannot hold
+across source sizes — but the effect is a wash even setting that clip aside.
+
+Why it fails, as far as the evidence shows: **the strongest grey step near the edge is
+frequently not the window border.** A shoulder against a backdrop, a caption bar, the
+edge of a podium all produce larger steps than the border does on some frames.
+
+Not yet ruled out: making growth *stop* correctly rather than correcting it afterwards,
+by requiring a candidate band to be spatially uniform as well as temporally still. The
+programme beside these windows is static, but it is not featureless — which is the
+property the current test misses.
+
+### A harness you cannot rebuild is not a harness
+
+The synthetic corpus could not be regenerated: its source image had been deliberately
+left out of the repository as "media", and was lost. The first substitute produced a
+corpus scoring **0.000 on every clip with zero detections** — a dead instrument that
+prints five clean FAIL rows and reads exactly like a verdict. Only the identical
+baseline gave it away.
+
+A public-domain NASA photograph is now committed at `harness/source/` with provenance,
+so the guard is rebuildable. 486 KB, and it is a still rather than media.
 
 ### Caveats on this run
 

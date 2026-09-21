@@ -85,7 +85,29 @@ of a licence we expect would probably be granted if asked.
 
 | id | Title | Publisher | Production credit | Licence basis | Acquisition route | Captions | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| _none yet_ | | | | | | | |
+| _pending download_ | First Minister's Questions (BSL) and related proceedings | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | Scottish Parliament Copyright Licence, aligned with OGL v3.0 | Publisher's own Download tab on scottishparliament.tv, emailed 24-hour link | Official Report published separately; WebVTT not yet confirmed | Verified side-panel layout: chamber picture and interpreter sit side by side, nothing occluded, no fill needed |
+
+### Obligations we carry for Scottish Parliament material
+
+Three, from the licence at https://www.parliament.scot/about/copyright:
+
+1. **Attribution, verbatim:** `Contains information licensed under the Scottish
+   Parliament Copyright Licence`, with a link where the surface allows one. Defined
+   once in `app/src/stm/attribution.ts`; never retyped.
+2. **No implication of official status or SPCB endorsement.** The app presents these
+   as source material with a credit, never as a Parliament product.
+3. **Never for party-political purposes or advertising endorsement.**
+
+Two exclusions bind us as much as the grant does:
+
+- **Third-party rights the SPCB is not authorised to license.** The BSL interpreter is
+  very likely a contracted professional. The Parliament broadcasts, archives and
+  offers downloads of her work under this licence, which is a strong signal it
+  believes it may — but that is an inference. Recorded as an open question, in line
+  with the interpreter-rights principle above, not treated as settled.
+- **The SPCB's Corporate Identity is not licensed.** The broadcast carries a purple
+  Parliament frame. We crop to the chamber picture and the interpreter panel and never
+  reproduce the logo or wordmark as decoration.
 
 ## Models
 
