@@ -158,16 +158,64 @@ This is a better basis than anything American found in the search. It is an expl
 grant of adaptation rights from the publisher, not an inference from the absence of
 copyright.
 
+#### CONFIRMED 2026-09-21: the layout is right and the pipeline reads it
+
+Saeed opened the player and the Share tab, which exposes the publisher's own HLS and
+DASH URLs. A 120-second excerpt was pulled at **1920x1080**, H.264/AAC, 25fps — far
+better source quality than the 854x480 Boston material.
+
+**It is a true side panel.** The chamber picture occupies x 0–1080 and the
+interpreter's purple panel x 1080–1920, both between y=108 and y=868, with full-width
+Parliament branding bands above and below. The chamber picture does **not** continue
+behind the interpreter, so lifting the panel occludes nothing and **no fill is needed
+at all**.
+
+The pipeline, unmodified:
+
+```
+layout: side-panel   confidence: 1.00
+rect: {x: 1038, y: 84, w: 882, h: 996}      ground truth {x: 1080, y: 108, w: 840, h: 760}
+IoU 0.727
+```
+
+**Layout classified correctly.** Compare the Boston mean of 0.629 across 14 corner
+insets. The boundary here is a hard, high-contrast edge against a picture that is
+neither static nor uniform — the opposite of a press conference backdrop — so growth
+stops close to where it should instead of walking across a flat wall.
+
+The residual error is the same over-growth, milder:
+
+| edge | chosen | truth | over |
+| --- | --- | --- | --- |
+| left | 1038 | 1080 | **42 px into the chamber picture** |
+| top | 84 | 108 | 24 px into the branding band |
+| bottom | 1080 | 868 | 212 px into the branding band |
+
+Only the left edge matters. 42 px means the extracted signer layer carries a thin strip
+of chamber along its edge, and the main picture loses the same strip — visible on a
+television, though small. Top and bottom over-grow into Parliament branding, which is
+cosmetic and arguably wants trimming anyway since **the SPCB's Corporate Identity is
+not licensed to us**.
+
+#### What this changes
+
+The content we can license is the layout the pipeline handles **best**, not worst. That
+inverts the risk: the inpainting path, which the corner-inset material needs and which
+the over-growth defect most damages, is not on the critical path for a shipped
+catalogue. Boston keeps earning its place as the hard development case.
+
+#### Still to do, and it is Saeed's
+
+The excerpt above came from the **Share** tab's HLS URL, not the **Download** tab.
+The licence governs the use either way and the Share tab publishes those URLs openly,
+but the Download tab requires ticking "I have read and agree to the Terms and
+Conditions", and **an accepted-terms record is a stronger answer to a judge asking how
+the file was obtained.** For anything that ships, use the Download tab.
+
 #### Two things still to check, and both are Saeed's
 
-1. **The layout is unconfirmed.** Every BSL event on the archive uses the same generic
-   "BSL CHANNEL" branding card as its thumbnail, so no real frame is reachable without
-   playing the video, and the playback URL is injected by JavaScript rather than
-   present in the HTML. External descriptions say the screen shows "BSL interpreter
-   and the live debate" together, which implies a composited inset or side panel —
-   the shape we need — but **I have not seen a frame.** If instead the BSL channel
-   carries a full-frame interpreter with no main picture, there is nothing to extract
-   and this lead dies. Checking takes one minute in a browser.
+1. ~~The layout is unconfirmed.~~ **Resolved above: true side panel, confirmed on a
+   real frame.**
 2. **The download requires accepting terms and giving an email address.** The form
    carries "I have read and agree to the Terms and Conditions". **Accepting a licence
    is a legal act and it is yours, not mine** — I have not ticked it and will not.
