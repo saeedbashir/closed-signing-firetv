@@ -37,29 +37,43 @@ slightly generous crop, it **inverts the ranking**.
 
 ### The number
 
-Ground truth was read by eye off a coordinate grid rendered over a clean frame of
-each clip, bounding the interpreter's video tile at its visible border. Scored with
-the project's own harness:
+All 14 clips labelled by reading the interpreter tile's visible border off a
+coordinate grid rendered over a clean frame. Scored with the project's own harness:
 
 ```
-clip      iou    pass   conf  layout
-03.mp4  0.384   FAIL    1.00  side-panel
-09.mp4  0.465   FAIL    1.00  corner-inset
-14.mp4  0.551   FAIL    0.99  side-panel
+clip      iou    conf  layout          clip      iou    conf  layout
+01.mp4  0.818   1.00  corner-inset     08.mp4  0.823   1.00  corner-inset
+02.mp4  0.549   0.99  side-panel       09.mp4  0.465   1.00  corner-inset
+03.mp4  0.384   1.00  side-panel       10.mp4  0.718   0.97  corner-inset
+04.mp4  0.591   0.97  corner-inset     11.mp4  0.777   1.00  corner-inset
+05.mp4  0.689   1.00  corner-inset     12.mp4  0.561   0.98  corner-inset
+06.mp4  0.720   0.96  corner-inset     13.mp4  0.623   0.99  corner-inset
+07.mp4  0.535   1.00  corner-inset     14.mp4  0.551   0.99  side-panel
 
-0/3 pass at IoU >= 0.85; mean IoU 0.467
+0/14 pass at IoU >= 0.85; mean IoU 0.629; range 0.384 to 0.823
 ```
 
-**Mean IoU 0.467 is almost exactly what you would expect from a window twice as tall
-as it should be.** On clip 09 the tile ends at y=190 and the chosen window runs to
-y=398. The detector is confident and it is confidently wrong about the boundary.
+**Nothing passes, but the spread matters.** Mean 0.629 implies the window is on
+average about 1.6x the area it should be, not the 2x the worst cases suggested. Two
+clips (01 at 0.818, 08 at 0.823) come close to the 0.85 threshold; the floor is
+clip 03 at 0.384.
 
-Hand-computed IoUs from the grid readings matched the harness to three decimal
-places, which cross-checks both the readings and the harness.
+All three clips the layout classifier called **side-panel** sit below the mean —
+0.549, 0.384, 0.551. The misclassification and the over-growth are the same defect
+seen from two angles: grow too far and the region starts to look like a panel.
 
-Labels live in `signed-track-manifest/harness/ground_truth-boston.yaml`, are accurate
-to roughly ±8 source pixels, and are deliberately coarse: enough to separate a correct
-window from one twice too tall, not enough to tune an edge detector on.
+A correction worth recording: an earlier pass scored only clips 03, 09 and 14 and
+reported mean IoU 0.467. That was a biased sample — those three had already been
+picked out as failures, two of them the misclassified side-panels. **0.629 across the
+full corpus is the number to use.** The conclusion is unchanged; the severity was
+overstated.
+
+Hand-computed IoUs for 03, 09 and 14 from the grid readings matched the harness to
+three decimal places, which cross-checks both the readings and the harness.
+
+Labels live in `signed-track-manifest/harness/ground_truth-boston.yaml`, accurate to
+roughly ±8 source pixels: enough to separate a correct window from one half again too
+large, not enough to tune an edge detector on.
 
 ### The evidence
 
@@ -98,11 +112,14 @@ not as ground truth. Real content is now available to score against.
   excerpt is representative for layout and fill, but not for anything time-varying.
 - `-c copy` range extraction leaves a torn GOP at the tail; ffmpeg logs NAL unit
   errors on some clips. Detection was unaffected.
-- Only 3 of the 14 clips are labelled. `stm harness label` needs a GUI, so these were
-  read off a rendered coordinate grid instead. Labelling the remaining 11 would firm
-  up the mean.
-- One publisher only. Every clip is Boston City TV, so the layout conventions are one
-  production team's habits.
+- Labels were read off a rendered coordinate grid rather than drawn with
+  `stm harness label`, which needs a GUI. All 14 are labelled.
+- **One publisher, and less varied than 14 implies.** Every clip is Boston City TV.
+  Clips 02 and 14 are the same annual salt-pile event staged near-identically a year
+  apart, the same interpreter appears in almost every broadcast, and only clip 10
+  differs in resolution (480x360) and era. This is one production team's house style
+  sampled 14 times, so 14/14 detection is weaker evidence of generality than the
+  count suggests.
 
 ## Verdict against the gate
 
