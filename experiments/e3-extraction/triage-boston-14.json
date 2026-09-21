@@ -1,0 +1,282 @@
+[
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/01.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 544,
+      "y": 0,
+      "w": 310,
+      "h": 242
+    },
+    "resolution": "854x480",
+    "durationS": 120.2,
+    "confidence": 1.0,
+    "sizeFrac": 0.363,
+    "backgroundDetail": 34.7,
+    "backgroundMotion": 141.3,
+    "fillDifficulty": 0.967,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/02.mp4",
+    "verdict": "excellent",
+    "layout": "side-panel",
+    "edge": "right",
+    "rect": {
+      "x": 522,
+      "y": 0,
+      "w": 324,
+      "h": 408
+    },
+    "resolution": "854x480",
+    "durationS": 1523.5,
+    "confidence": 0.956,
+    "sizeFrac": 0.379,
+    "backgroundDetail": 37.9,
+    "backgroundMotion": 1042.6,
+    "fillDifficulty": 0.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/03.mp4",
+    "verdict": "excellent",
+    "layout": "side-panel",
+    "edge": "right",
+    "rect": {
+      "x": 522,
+      "y": 12,
+      "w": 332,
+      "h": 468
+    },
+    "resolution": "854x480",
+    "durationS": 120.1,
+    "confidence": 1.0,
+    "sizeFrac": 0.389,
+    "backgroundDetail": 59.0,
+    "backgroundMotion": 1642.0,
+    "fillDifficulty": 0.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/04.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 496,
+      "y": 18,
+      "w": 336,
+      "h": 308
+    },
+    "resolution": "854x480",
+    "durationS": 120.2,
+    "confidence": 0.973,
+    "sizeFrac": 0.393,
+    "backgroundDetail": 45.5,
+    "backgroundMotion": 1154.4,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/05.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 500,
+      "y": 8,
+      "w": 348,
+      "h": 318
+    },
+    "resolution": "854x480",
+    "durationS": 120.2,
+    "confidence": 0.996,
+    "sizeFrac": 0.407,
+    "backgroundDetail": 85.6,
+    "backgroundMotion": 601.9,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/06.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 450,
+      "y": 48,
+      "w": 394,
+      "h": 272
+    },
+    "resolution": "854x480",
+    "durationS": 120.1,
+    "confidence": 0.964,
+    "sizeFrac": 0.461,
+    "backgroundDetail": 105.5,
+    "backgroundMotion": 1020.4,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/07.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 530,
+      "y": 0,
+      "w": 324,
+      "h": 342
+    },
+    "resolution": "854x480",
+    "durationS": 120.2,
+    "confidence": 1.0,
+    "sizeFrac": 0.379,
+    "backgroundDetail": 62.2,
+    "backgroundMotion": 559.8,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/08.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 472,
+      "y": 0,
+      "w": 382,
+      "h": 280
+    },
+    "resolution": "854x480",
+    "durationS": 120.1,
+    "confidence": 1.0,
+    "sizeFrac": 0.447,
+    "backgroundDetail": 67.3,
+    "backgroundMotion": 176.8,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/09.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 578,
+      "y": 0,
+      "w": 276,
+      "h": 398
+    },
+    "resolution": "854x480",
+    "durationS": 120.1,
+    "confidence": 1.0,
+    "sizeFrac": 0.323,
+    "backgroundDetail": 36.7,
+    "backgroundMotion": 168.3,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/10.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 328,
+      "y": 0,
+      "w": 152,
+      "h": 166
+    },
+    "resolution": "480x360",
+    "durationS": 120.1,
+    "confidence": 0.974,
+    "sizeFrac": 0.317,
+    "backgroundDetail": 58.4,
+    "backgroundMotion": 169.0,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/11.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 530,
+      "y": 0,
+      "w": 316,
+      "h": 234
+    },
+    "resolution": "854x480",
+    "durationS": 120.1,
+    "confidence": 1.0,
+    "sizeFrac": 0.37,
+    "backgroundDetail": 48.6,
+    "backgroundMotion": 431.2,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/12.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 538,
+      "y": 0,
+      "w": 316,
+      "h": 354
+    },
+    "resolution": "854x480",
+    "durationS": 120.2,
+    "confidence": 0.985,
+    "sizeFrac": 0.37,
+    "backgroundDetail": 43.7,
+    "backgroundMotion": 317.8,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/13.mp4",
+    "verdict": "poor",
+    "layout": "corner-inset",
+    "edge": null,
+    "rect": {
+      "x": 522,
+      "y": 0,
+      "w": 332,
+      "h": 304
+    },
+    "resolution": "854x480",
+    "durationS": 120.1,
+    "confidence": 0.994,
+    "sizeFrac": 0.389,
+    "backgroundDetail": 48.1,
+    "backgroundMotion": 1458.8,
+    "fillDifficulty": 1.0,
+    "error": null
+  },
+  {
+    "clip": "/Users/saeed.bashir/Desktop/closed-signing/dev-corpus/boston/14.mp4",
+    "verdict": "excellent",
+    "layout": "side-panel",
+    "edge": "right",
+    "rect": {
+      "x": 520,
+      "y": 0,
+      "w": 334,
+      "h": 410
+    },
+    "resolution": "854x480",
+    "durationS": 120.1,
+    "confidence": 0.992,
+    "sizeFrac": 0.391,
+    "backgroundDetail": 48.8,
+    "backgroundMotion": 493.5,
+    "fillDifficulty": 0.0,
+    "error": null
+  }
+]
