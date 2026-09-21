@@ -23,6 +23,8 @@ import { SignerControls } from './SignerControls';
 import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
 import type { Preferences } from '../state/preferences';
 import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
+import { isUnreviewed, trackForMode, useCaptions } from '../stm/useCaptions';
+import { activeCue } from '../stm/webvtt';
 
 /** Set true to trace both surfaces in the device log, as Experiment 2 did. */
 const LOG_SURFACES = false;
@@ -95,9 +97,9 @@ export const Player = ({
 }): React.JSX.Element => {
   const [controlsOpen, setControlsOpen] = useState(false);
   const [chromeVisible, setChromeVisible] = useState(false);
-  const [cueText] = useState('');
 
   const signTrack = useMemo(() => humanSignTracks(manifest)[0] ?? null, [manifest]);
+
   const mainRef = useSurface(manifest.video.main.url, true);
   const signerRef = useSurface(
     prefs.signerVisible && signTrack ? signTrack.track.url : null,
@@ -105,6 +107,36 @@ export const Player = ({
   );
   const main = mainRef.current;
   const signer = signerRef.current;
+
+  /**
+   * Captions, driven off the main surface's clock.
+   *
+   * The cue is recomputed four times a second but only written to state when
+   * the text actually changes, so a two-second cue costs one render rather
+   * than eight. Reading the player's `currentTime` rather than counting up
+   * locally means a seek lands on the right line immediately.
+   */
+  const captionTrack = useMemo(
+    () => trackForMode(manifest.captions, prefs.captionMode),
+    [manifest.captions, prefs.captionMode],
+  );
+  const { cues, status: captionStatus } = useCaptions(captionTrack);
+  const [cueText, setCueText] = useState('');
+
+  useEffect(() => {
+    if (!cues.length) {
+      setCueText('');
+      return;
+    }
+    const tick = () => {
+      const at = (mainRef.current.player?.currentTime ?? 0) * 1000;
+      const next = activeCue(cues, at)?.text ?? '';
+      setCueText((prev) => (prev === next ? prev : next));
+    };
+    tick();
+    const id = setInterval(tick, 250);
+    return () => clearInterval(id);
+  }, [cues, mainRef]);
 
   const box = useMemo(
     () =>
@@ -305,10 +337,21 @@ export const Player = ({
             { bottom: captions.bottom, left: captions.left, right: captions.right },
           ]}
         >
-          {/* Cue text comes from the WebVTT track; the plate renders once cues are wired. */}
+          {/* Machine-simplified text is labelled wherever it is shown. The
+              manifest guarantees `reviewed: false`; saying so only in a file
+              the viewer never opens would honour the letter of that and not
+              the point of it. */}
+          {isUnreviewed(captionTrack) ? (
+            <Metadata style={styles.captionProvenance}>
+              Simplified automatically · not checked by a person
+            </Metadata>
+          ) : null}
           <Body style={[styles.captionText, { fontSize: captionSize[prefs.captionSize] }]}>
             {cueText}
           </Body>
+          {captionStatus === 'failed' ? (
+            <Metadata style={styles.captionProvenance}>Captions unavailable for this title.</Metadata>
+          ) : null}
         </View>
       ) : null}
 
@@ -352,5 +395,6 @@ const styles = StyleSheet.create({
     paddingVertical: space(1),
     borderRadius: 8,
   },
+  captionProvenance: { color: colour.textSecondary, marginBottom: space(1) },
   captionText: { color: colour.captionText, textAlign: 'center' },
 });
