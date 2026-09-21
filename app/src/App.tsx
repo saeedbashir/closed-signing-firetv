@@ -11,11 +11,13 @@ import { ErrorState } from './components/ErrorState';
 import { colour } from './design/tokens';
 import { currentRoute, initialNav, navReduce } from './navigation/routes';
 import { Home } from './screens/Home';
+import { Player } from './screens/Player';
 import { TitleDetail } from './screens/TitleDetail';
 import { Walkthrough } from './screens/Walkthrough';
 import {
   DEFAULT_PREFERENCES,
   applyPatch,
+  rememberPosition,
   resumePosition,
   type Preferences,
 } from './state/preferences';
@@ -89,13 +91,15 @@ export const App = (): React.JSX.Element => {
         />
       );
     }
-    // The player lands here once the two-surface work is wired to VideoPlayer.
     return (
-      <ErrorState
-        title="Player"
-        detail="Two-surface playback is confirmed working on Vega and is being wired in next."
-        actionLabel="Back"
-        onAction={() => dispatch({ type: 'back' })}
+      <Player
+        manifest={manifest}
+        prefs={prefs}
+        onPatch={patch}
+        onExit={(positionMs) => {
+          setPrefs((cur) => rememberPosition(cur, manifest.id, positionMs, manifest.durationMs));
+          dispatch({ type: 'back' });
+        }}
       />
     );
   }
