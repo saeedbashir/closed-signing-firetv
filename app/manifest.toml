@@ -1,0 +1,75 @@
+schema-version = 1
+
+[package]
+title = "Basic UI React Native Application for project closedsigning"
+version = "0.1.0"
+id = "com.closedsigning.player"
+
+[os.version]
+min = "1.2"
+target = "1.2"
+
+[needs]
+[[needs.module]]
+id = "/com.amazon.vega.os@IVega_1_2"
+
+[[needs.module]]
+id = "/com.amazon.kepler.keplerscript_4@IKeplerScript_0"
+
+
+[components]
+[[components.interactive]]
+id = "com.closedsigning.player.main"
+runtime-module = "/com.amazon.kepler.runtime.react_native_kepler_4@IReactNativeKepler_0"
+launch-type = "singleton"
+categories = ["com.amazon.category.main"]
+
+
+# ---------------------------------------------------------------------------
+# Media playback. Verified against AmazonAppDev/vega-video-sample, which places
+# these under [wants] rather than [needs]: [needs] declares a hard device
+# requirement and narrows Appstore install targeting.
+# DRM entries from that sample are deliberately omitted -- our content is
+# unencrypted, and com.amazon.media.secureplayback would claim the single
+# secure decoder instance we are trying not to need.
+# ---------------------------------------------------------------------------
+[wants]
+
+[[wants.service]]
+id = "com.amazon.media.server"
+
+[[wants.service]]
+id = "com.amazon.mediametrics.service"
+
+[[wants.service]]
+id = "com.amazon.media.playersession.service"
+
+[[wants.service]]
+id = "com.amazon.mediabuffer.service"
+
+[[wants.service]]
+id = "com.amazon.mediatransform.service"
+
+[[wants.service]]
+id = "com.amazon.audio.stream"
+
+[[wants.service]]
+id = "com.amazon.audio.control"
+
+[[wants.service]]
+id = "com.amazon.audio.system"
+
+# Remote button events. The whole product is D-pad driven.
+[[wants.service]]
+id = "com.amazon.inputd.service"
+
+# GIPC, which audio and video playback depend on.
+[[wants.service]]
+id = "com.amazon.gipc.uuid.*"
+
+[[wants.service]]
+id = "com.amazon.network.service"
+
+# Captions are half this product; declare the privilege before it is needed.
+[[wants.privilege]]
+id = "com.amazon.devconf.privilege.accessibility"

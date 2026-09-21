@@ -1,0 +1,63 @@
+# Merge these into the app's manifest.toml.
+#
+# Verified against Amazon's own Vega video sample
+# (github.com/AmazonAppDev/vega-video-sample), not from prose docs. Two things
+# that a written-from-the-docs version gets wrong:
+#
+#   * Media services go under [wants], NOT [needs]. A [needs] entry declares a
+#     hard device requirement and narrows which devices the Appstore will
+#     install on; [wants] is the optional capability the sample actually uses.
+#   * Our implementation spec listed only the playersession / mediabuffer /
+#     mediatransform trio. The sample also declares media.server,
+#     mediametrics.service, network.service and inputd.service.
+#
+# DRM entries from the sample are deliberately omitted: our content is
+# unencrypted, and com.amazon.media.secureplayback would claim the one secure
+# decoder instance we are trying to avoid needing.
+
+[wants]
+
+# MediaPlayer / MediaTransform
+[[wants.service]]
+id = "com.amazon.media.server"
+[[wants.service]]
+id = "com.amazon.mediametrics.service"
+
+# Media controls
+[[wants.service]]
+id = "com.amazon.media.playersession.service"
+[[wants.service]]
+id = "com.amazon.mediabuffer.service"
+[[wants.service]]
+id = "com.amazon.mediatransform.service"
+
+# Audio playback, volume and system audio controls
+[[wants.service]]
+id = "com.amazon.audio.stream"
+[[wants.service]]
+id = "com.amazon.audio.control"
+[[wants.service]]
+id = "com.amazon.audio.system"
+
+# Remote button events. The whole product is driven by the D-pad, so this is
+# not optional in practice.
+[[wants.service]]
+id = "com.amazon.inputd.service"
+
+# Required for GIPC, which audio and video playback depend on.
+[[wants.service]]
+id = "com.amazon.gipc.uuid.*"
+
+# Network information
+[[wants.service]]
+id = "com.amazon.network.service"
+
+# Accessibility. Declared now even though the probe has no captions: captions
+# are half this product, and finding a missing privilege in week three eats a
+# weekend.
+[[wants.privilege]]
+id = "com.amazon.devconf.privilege.accessibility"
+
+[needs]
+[[needs.privilege]]
+id = "com.amazon.network.privilege.net-info"

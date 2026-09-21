@@ -1,0 +1,53 @@
+# Candidate titles for the catalogue.
+#
+# Fill in an entry BEFORE downloading anything. Every field below the URL exists
+# because it changes whether we may use the title. The `stm ingest` command in the
+# signed-track-manifest repo reads this file, refuses platform rips, and downloads
+# the rest.
+#
+# Success bar for Experiment 1 (week one gate): ten titles, at least six with a
+# clean low-detail region behind the interpreter, licences defensible, files
+# obtainable without breaking platform terms, captions available for most.
+#
+# Field reference
+#   id                 lower-case, hyphens, unique. e.g. wh-briefing-2026-03-14
+#   title              display title
+#   url                where it was published (the page, not necessarily the file)
+#   publisher          who published it
+#   production_credit  who actually produced it; "verified: in-house" or the contractor's name
+#   licence            public-domain-usgov | cc0-1.0 | cc-by-4.0 | <SPDX id> | unclear
+#   attribution        the text the app will display on the title detail screen
+#   acquisition_route  agency download page | public archive (which) | direct request | (never a YouTube rip)
+#   captions           URL or local path to a .vtt or .srt file, if one exists
+#   caption_language   BCP 47, default en
+#   sign_language      ISO 639-3, default ase
+#   language_label     default "American Sign Language"
+#   layout_notes       corner inset or side panel, roughly where; what sits behind the inset
+#   framing_notes      is the interpreter framed at least waist-up with the face fully visible?
+#   duration_s         rough duration; 180–900 s preferred
+#   verdict            candidate | usable | rejected, with a reason in notes
+#   notes              anything else, including licence doubts
+#
+# Optional, for the demo path when detection is marginal:
+#   crop_rect: {x: 1392, y: 612, w: 432, h: 396}   # source pixels, hand-specified
+#   layout: corner-inset | side-panel                # required with crop_rect
+#
+# Example (delete once real entries exist):
+#
+# sources:
+#   - id: example-briefing-01
+#     title: "Example briefing, 14 March 2026"
+#     url: https://www.example.gov/briefings/2026-03-14
+#     publisher: Example Agency
+#     production_credit: "verified: in-house"
+#     licence: public-domain-usgov
+#     attribution: "Example Agency. Public domain."
+#     acquisition_route: agency download page
+#     captions: https://www.example.gov/briefings/2026-03-14.vtt
+#     layout_notes: corner inset, bottom right, over a plain blue backdrop
+#     framing_notes: waist-up, face fully visible throughout
+#     duration_s: 540
+#     verdict: candidate
+#     notes: ""
+
+sources: []

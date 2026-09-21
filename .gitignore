@@ -1,0 +1,18 @@
+node_modules/
+build/
+dist/
+.vega/
+*.log
+.DS_Store
+cdk.out/
+.env
+*.tsbuildinfo
+coverage/
+
+# Media never goes in git except the small bundled titles
+catalogue/work/
+catalogue/out/
+*.mp4
+*.webm
+*.mov
+!catalogue/bundled/**/*.mp4
