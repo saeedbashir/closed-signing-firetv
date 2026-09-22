@@ -27,6 +27,7 @@ import { diag } from '../diagnostics';
 import type { Preferences } from '../state/preferences';
 import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
 import { isUnreviewed, trackForMode, useCaptions } from '../stm/useCaptions';
+import { bundledMain, bundledSigner } from '../bundledMedia';
 import { activeCue } from '../stm/webvtt';
 import { px } from '../design/scale';
 
@@ -109,11 +110,15 @@ export const Player = ({
 
   const signTrack = useMemo(() => humanSignTracks(manifest)[0] ?? null, [manifest]);
 
-  const mainRef = useSurface(manifest.video.main.url, true);
-  const signerRef = useSurface(
-    prefs.signerVisible && signTrack ? signTrack.track.url : null,
-    true,
-  );
+  // Bundled media first, the manifest's URL otherwise. A title that ships with
+  // the app plays with no network at all.
+  const mainSrc = bundledMain(manifest.id) ?? manifest.video.main.url;
+  const signerSrc = signTrack
+    ? (bundledSigner(manifest.id, signTrack.language) ?? signTrack.track.url)
+    : null;
+
+  const mainRef = useSurface(mainSrc, true);
+  const signerRef = useSurface(prefs.signerVisible ? signerSrc : null, true);
   const main = mainRef.current;
   const signer = signerRef.current;
 

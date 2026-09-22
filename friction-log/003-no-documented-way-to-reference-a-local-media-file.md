@@ -3,7 +3,8 @@
 **Date:** 2026-09-21
 **Area:** Vega SDK / react-native-w3cmedia / Vega Virtual Device
 **Severity:** major
-**Resolved:** yes — the source must be HTTPS. Cost about two hours to find.
+**Resolved:** partly, and the first resolution was wrong. HTTPS works; so does a
+file bundled in the package, from a bare path. See the correction below.
 
 ## Task attempted
 
@@ -109,3 +110,42 @@ About two hours, nearly all of it on this one step. Everything from SDK install
 to a running, instrumented app on the virtual device took well under an hour,
 and the experiment itself produced a clean result within a minute of the source
 finally loading.
+
+## CORRECTION, 2026-09-22 — a local file does work
+
+The conclusion above, that media must be remote, was drawn from files **pushed to the
+device** with `vega device copy-to`. Those really are unreachable: the app runs in a
+mount namespace where `/tmp` is not the `/tmp` the shell sees. What was never tried is
+a file **bundled inside the `.vpkg`**, which lives in the app's own namespace.
+
+It plays. Two things had to be right at once, which is why it looked like a flat
+refusal:
+
+1. The asset must be bundled, not pushed. Metro already treats `mp4` as an asset
+   extension, so `require('../assets/demo-main.mp4')` is enough. (`vtt` is not in
+   `assetExts`; caption sidecars need it adding.)
+2. The path must be bare. `Image.resolveAssetSource` returns
+   `file:///pkg/bundle/assets/assets/demo-main.mp4`, and GStreamer treats the scheme
+   as part of the filename — the same literal-URI behaviour as step 2 of the original
+   report. Strip `file://` and hand over `/pkg/bundle/assets/assets/demo-main.mp4`.
+
+Measured on device, with an on-screen readout because nothing else can observe a Vega
+app:
+
+```
+file:///pkg/bundle/assets/assets/demo-main.mp4   readyState=0   (nothing happens)
+/pkg/bundle/assets/assets/demo-main.mp4          readyState=2   (plays)
+```
+
+So the platform is stricter than it is limited, and the error message pointed away from
+the answer in both cases.
+
+This matters beyond neatness. The hackathon rules ask that the repository contain
+everything needed for the project to be functional, and a judge should be able to press
+play without our storage bucket being alive. The app now prefers bundled media and
+falls back to HTTPS, in `app/src/bundledMedia.ts`.
+
+**The suggestion stands, and sharpens:** one worked example of playing a bundled asset
+would have saved the original two hours and this second investigation. The single most
+useful line the documentation could add is that the player takes a *path*, not a URI,
+for local files.
