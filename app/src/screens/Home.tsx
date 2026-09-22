@@ -6,7 +6,7 @@
  * screen exists to reach the player, which is the product.
  */
 import React, { useMemo } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { SignLanguageBadge as Badge } from '../components/Badge';
 import { Focusable } from '../components/Focusable';
 import { Body, CardTitle, Metadata, ScreenTitle, SectionHeading } from '../components/Text';
@@ -37,6 +37,15 @@ const Card = ({
       {(focused) => (
         <View>
           <View style={styles.poster}>
+            {/* The still sits behind the badge rather than beside it, so a
+                title with no poster still shows its language rather than an
+                empty rectangle. */}
+            <Image
+              source={{ uri: entry.poster }}
+              style={[StyleSheet.absoluteFill, styles.posterImage]}
+              resizeMode="cover"
+              accessible={false}
+            />
             <Badge
               languages={entry.signLanguages}
               lowConfidence={isLowConfidence(entry)}
@@ -163,7 +172,9 @@ const styles = StyleSheet.create({
     borderRadius: px(8),
     justifyContent: 'flex-end',
     padding: space(1),
+    overflow: 'hidden',
   },
+  posterImage: { borderRadius: px(8) },
   cardTitle: { marginTop: space(1.5) },
   progressTrack: {
     height: px(6),

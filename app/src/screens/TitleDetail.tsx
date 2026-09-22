@@ -6,7 +6,7 @@
  * presentation, which is precisely what this project is about.
  */
 import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { SignLanguageBadge } from '../components/Badge';
 import { Focusable } from '../components/Focusable';
 import { Body, Metadata, ScreenTitle } from '../components/Text';
@@ -37,7 +37,14 @@ export const TitleDetail = ({
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content}>
-      <View style={styles.still} />
+      <View style={styles.still}>
+        <Image
+          source={{ uri: manifest.video.poster }}
+          style={[StyleSheet.absoluteFill, styles.stillImage]}
+          resizeMode="cover"
+          accessible={false}
+        />
+      </View>
       <ScreenTitle style={styles.title}>{manifest.title}</ScreenTitle>
       <View style={styles.metaRow}>
         <Metadata dim>{formatDuration(manifest.durationMs)}</Metadata>
@@ -97,7 +104,13 @@ export const TitleDetail = ({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colour.bgBase },
   content: { paddingHorizontal: safeArea.horizontal, paddingVertical: safeArea.vertical },
-  still: { height: px(320), borderRadius: px(12), backgroundColor: colour.bgSurface },
+  still: {
+    height: px(320),
+    borderRadius: px(12),
+    backgroundColor: colour.bgSurface,
+    overflow: 'hidden',
+  },
+  stillImage: { borderRadius: px(12) },
   title: { marginTop: space(3) },
   metaRow: { flexDirection: 'row', marginTop: space(1) },
   dot: { marginHorizontal: space(1) },
