@@ -10,7 +10,7 @@
  * remote in front of a television; "that address returned a web page, not a
  * manifest" tells them they pasted the wrong link.
  */
-import type { TitleManifest } from './types';
+import { STM_VERSIONS, type TitleManifest } from './types';
 
 export type LoadResult =
   | { ok: true; manifest: TitleManifest }
@@ -44,14 +44,15 @@ function validate(value: unknown): LoadResult {
     return { ok: false, reason: 'That address did not return a manifest.' };
   }
   const m = value as Partial<TitleManifest>;
-  if (m.stmVersion !== '0.1') {
+  if (!(STM_VERSIONS as readonly unknown[]).includes(m.stmVersion)) {
     return {
       ok: false,
       reason: m.stmVersion
-        ? `That manifest is version ${String(m.stmVersion)}; this player reads 0.1.`
+        ? `That manifest is version ${String(m.stmVersion)}; this player reads ${STM_VERSIONS.join(' and ')}.`
         : 'That file is not a Signed Track Manifest.',
     };
   }
+
   if (!m.id || !m.title) return { ok: false, reason: 'That manifest has no title.' };
   const main = m.video?.main?.url;
   if (!main) return { ok: false, reason: 'That manifest has no main video.' };

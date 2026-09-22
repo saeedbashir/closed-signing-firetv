@@ -35,6 +35,9 @@ import type { Catalogue, TitleManifest } from './stm/types';
 
 `;
 
+/** The format versions the app reads; keep in step with app/src/stm/types.ts. */
+const ACCEPTED = ['0.1', '0.2'];
+
 const urls = process.argv.slice(2);
 if (urls.length === 0) {
   console.error('usage: build-catalogue.mjs <manifest-url> [...]');
@@ -49,8 +52,8 @@ for (const url of urls) {
     process.exit(1);
   }
   const manifest = await response.json();
-  if (manifest.stmVersion !== '0.1') {
-    console.error(`${url}: unexpected stmVersion ${manifest.stmVersion}`);
+  if (!ACCEPTED.includes(manifest.stmVersion)) {
+    console.error(`${url}: unexpected stmVersion ${manifest.stmVersion}; this tool reads ${ACCEPTED.join(', ')}`);
     process.exit(1);
   }
   manifests.push(manifest);
@@ -59,19 +62,29 @@ for (const url of urls) {
   console.log(`${manifest.id}: ${signed} sign track(s), ${captions} caption track(s)`);
 }
 
+// The catalogue is written at the highest version any manifest carries, so a
+// 0.2 title never hides inside a 0.1 index.
+const catalogueVersion = manifests.some((m) => m.stmVersion === '0.2') ? '0.2' : '0.1';
+
 const catalogue = {
-  stmVersion: '0.1',
-  titles: manifests.map((m) => ({
-    id: m.id,
-    title: m.title,
-    durationMs: m.durationMs,
-    poster: m.video.poster,
-    manifestUrl: 'bundled',
-    signLanguages: (m.signLanguage ?? []).map((t) => t.language),
-    ...(m.signLanguage?.[0]?.confidence !== undefined
-      ? { confidence: m.signLanguage[0].confidence }
-      : {}),
-  })),
+  stmVersion: catalogueVersion,
+  titles: manifests.map((m) => {
+    // Lowest extraction confidence across the title's tracks, as SPEC.md says —
+    // it lives under `extraction`, and the earlier read of `signLanguage[0].confidence`
+    // found nothing and silently omitted the badge signal from every entry.
+    const confs = (m.signLanguage ?? [])
+      .map((t) => t.extraction?.confidence)
+      .filter((c) => typeof c === 'number');
+    return {
+      id: m.id,
+      title: m.title,
+      durationMs: m.durationMs,
+      poster: m.video.poster,
+      manifestUrl: 'bundled',
+      signLanguages: (m.signLanguage ?? []).map((t) => t.language),
+      ...(confs.length ? { confidence: Math.min(...confs) } : {}),
+    };
+  }),
 };
 
 const byId = Object.fromEntries(manifests.map((m) => [m.id, m]));

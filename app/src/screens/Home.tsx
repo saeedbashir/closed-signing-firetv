@@ -13,6 +13,8 @@ import { Body, CardTitle, Metadata, ScreenTitle, SectionHeading } from '../compo
 import { colour, layout, safeArea, space } from '../design/tokens';
 import { formatDuration, isLowConfidence, type CatalogueEntry } from '../stm/types';
 import type { Preferences } from '../state/preferences';
+import { lastStorageError } from '../state/storage';
+import { DIAG } from '../diagnostics';
 import { px } from '../design/scale';
 
 const Card = ({
@@ -129,6 +131,13 @@ export const Home = ({
 
   return (
     <ScrollView style={styles.root} contentContainerStyle={styles.content}>
+      {/* Diagnostic builds only: the one storage failure that matters, on the
+          one surface where this platform lets anything be observed. */}
+      {DIAG ? (
+        <Metadata dim>
+          {`storage: ${lastStorageError() ?? 'ok'} · seen=${String(prefs.walkthroughSeen)} · corner=${prefs.signerCorner}`}
+        </Metadata>
+      ) : null}
       <View style={styles.header}>
         <ScreenTitle>Closed Signing</ScreenTitle>
         <View style={styles.headerActions}>

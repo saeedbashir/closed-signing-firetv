@@ -43,6 +43,19 @@ export type Extraction = {
   fillMethod: FillMethod;
 };
 
+/**
+ * How much the interpreter moves, per interval from t=0. Format 0.2.
+ *
+ * Integers 0..100, normalised to the title's own 95th percentile. Hand motion
+ * and nothing else — not meaning, not quality. The idle threshold is ours to
+ * set, exactly as the low-confidence threshold is.
+ */
+export type Activity = {
+  intervalMs: number;
+  scale: 'title-p95';
+  values: number[];
+};
+
 export type SignTrack = {
   /** ISO 639-3. `ase` is American Sign Language, `bfi` British. */
   language: string;
@@ -61,6 +74,8 @@ export type SignTrack = {
     /** Interpretation lags speech; the player shifts, the pipeline never re-encodes. */
     syncOffsetMs: number;
   };
+  /** Absent on 0.1 manifests and on titles the producer did not measure. */
+  activity?: Activity;
 };
 
 export type Caption = {
@@ -74,8 +89,12 @@ export type Caption = {
   reviewedBy?: string;
 };
 
+/** The versions this player reads. 0.2 adds `activity`; nothing else changed. */
+export const STM_VERSIONS = ['0.1', '0.2'] as const;
+export type StmVersion = (typeof STM_VERSIONS)[number];
+
 export type TitleManifest = {
-  stmVersion: '0.1';
+  stmVersion: StmVersion;
   id: string;
   title: string;
   durationMs: number;
@@ -95,7 +114,7 @@ export type CatalogueEntry = {
   confidence?: number;
 };
 
-export type Catalogue = { stmVersion: '0.1'; titles: CatalogueEntry[] };
+export type Catalogue = { stmVersion: StmVersion; titles: CatalogueEntry[] };
 
 /** Only ever show a human-interpreted track. We do not play synthesised signing. */
 export function humanSignTracks(m: TitleManifest): SignTrack[] {

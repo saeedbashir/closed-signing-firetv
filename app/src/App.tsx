@@ -5,13 +5,14 @@
  * order is ours to control. Every screen declares its own initial focus
  * explicitly; the framework is never left to guess.
  */
-import React, { useCallback, useMemo, useReducer, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useReducer, useState } from 'react';
 import { diag } from './diagnostics';
 import { useBack, useBackRoot } from './input/useBack';
 import { setReduceMotion } from './design/motion';
 import { Settings } from './screens/Settings';
 import { OpenUrl } from './screens/OpenUrl';
 import { rememberRecent } from './state/recents';
+import { load, save } from './state/storage';
 import { StyleSheet, View } from 'react-native';
 import { ErrorState } from './components/ErrorState';
 import { colour } from './design/tokens';
@@ -21,8 +22,9 @@ import { Player } from './screens/Player';
 import { TitleDetail } from './screens/TitleDetail';
 import { Walkthrough } from './screens/Walkthrough';
 import {
-  DEFAULT_PREFERENCES,
+  PREFERENCES_KEY,
   applyPatch,
+  fromStored,
   rememberPosition,
   resumePosition,
   type Preferences,
@@ -36,7 +38,34 @@ const DEV_AUTOPLAY = false;
 
 export const App = (): React.JSX.Element => {
   const [nav, dispatch] = useReducer(navReduce, initialNav);
-  const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
+
+  /**
+   * Preferences: loaded once, written on every change.
+   *
+   * `null` until storage has answered, and nothing is decided before then —
+   * the first route depends on `walkthroughSeen`, and deciding it against the
+   * defaults would show the walkthrough to every returning viewer. That is
+   * precisely what happened: `storage.ts` existed, was documented as the fix,
+   * and was wired to the recents list and nothing else. Every launch reset the
+   * signer to bottom-right medium, forgot every watch position, and replayed
+   * the introduction. The product's own premise — set it once — was absent,
+   * and nothing anywhere failed. Found by audit on 2026-09-22.
+   */
+  const [prefs, setPrefs] = useState<Preferences | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    void load<unknown>(PREFERENCES_KEY, null).then((raw) => {
+      if (!cancelled) setPrefs(fromStored(raw));
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+  useEffect(() => {
+    // Skip the load itself; write every change after it. A failed write is
+    // dropped by `save` — the viewer loses a preference, not the programme.
+    if (prefs) void save(PREFERENCES_KEY, prefs);
+  }, [prefs]);
   /**
    * A manifest opened by address, which is not in the bundled catalogue.
    * Held here rather than in the route so the route stays serialisable.
@@ -50,7 +79,7 @@ export const App = (): React.JSX.Element => {
   // root is what lets the viewer actually leave the app.
   useBackRoot();
   // A device-wide setting, applied where the animation actually happens.
-  setReduceMotion(prefs.reduceMotion);
+  setReduceMotion(prefs?.reduceMotion ?? false);
   const onBack = useCallback(() => {
     if (nav.stack.length <= 1) return false;
     dispatch({ type: 'back' });
@@ -59,7 +88,7 @@ export const App = (): React.JSX.Element => {
   useBack(onBack);
 
   const patch = useCallback(
-    (p: Partial<Preferences>) => setPrefs((cur) => applyPatch(cur, p)),
+    (p: Partial<Preferences>) => setPrefs((cur) => (cur ? applyPatch(cur, p) : cur)),
     [],
   );
 
@@ -70,6 +99,11 @@ export const App = (): React.JSX.Element => {
     if (opened?.id === id) return opened;
     return BUNDLED_MANIFESTS[id] ?? null;
   }, [route, opened]);
+
+  // Nothing is drawn and no route is chosen until the stored preferences are
+  // in hand. The wait is one storage read — tens of milliseconds — and it is
+  // the difference between remembering the viewer and greeting them as new.
+  if (!prefs) return <View style={styles.root} />;
 
   // Launch resolves immediately with the bundled catalogue; a networked
   // catalogue would show the loading state and time out to the offline one.
@@ -159,10 +193,14 @@ export const App = (): React.JSX.Element => {
         prefs={prefs}
         onPatch={patch}
         onProgress={(positionMs) =>
-          setPrefs((cur) => rememberPosition(cur, manifest.id, positionMs, manifest.durationMs))
+          setPrefs((cur) =>
+            cur ? rememberPosition(cur, manifest.id, positionMs, manifest.durationMs) : cur,
+          )
         }
         onExit={(positionMs) => {
-          setPrefs((cur) => rememberPosition(cur, manifest.id, positionMs, manifest.durationMs));
+          setPrefs((cur) =>
+            cur ? rememberPosition(cur, manifest.id, positionMs, manifest.durationMs) : cur,
+          );
           dispatch({ type: 'back' });
         }}
       />

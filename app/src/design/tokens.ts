@@ -117,6 +117,15 @@ export type SignerSize = keyof typeof signerSize;
 export const signerOpacity = { full: 1, high: 0.85, medium: 0.7 } as const;
 export type SignerOpacity = keyof typeof signerOpacity;
 
+/**
+ * Where the signer layer settles while the interpreter is idle and auto-dim is
+ * on. Faint enough to give the picture back, present enough that the viewer
+ * knows the interpreter has not gone anywhere — a vanished interpreter reads
+ * as a fault, a faded one reads as a choice. Not one of the viewer's opacity
+ * steps on purpose: it sits below all of them.
+ */
+export const signerIdleOpacity = 0.35;
+
 export type SignerCorner = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 export const signerCorners: readonly SignerCorner[] = [
   'top-left',

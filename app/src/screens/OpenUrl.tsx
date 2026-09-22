@@ -25,6 +25,7 @@ import { px } from '../design/scale';
 import { loadManifest } from '../stm/remoteManifest';
 import { loadRecents, type Recent } from '../state/recents';
 import type { TitleManifest } from '../stm/types';
+import { DIAG } from '../diagnostics';
 
 /** Something to open on a fresh install, so the feature can be seen without typing. */
 const EXAMPLES: readonly Recent[] = [
@@ -38,6 +39,19 @@ const EXAMPLES: readonly Recent[] = [
     title: 'Example — corner inset demonstration',
     openedAt: 0,
   },
+  // Diagnostic builds only. A real title's manifest with a synthetic activity
+  // track that alternates 15 s of signing with 15 s of stillness, so the
+  // auto-dim transitions can be watched on a device — the shipped titles are
+  // continuous proceedings and never go idle for long enough to trigger it.
+  ...(DIAG
+    ? [
+        {
+          url: 'https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/_test-autodim/manifest.json',
+          title: 'TEST FIXTURE — auto-dim, synthetic activity',
+          openedAt: 0,
+        },
+      ]
+    : []),
 ];
 
 export const OpenUrl = ({

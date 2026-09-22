@@ -113,6 +113,8 @@ export type SignerControlsProps = {
   onDismiss: () => void;
   /** False in the pre-composited fallback, where these controls do not exist. */
   sizeAndOpacityAvailable?: boolean;
+  /** Whether this title's manifest carries an activity track (format 0.2). */
+  activityAvailable?: boolean;
 };
 
 export const SignerControls = ({
@@ -120,6 +122,7 @@ export const SignerControls = ({
   onChange,
   onDismiss,
   sizeAndOpacityAvailable = true,
+  activityAvailable = false,
 }: SignerControlsProps): React.JSX.Element => {
   const anchorLeft = prefs.signerCorner.endsWith('right');
 
@@ -139,6 +142,7 @@ export const SignerControls = ({
     corner: (d) => onChange({ signerCorner: cycle(signerCorners, prefs.signerCorner, d) }),
     size: (d) => onChange({ signerSize: cycle(SIZES, prefs.signerSize, d) }),
     opacity: (d) => onChange({ signerOpacity: cycle(OPACITIES, prefs.signerOpacity, d) }),
+    autoDim: () => onChange({ signerAutoDim: !prefs.signerAutoDim }),
   };
   const live = useRef(handlers);
   live.current = handlers;
@@ -177,7 +181,9 @@ export const SignerControls = ({
             label="Position"
             value={CORNER_LABEL[prefs.signerCorner]}
             onChange={(d) =>
-              onChange({ signerCorner: cycle(signerCorners, prefs.signerCorner, d) })
+              onChange({
+                signerCorner: cycle(signerCorners, prefs.signerCorner, d),
+              })
             }
           />
           <CornerGrid corner={prefs.signerCorner} />
@@ -197,9 +203,32 @@ export const SignerControls = ({
                 label="Opacity"
                 value={OPACITY_LABEL[prefs.signerOpacity]}
                 onChange={(d) =>
-                  onChange({ signerOpacity: cycle(OPACITIES, prefs.signerOpacity, d) })
+                  onChange({
+                    signerOpacity: cycle(OPACITIES, prefs.signerOpacity, d),
+                  })
                 }
               />
+              {/* Experimental, opt-in, and only where the manifest measured
+                  the interpreter. A control that would do nothing is replaced
+                  by the sentence saying why, as size and opacity are above. */}
+              {activityAvailable ? (
+                <>
+                  <ValueRow
+                    rowKey="autoDim"
+                    onFocused={onFocused}
+                    label="Dim when idle"
+                    value={prefs.signerAutoDim ? 'On' : 'Off'}
+                    onChange={() => onChange({ signerAutoDim: !prefs.signerAutoDim })}
+                  />
+                  <Metadata dim style={styles.unavailable}>
+                    Fades the interpreter while they are not signing. Experimental.
+                  </Metadata>
+                </>
+              ) : (
+                <Metadata dim style={styles.unavailable}>
+                  Dim when idle is not available for this title.
+                </Metadata>
+              )}
             </>
           ) : (
             // Say why rather than showing controls that do nothing.
@@ -236,8 +265,16 @@ const styles = StyleSheet.create({
   anchorLeft: { left: safeArea.horizontal },
   anchorRight: { right: safeArea.horizontal },
   heading: { marginBottom: space(2) },
-  row: { paddingHorizontal: space(2), paddingVertical: space(1.5), marginBottom: space(1) },
-  rowInner: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  row: {
+    paddingHorizontal: space(2),
+    paddingVertical: space(1.5),
+    marginBottom: space(1),
+  },
+  rowInner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   valueGroup: { flexDirection: 'row', alignItems: 'center' },
   chevron: { width: px(28), textAlign: 'center' },
   grid: {

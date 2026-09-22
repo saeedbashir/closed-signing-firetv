@@ -13,18 +13,27 @@
  * tells the control overlay to stop offering controls that would do nothing.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 import { KeplerVideoView, VideoPlayer } from '@amazon-devices/react-native-w3cmedia';
 import { Focusable } from '../components/Focusable';
 import { Body, Metadata, SectionHeading } from '../components/Text';
 import { TRANSPORT_HEIGHT, TransportControls } from '../components/TransportControls';
 import { SCREEN, captionPlacement, signerBox } from '../design/geometry';
-import { captionSize, colour, layout, motion, safeArea, signerOpacity, space } from '../design/tokens';
+import {
+  captionSize,
+  colour,
+  layout,
+  motion,
+  safeArea,
+  signerIdleOpacity,
+  signerOpacity,
+  space,
+} from '../design/tokens';
 import { SignerControls } from './SignerControls';
 import { CaptionMenu } from './CaptionMenu';
 import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
 import { useBack } from '../input/useBack';
-import { diag } from '../diagnostics';
+import { DIAG, diag } from '../diagnostics';
 import type { Preferences } from '../state/preferences';
 import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
 import { isUnreviewed, trackForMode, useCaptions } from '../stm/useCaptions';
@@ -32,6 +41,8 @@ import { bundledMain, bundledSigner } from '../bundledMedia';
 import { activeCue } from '../stm/webvtt';
 import { px } from '../design/scale';
 import { hasFinished, playbackDuration } from '../playback';
+import { IdleDetector, activityAt } from '../playback/idle';
+import { prefersReducedMotion } from '../design/motion';
 
 /** Set true to trace both surfaces in the device log, as Experiment 2 did. */
 const LOG_SURFACES = false;
@@ -119,7 +130,7 @@ export const Player = ({
   // the app plays with no network at all.
   const mainSrc = bundledMain(manifest.id) ?? manifest.video.main.url;
   const signerSrc = signTrack
-    ? (bundledSigner(manifest.id, signTrack.language) ?? signTrack.track.url)
+    ? bundledSigner(manifest.id, signTrack.language) ?? signTrack.track.url
     : null;
 
   const mainRef = useSurface(mainSrc, true);
@@ -210,29 +221,96 @@ export const Player = ({
   const [ended, setEnded] = useState(false);
   const replayedAt = useRef(0);
   const durationMs = manifest.durationMs;
+
+  /**
+   * Auto-dim: fade the interpreter while they are idle, if the viewer asked.
+   *
+   * The manifest's activity track says how much they moved each second; the
+   * detector turns that into a decision with hysteresis so the layer never
+   * flickers at the threshold. It is fed from the same half-second poll as
+   * the end-of-programme check, reading the same clock, so a paused programme
+   * neither dims nor restores. Opt-in and off by default: whether signing
+   * viewers want this is an assumption, and the submission says so.
+   */
+  const activity = signTrack?.activity ?? null;
+  const detector = useMemo(() => (activity ? new IdleDetector(activity) : null), [activity]);
+  const autoDim = prefs.signerAutoDim && detector !== null;
+  const [dimmed, setDimmed] = useState(false);
+  useEffect(() => {
+    if (!autoDim) setDimmed(false);
+  }, [autoDim]);
+
   useEffect(() => {
     const id = setInterval(() => {
       const p = mainRef.current.player;
       if (!p) return;
       if (Date.now() - replayedAt.current < REPLAY_GRACE_MS) return;
       const duration = playbackDuration(p.duration, durationMs);
-      const finished = hasFinished({ currentTime: p.currentTime, duration, endedFlag: p.ended });
+      const finished = hasFinished({
+        currentTime: p.currentTime,
+        duration,
+        endedFlag: p.ended,
+      });
       setEnded((was) => {
         if (finished !== was) {
-          diag(`ended ${was} to ${finished} at ${p.currentTime.toFixed(2)}/${duration} flag=${p.ended}`);
+          diag(
+            `ended ${was} to ${finished} at ${p.currentTime.toFixed(2)}/${duration} flag=${
+              p.ended
+            }`,
+          );
         }
         return finished;
       });
+      if (autoDim && detector) {
+        const idle = detector.update(Math.round(p.currentTime * 1000));
+        setDimmed((was) => {
+          if (idle !== was)
+            diag(`signer ${idle ? 'dim' : 'restore'} at ${p.currentTime.toFixed(1)}`);
+          return idle;
+        });
+      }
     }, 500);
     return () => clearInterval(id);
-  }, [durationMs, mainRef]);
+  }, [autoDim, detector, durationMs, mainRef]);
+
+  /**
+   * The layer's opacity, as a scrim rather than as opacity.
+   *
+   * `opacity` on the View around a `KeplerVideoView` does nothing on Vega: the
+   * video is composited on its own plane and ignores its parent's alpha.
+   * Measured on device 2026-09-22 — the signer read 59.7 at "100%", 59.9 at
+   * "70%" and 59.5 back at "100%", so the Opacity control had never done
+   * anything a viewer could see. What does reach the video is an ordinary
+   * View drawn above it as a later sibling — the end-of-programme panel dims
+   * both layers that way, measured. So the signer carries a black scrim whose
+   * alpha is one minus the opacity the viewer chose, and idle raises that
+   * alpha further, below every step. See friction-log/012.
+   *
+   * Instant under reduced motion — the fade is the movement, and that is the
+   * thing the setting removes.
+   */
+  const scrimAlpha = useRef(new Animated.Value(1 - signerOpacity[prefs.signerOpacity])).current;
+  useEffect(() => {
+    const target = 1 - (dimmed ? signerIdleOpacity : signerOpacity[prefs.signerOpacity]);
+    if (prefersReducedMotion()) {
+      scrimAlpha.setValue(target);
+      return;
+    }
+    const anim = Animated.timing(scrimAlpha, {
+      toValue: target,
+      duration: motion.standard,
+      useNativeDriver: true,
+    });
+    anim.start();
+    return () => anim.stop();
+  }, [dimmed, prefs.signerOpacity, scrimAlpha]);
 
   useEffect(() => {
     diag(`chrome visible=${chromeVisible} overlay=${anyOverlayOpen}`);
   }, [chromeVisible, anyOverlayOpen]);
 
   useEffect(() => {
-    if (!chromeVisible) return;
+    if (!chromeVisible && !DIAG) return;
     const read = () => setPositionMs(Math.round((mainRef.current.player?.currentTime ?? 0) * 1000));
     read();
     const id = setInterval(read, 250);
@@ -334,9 +412,11 @@ export const Player = ({
       p.currentTime = 0;
       p.play().catch(() => undefined);
     });
+    detector?.reset();
+    setDimmed(false);
     setEnded(false);
     setChromeVisible(true);
-  }, [bothSurfaces]);
+  }, [bothSurfaces, detector]);
 
   const seekBy = useCallback(
     (seconds: number) => {
@@ -444,21 +524,35 @@ export const Player = ({
       </View>
 
       {prefs.signerVisible && box ? (
-        <View
-          style={[
-            styles.signer,
-            { left: box.left, top: box.top, width: box.width, height: box.height },
-            { opacity: signerOpacity[prefs.signerOpacity] },
-          ]}
-        >
-          {signer.player ? (
-            <KeplerVideoView
-              style={StyleSheet.absoluteFill}
-              videoPlayer={signer.player}
-              scalingmode="fit"
-            />
-          ) : null}
-        </View>
+        <>
+          <View
+            style={[
+              styles.signer,
+              { left: box.left, top: box.top, width: box.width, height: box.height },
+            ]}
+          >
+            {signer.player ? (
+              <KeplerVideoView
+                style={StyleSheet.absoluteFill}
+                videoPlayer={signer.player}
+                scalingmode="fit"
+              />
+            ) : null}
+          </View>
+          {/* The scrim is a sibling of the video's container, not a child of it,
+              and it comes after it: that is the arrangement the end-of-programme
+              panel uses to dim both layers, and the only one measured to reach
+              the video plane. Same box, same corners. */}
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.signer,
+              styles.scrim,
+              { left: box.left, top: box.top, width: box.width, height: box.height },
+              { opacity: scrimAlpha },
+            ]}
+          />
+        </>
       ) : null}
 
       {/* Degrade, never block — but never leave a black screen unexplained
@@ -484,7 +578,11 @@ export const Player = ({
         <View
           style={[
             styles.captionPlate,
-            { bottom: captions.bottom, left: captions.left, right: captions.right },
+            {
+              bottom: captions.bottom,
+              left: captions.left,
+              right: captions.right,
+            },
           ]}
         >
           {/* Machine-simplified text is labelled wherever it is shown. The
@@ -500,7 +598,9 @@ export const Player = ({
             {cueText}
           </Body>
           {captionStatus === 'failed' ? (
-            <Metadata style={styles.captionProvenance}>Captions unavailable for this title.</Metadata>
+            <Metadata style={styles.captionProvenance}>
+              Captions unavailable for this title.
+            </Metadata>
           ) : null}
         </View>
       ) : null}
@@ -508,7 +608,9 @@ export const Player = ({
       {/* The end of the programme is a state, not an absence. */}
       {ended && !anyOverlayOpen ? (
         <View style={styles.endPanel}>
-          <SectionHeading style={styles.endHeading}>That is the end of this programme</SectionHeading>
+          <SectionHeading style={styles.endHeading}>
+            That is the end of this programme
+          </SectionHeading>
           <View style={styles.endActions}>
             <Focusable
               variant="primary"
@@ -558,12 +660,27 @@ export const Player = ({
         />
       ) : null}
 
+      {/* Diagnostic builds only: what the auto-dim believes, on the one surface
+          this platform lets anything be observed. */}
+      {DIAG ? (
+        <View style={styles.trace}>
+          <Metadata>
+            {`t=${(positionMs / 1000).toFixed(1)} act=${
+              activity ? activityAt(activity, positionMs) : '-'
+            } autoDim=${String(autoDim)} dimmed=${String(dimmed)} n=${
+              activity?.values.length ?? 0
+            }`}
+          </Metadata>
+        </View>
+      ) : null}
+
       {controlsOpen ? (
         <SignerControls
           prefs={prefs}
           onChange={onPatch}
           onDismiss={() => setControlsOpen(false)}
           sizeAndOpacityAvailable={sizeAndOpacityAvailable}
+          activityAvailable={detector !== null}
         />
       ) : null}
     </View>
@@ -585,6 +702,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.72)',
   },
   endHeading: { marginBottom: space(3) },
+  trace: {
+    position: 'absolute',
+    left: safeArea.horizontal,
+    top: safeArea.vertical,
+    backgroundColor: 'rgba(0,0,0,0.85)',
+    paddingHorizontal: space(2),
+    paddingVertical: space(1),
+  },
   endActions: { flexDirection: 'row' },
   endPrimary: {
     paddingHorizontal: space(5),
@@ -592,8 +717,13 @@ const styles = StyleSheet.create({
     borderRadius: layout.overlayRadius,
   },
   endPrimaryLabel: { color: colour.onAccent },
-  endSecondary: { marginLeft: space(2), paddingHorizontal: space(4), paddingVertical: space(2) },
+  endSecondary: {
+    marginLeft: space(2),
+    paddingHorizontal: space(4),
+    paddingVertical: space(2),
+  },
   signer: { position: 'absolute', borderRadius: px(8), overflow: 'hidden' },
+  scrim: { backgroundColor: '#000000' },
   notice: {
     position: 'absolute',
     bottom: space(3),
