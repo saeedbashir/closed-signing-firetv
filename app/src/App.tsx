@@ -8,6 +8,7 @@
 import React, { useCallback, useMemo, useReducer, useState } from 'react';
 import { diag } from './diagnostics';
 import { useBack, useBackRoot } from './input/useBack';
+import { setReduceMotion } from './design/motion';
 import { Settings } from './screens/Settings';
 import { OpenUrl } from './screens/OpenUrl';
 import { rememberRecent } from './state/recents';
@@ -48,6 +49,8 @@ export const App = (): React.JSX.Element => {
   // Back pops the stack everywhere the player is not. Returning false at the
   // root is what lets the viewer actually leave the app.
   useBackRoot();
+  // A device-wide setting, applied where the animation actually happens.
+  setReduceMotion(prefs.reduceMotion);
   const onBack = useCallback(() => {
     if (nav.stack.length <= 1) return false;
     dispatch({ type: 'back' });

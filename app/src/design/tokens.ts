@@ -39,6 +39,15 @@ export const colour = {
 /**
  * Typography. 24px is the floor and nothing smaller ships.
  *
+ * `metadata` sat at 20 for weeks while this comment said 24 — and metadata is
+ * not incidental here: it carries durations, licence attributions, the remote
+ * hints and every error message. Raised to meet the rule the file already
+ * stated.
+ *
+ * Hierarchy now comes from weight and colour rather than size, which is the
+ * better signal anyway. This app refuses to distinguish focus by colour alone;
+ * distinguishing importance by size alone has the same weakness at two metres.
+ *
  * Inter is bundled rather than relying on the system font being Amazon Ember.
  * It is under the SIL Open Font License, so it is safe to ship.
  */
@@ -49,7 +58,7 @@ export const type = {
   sectionHeading: { fontSize: px(34), fontWeight: '600', lineHeight: px(44) },
   cardTitle: { fontSize: px(26), fontWeight: '500', lineHeight: px(35) },
   body: { fontSize: px(24), fontWeight: '400', lineHeight: px(35) },
-  metadata: { fontSize: px(20), fontWeight: '400', lineHeight: px(28) },
+  metadata: { fontSize: px(24), fontWeight: '400', lineHeight: px(32) },
   caption: { fontSize: px(40), fontWeight: '500', lineHeight: px(54) },
 } as const;
 

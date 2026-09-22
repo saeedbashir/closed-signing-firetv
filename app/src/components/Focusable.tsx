@@ -10,6 +10,7 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, type ViewStyle } from 'react-native';
 import { colour, focus } from '../design/tokens';
+import { prefersReducedMotion } from '../design/motion';
 import { px } from '../design/scale';
 
 export type FocusableProps = {
@@ -32,6 +33,7 @@ export const Focusable = ({
   hasTVPreferredFocus,
   style,
   scaleOnFocus = true,
+  reduceMotion,
   accessibilityLabel,
 }: FocusableProps): React.JSX.Element => {
   const [focused, setFocused] = useState(false);
@@ -56,7 +58,12 @@ export const Focusable = ({
         styles.base,
         style,
         focused && styles.focused,
-        focused && scaleOnFocus ? { transform: [{ scale: focus.scale }] } : null,
+        // The ring and the brightness change stay: they are how focus is seen
+        // at all, and removing them would trade one accessibility need for
+        // another. It is the movement that goes.
+        focused && scaleOnFocus && !(reduceMotion ?? prefersReducedMotion())
+          ? { transform: [{ scale: focus.scale }] }
+          : null,
       ]}
     >
       {typeof children === 'function' ? children(focused) : children}
