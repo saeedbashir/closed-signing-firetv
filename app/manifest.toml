@@ -75,6 +75,12 @@ id = "com.amazon.audio.system"
 [[wants.service]]
 id = "com.amazon.inputd.service"
 
+# Text entry. Needed for the "open by address" screen, where a viewer types a
+# manifest URL with the on-screen keyboard. Amazon's own video sample declares
+# the same service.
+[[wants.service]]
+id = "com.amazon.inputmethod.service"
+
 # GIPC, which audio and video playback depend on.
 [[wants.service]]
 id = "com.amazon.gipc.uuid.*"

@@ -12,7 +12,8 @@ export type Route =
   | { name: 'home' }
   | { name: 'detail'; titleId: string }
   | { name: 'player'; titleId: string; resumeMs: number }
-  | { name: 'settings' };
+  | { name: 'settings' }
+  | { name: 'openUrl' };
 
 export type NavState = { stack: Route[] };
 

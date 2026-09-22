@@ -103,11 +103,13 @@ export const Home = ({
   prefs,
   onOpen,
   onSettings,
+  onOpenUrl,
 }: {
   titles: CatalogueEntry[];
   prefs: Preferences;
   onOpen: (id: string) => void;
   onSettings: () => void;
+  onOpenUrl: () => void;
 }): React.JSX.Element => {
   const continueWatching = useMemo(
     () => titles.filter((t) => (prefs.watchPositions[t.id] ?? 0) > 0),
@@ -129,9 +131,16 @@ export const Home = ({
     <ScrollView style={styles.root} contentContainerStyle={styles.content}>
       <View style={styles.header}>
         <ScreenTitle>Closed Signing</ScreenTitle>
-        <Focusable style={styles.settings} onPress={onSettings} scaleOnFocus={false}>
-          <Body>Settings</Body>
-        </Focusable>
+        <View style={styles.headerActions}>
+          {/* The catalogue is what ships; this is what makes it a player for
+              the format rather than a player for our three titles. */}
+          <Focusable style={styles.settings} onPress={onOpenUrl} scaleOnFocus={false}>
+            <Body>Open by address</Body>
+          </Focusable>
+          <Focusable style={styles.settings} onPress={onSettings} scaleOnFocus={false}>
+            <Body>Settings</Body>
+          </Focusable>
+        </View>
       </View>
       <Rail
         title="Continue watching"
@@ -161,6 +170,7 @@ const styles = StyleSheet.create({
     paddingRight: safeArea.horizontal,
     marginBottom: space(4),
   },
+  headerActions: { flexDirection: 'row', alignItems: 'center' },
   settings: { paddingHorizontal: space(3), paddingVertical: space(1.5) },
   rail: { marginBottom: space(5) },
   railTitle: { marginBottom: layout.railTitleGap },

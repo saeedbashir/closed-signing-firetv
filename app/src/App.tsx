@@ -9,6 +9,8 @@ import React, { useCallback, useMemo, useReducer, useState } from 'react';
 import { diag } from './diagnostics';
 import { useBack, useBackRoot } from './input/useBack';
 import { Settings } from './screens/Settings';
+import { OpenUrl } from './screens/OpenUrl';
+import { rememberRecent } from './state/recents';
 import { StyleSheet, View } from 'react-native';
 import { ErrorState } from './components/ErrorState';
 import { colour } from './design/tokens';
@@ -25,6 +27,7 @@ import {
   type Preferences,
 } from './state/preferences';
 import { BUNDLED_CATALOGUE, BUNDLED_MANIFESTS } from './catalogue';
+import type { TitleManifest } from './stm/types';
 
 /** Skips the browse screens and opens the first title directly, so the media
  *  path can be verified from a script without a remote in hand. Off normally. */
@@ -33,6 +36,11 @@ const DEV_AUTOPLAY = false;
 export const App = (): React.JSX.Element => {
   const [nav, dispatch] = useReducer(navReduce, initialNav);
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
+  /**
+   * A manifest opened by address, which is not in the bundled catalogue.
+   * Held here rather than in the route so the route stays serialisable.
+   */
+  const [opened, setOpened] = useState<TitleManifest | null>(null);
 
   const route = currentRoute(nav);
   // Temporary: the screen cannot be inspected from a script, so say where we are.
@@ -55,8 +63,10 @@ export const App = (): React.JSX.Element => {
   const titles = BUNDLED_CATALOGUE.titles;
   const manifest = useMemo(() => {
     const id = 'titleId' in route ? route.titleId : null;
-    return id ? (BUNDLED_MANIFESTS[id] ?? null) : null;
-  }, [route]);
+    if (!id) return null;
+    if (opened?.id === id) return opened;
+    return BUNDLED_MANIFESTS[id] ?? null;
+  }, [route, opened]);
 
   // Launch resolves immediately with the bundled catalogue; a networked
   // catalogue would show the loading state and time out to the offline one.
@@ -80,6 +90,19 @@ export const App = (): React.JSX.Element => {
           patch({ walkthroughSeen: true });
           dispatch({ type: 'replace', route: { name: 'home' } });
         }}
+      />
+    );
+  }
+
+  if (route.name === 'openUrl') {
+    return (
+      <OpenUrl
+        onOpened={(m, url) => {
+          setOpened(m);
+          void rememberRecent(url, m.title);
+          dispatch({ type: 'push', route: { name: 'player', titleId: m.id, resumeMs: 0 } });
+        }}
+        onBack={() => dispatch({ type: 'back' })}
       />
     );
   }
@@ -149,6 +172,7 @@ export const App = (): React.JSX.Element => {
       prefs={prefs}
       onOpen={(id) => dispatch({ type: 'push', route: { name: 'detail', titleId: id } })}
       onSettings={() => dispatch({ type: 'push', route: { name: 'settings' } })}
+      onOpenUrl={() => dispatch({ type: 'push', route: { name: 'openUrl' } })}
     />
   );
 };
