@@ -6,6 +6,7 @@
  * explicitly; the framework is never left to guess.
  */
 import React, { useCallback, useMemo, useReducer, useState } from 'react';
+import { diag } from './diagnostics';
 import { StyleSheet, View } from 'react-native';
 import { ErrorState } from './components/ErrorState';
 import { colour } from './design/tokens';
@@ -32,6 +33,8 @@ export const App = (): React.JSX.Element => {
   const [prefs, setPrefs] = useState<Preferences>(DEFAULT_PREFERENCES);
 
   const route = currentRoute(nav);
+  // Temporary: the screen cannot be inspected from a script, so say where we are.
+  diag(`route=${route.name} stack=${nav.stack.map((r) => r.name).join('>')}`);
   const patch = useCallback(
     (p: Partial<Preferences>) => setPrefs((cur) => applyPatch(cur, p)),
     [],

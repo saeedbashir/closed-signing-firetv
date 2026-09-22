@@ -21,6 +21,7 @@ import { captionPlacement, signerBox } from '../design/geometry';
 import { captionSize, colour, motion, signerOpacity, space } from '../design/tokens';
 import { SignerControls } from './SignerControls';
 import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
+import { diag } from '../diagnostics';
 import type { Preferences } from '../state/preferences';
 import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
 import { isUnreviewed, trackForMode, useCaptions } from '../stm/useCaptions';
@@ -121,6 +122,12 @@ export const Player = ({
     [manifest.captions, prefs.captionMode],
   );
   const { cues, status: captionStatus } = useCaptions(captionTrack);
+  useEffect(() => {
+    diag(
+      `captions mode=${prefs.captionMode} track=${captionTrack?.url ?? 'none'} ` +
+        `status=${captionStatus} cues=${cues.length}`,
+    );
+  }, [captionStatus, cues.length, captionTrack, prefs.captionMode]);
   const [cueText, setCueText] = useState('');
 
   useEffect(() => {
@@ -163,6 +170,10 @@ export const Player = ({
    * hidden bar is a cost paid for nothing, on a device with a budget.
    */
   const [positionMs, setPositionMs] = useState(0);
+  useEffect(() => {
+    diag(`chrome visible=${chromeVisible} controlsOpen=${controlsOpen}`);
+  }, [chromeVisible, controlsOpen]);
+
   useEffect(() => {
     if (!chromeVisible) return;
     const read = () => setPositionMs(Math.round((mainRef.current.player?.currentTime ?? 0) * 1000));
@@ -258,6 +269,7 @@ export const Player = ({
 
   const onRemote = useCallback(
     (action: RemoteAction) => {
+      diag(`remote action=${action}`);
       switch (action) {
         case 'playPause': {
           const paused = mainRef.current.player?.paused ?? true;
