@@ -79,6 +79,28 @@ applications by default.
 The silence is the expensive part. Five APIs accepted subscriptions and returned
 plausible-looking objects, and every one of them was a no-op.
 
+## Addendum, 2026-09-22 evening — Menu is the third
+
+The Menu key (≡ on the remote) goes the same way. Sent from the host keyboard as F2,
+which the virtual device maps to `KEY_MENU`, the guest log shows the injection and
+nothing after it:
+
+```
+Inputd:onMessageReceivedStatic: key event injection requested … keyCode=[KEY_MENU] : state=down
+Inputd:onMessageReceivedStatic: key event injection requested … keyCode=[KEY_MENU] : state=up
+```
+
+No `sendKeyToClient` line follows — where a D-pad key shows one to the
+`passthrough-capable client` and Play/Pause shows one to the interceptor and then
+the client. The key is accepted and dropped before any client. Playback continued,
+no screen changed.
+
+So the remote's seven keys divide as: Up, Down, Left, Right, Play/Pause, Rewind,
+Fast forward reach the app; Back, Select and Menu do not. The player's Menu →
+Settings route stays wired for platforms that deliver it, and Settings remains
+reachable from Home. Everything in Settings also exists in the player's own Up and
+Down overlays, so nothing is out of reach while watching.
+
 ## Time lost
 
 About three hours, across five APIs and a manifest comparison against the sample app.

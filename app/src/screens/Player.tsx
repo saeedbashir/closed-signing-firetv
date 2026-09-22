@@ -135,7 +135,12 @@ export const Player = ({
   onExit: (positionMs: number) => void;
   /** Called periodically so a position survives the app being closed under us. */
   onProgress?: (positionMs: number) => void;
-  /** The Menu key. Settings is a screen of its own, so the shell owns the navigation. */
+  /**
+   * The Menu key. Settings is a screen of its own, so the shell owns the
+   * navigation. Wired and correct — and never called on Vega, which drops Menu
+   * before any client (friction-log/008, addendum). Settings stays reachable
+   * from Home, and everything in it is also in the Up and Down overlays here.
+   */
   onOpenSettings?: () => void;
   /** Where to start, from the title page's Resume. 0 starts from the beginning. */
   resumeMs?: number;

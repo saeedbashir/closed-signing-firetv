@@ -22,7 +22,7 @@ model access.
 | [005](friction-log/005-usetveventhandler-missing-from-typescript-surface.md) | 2026-09-21 | Vega SDK / TypeScript | minor | `useTVEventHandler` ships at runtime but not in the type surface |
 | [006](friction-log/006-no-way-to-see-what-a-vega-app-is-doing.md) | 2026-09-22 | Vega Virtual Device | major | No way to see what a Vega app is doing from a script |
 | [007](friction-log/007-keplervideoview-ignores-its-own-position-and-size.md) | 2026-09-22 | Vega SDK / w3cmedia | major | `KeplerVideoView` ignores its own position and size |
-| [008](friction-log/008-back-and-select-are-never-delivered-to-the-app.md) | 2026-09-22 | Vega SDK / RN input | blocker | Back and Select are never delivered to the app |
+| [008](friction-log/008-back-and-select-are-never-delivered-to-the-app.md) | 2026-09-22 | Vega SDK / RN input | blocker | Back, Select and Menu are never delivered to the app |
 | [009](friction-log/009-remote-key-names-are-not-the-documented-ones.md) | 2026-09-22 | Vega SDK / RN input | major | The remote sends key names that are not in the documented list |
 | [010](friction-log/010-nothing-moves-focus-to-a-panel-that-appears.md) | 2026-09-22 | Vega SDK / RN focus | major | Nothing documented moves focus to a panel that appears over a focused screen |
 | [011](friction-log/011-the-bundled-asyncstorage-does-nothing-and-says-so-to-no-one.md) | 2026-09-22 | Vega SDK / RN storage | major | The bundled `AsyncStorage` does nothing, and says so to no one |
