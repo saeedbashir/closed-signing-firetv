@@ -85,6 +85,7 @@ export const Player = ({
   prefs,
   onPatch,
   onExit,
+  onProgress,
   onOpenCaptionMenu,
   onOpenSettings,
   sizeAndOpacityAvailable = true,
@@ -93,6 +94,8 @@ export const Player = ({
   prefs: Preferences;
   onPatch: (p: Partial<Preferences>) => void;
   onExit: (positionMs: number) => void;
+  /** Called periodically so a position survives the app being closed under us. */
+  onProgress?: (positionMs: number) => void;
   /** Not yet built. Wired so the key works the day the screen lands. */
   onOpenCaptionMenu?: () => void;
   /** Not yet built. Wired so the key works the day the screen lands. */
@@ -241,6 +244,21 @@ export const Player = ({
   }, []);
 
   useEffect(() => () => leave(), [leave]);
+
+  /**
+   * Write the position down every few seconds, not only on the way out.
+   *
+   * Back cannot be intercepted on this platform, so the viewer can leave the
+   * app at any moment without us being told. Saving only on unmount meant
+   * losing their place exactly when resuming matters most. See friction-log/008.
+   */
+  useEffect(() => {
+    const id = setInterval(() => {
+      const at = Math.round(position() * 1000);
+      if (at > 0) onProgress?.(at);
+    }, 5000);
+    return () => clearInterval(id);
+  }, [onProgress, position]);
 
   /**
    * Transport applies to both surfaces or to neither.

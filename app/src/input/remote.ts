@@ -38,6 +38,17 @@ const isPress = (evt: HWEvent): boolean =>
 /**
  * The spec's mapping, and nothing beyond it.
  *
+ * TWO OF THESE NEVER ARRIVE ON VEGA. The platform keeps Back and Select for its
+ * own navigation and does not pass them to any subscription the app can make —
+ * not this one, not `BackHandler`, not `useKeplerBackHandler`, not
+ * `UserInputManager` directly, and not a focused `Pressable`. Proved with an
+ * on-screen counter and confirmed in the device log, where `inputd` denies the
+ * app as a client and routes the key to another process. See friction-log/008.
+ *
+ * They stay in the table because the mapping is the product's design and it is
+ * correct on any platform that delivers them. What changed is the UI: nothing
+ * on screen now tells a viewer to press Back.
+ *
  * Several names are accepted per action because remotes differ in what they
  * emit: a Fire TV remote's menu button and an on-screen context menu arrive
  * under different names for the same intent, and `pause` appears alone on

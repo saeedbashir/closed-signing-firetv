@@ -188,7 +188,7 @@ export const SignerControls = ({
       ) : null}
 
       <Metadata dim style={styles.hint}>
-        Left and right to change · Back to close
+        Left and right to change · Select Done to close
       </Metadata>
       <Focusable style={styles.done} onPress={onDismiss} scaleOnFocus={false}>
         <Body>Done</Body>
