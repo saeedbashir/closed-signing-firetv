@@ -61,13 +61,15 @@ const ValueRow = ({
   value,
   onChange,
   first,
+  rowKey,
   onFocused,
 }: {
   label: string;
   value: string;
   onChange: (delta: number) => void;
   first?: boolean;
-  onFocused?: (change: (delta: number) => void) => void;
+  rowKey: string;
+  onFocused?: (key: string) => void;
 }): React.JSX.Element => (
   <Focusable
     style={styles.row}
@@ -76,7 +78,7 @@ const ValueRow = ({
     accessibilityLabel={`${label}, ${value}`}
     onPress={() => onChange(1)}
     onFocusChange={(focused) => {
-      if (focused) onFocused?.(onChange);
+      if (focused) onFocused?.(rowKey);
     }}
   >
     {(focused) => (
@@ -121,12 +123,29 @@ export const SignerControls = ({
 }: SignerControlsProps): React.JSX.Element => {
   const anchorLeft = prefs.signerCorner.endsWith('right');
 
-  // Left and Right act on whichever row has focus.
-  const focusedChange = useRef<((delta: number) => void) | null>(null);
-  const onFocused = useCallback((change: (delta: number) => void) => {
-    focusedChange.current = change;
+  /**
+   * Left and Right act on whichever row has focus.
+   *
+   * By name, with the handlers rewritten every render. Holding the handler
+   * itself closes over the preference as it stood when the row took focus, so
+   * the value moves once and then sticks. See the note in CaptionMenu.
+   */
+  const focusedKey = useRef<string | null>(null);
+  const onFocused = useCallback((key: string) => {
+    focusedKey.current = key;
   }, []);
-  useOverlayValueKeys((delta) => focusedChange.current?.(delta), true);
+  const handlers: Record<string, (delta: number) => void> = {
+    visible: () => onChange({ signerVisible: !prefs.signerVisible }),
+    corner: (d) => onChange({ signerCorner: cycle(signerCorners, prefs.signerCorner, d) }),
+    size: (d) => onChange({ signerSize: cycle(SIZES, prefs.signerSize, d) }),
+    opacity: (d) => onChange({ signerOpacity: cycle(OPACITIES, prefs.signerOpacity, d) }),
+  };
+  const live = useRef(handlers);
+  live.current = handlers;
+  useOverlayValueKeys((delta) => {
+    const key = focusedKey.current;
+    if (key) live.current[key]?.(delta);
+  }, true);
 
   const toggleVisible = useCallback(
     () => onChange({ signerVisible: !prefs.signerVisible }),
@@ -142,6 +161,7 @@ export const SignerControls = ({
 
       <ValueRow
         first
+        rowKey="visible"
         onFocused={onFocused}
         label="Show interpreter"
         value={prefs.signerVisible ? 'On' : 'Off'}
@@ -152,6 +172,7 @@ export const SignerControls = ({
       {prefs.signerVisible ? (
         <>
           <ValueRow
+            rowKey="corner"
             onFocused={onFocused}
             label="Position"
             value={CORNER_LABEL[prefs.signerCorner]}
@@ -164,12 +185,14 @@ export const SignerControls = ({
           {sizeAndOpacityAvailable ? (
             <>
               <ValueRow
+                rowKey="size"
                 onFocused={onFocused}
                 label="Size"
                 value={SIZE_LABEL[prefs.signerSize]}
                 onChange={(d) => onChange({ signerSize: cycle(SIZES, prefs.signerSize, d) })}
               />
               <ValueRow
+                rowKey="opacity"
                 onFocused={onFocused}
                 label="Opacity"
                 value={OPACITY_LABEL[prefs.signerOpacity]}

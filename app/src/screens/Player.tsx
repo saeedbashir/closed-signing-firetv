@@ -293,14 +293,6 @@ export const Player = ({
   const onRemote = useCallback(
     (action: RemoteAction) => {
       diag(`remote action=${action}`);
-      if (anyOverlayOpen) {
-        // The panel owns everything except the way out.
-        if (action === 'back') {
-          setControlsOpen(false);
-          setCaptionMenuOpen(false);
-        }
-        return;
-      }
       switch (action) {
         case 'playPause': {
           const paused = mainRef.current.player?.paused ?? true;
@@ -339,14 +331,15 @@ export const Player = ({
           break;
       }
     },
-    [anyOverlayOpen, bothSurfaces, leave, mainRef, onOpenCaptionMenu, onOpenSettings, seekBy],
+    [bothSurfaces, leave, mainRef, onOpenCaptionMenu, onOpenSettings, seekBy],
   );
 
-  // Always subscribed. While an overlay is open it owns Up, Down, Left and
-  // Right — but Back has to keep working, because both panels tell the viewer
-  // "Back to close" and nothing was implementing it, so the only way out was to
-  // find the Done button.
-  useRemote(onRemote, true);
+  // Only while no overlay is open. Two live `useTVEventHandler` subscriptions
+  // shadow each other — the panel's Left and Right silently stopped working
+  // when this was left always-on, because the player's subscription took the
+  // events and dropped them. Back is not a reason to keep it open: Back never
+  // arrives through this hook at all. See friction-log/008.
+  useRemote(onRemote, !anyOverlayOpen);
 
   // Back arrives through the platform's back handler, not the TV event handler.
   // Unhandled it exits the app, which from the player meant quitting to the

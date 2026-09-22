@@ -54,13 +54,15 @@ const Row = ({
   value,
   onChange,
   first,
+  rowKey,
   onFocused,
 }: {
   label: string;
   value: string;
   onChange: (delta: number) => void;
   first?: boolean;
-  onFocused?: (change: (delta: number) => void) => void;
+  rowKey: string;
+  onFocused?: (key: string) => void;
 }): React.JSX.Element => (
   <Focusable
     style={styles.row}
@@ -69,7 +71,7 @@ const Row = ({
     accessibilityLabel={`${label}, ${value}`}
     onPress={() => onChange(1)}
     onFocusChange={(focused) => {
-      if (focused) onFocused?.(onChange);
+      if (focused) onFocused?.(rowKey);
     }}
   >
     {(focused) => (
@@ -103,12 +105,30 @@ export const CaptionMenu = ({
   const modes = availableModes(captions);
   const selected = trackForMode(captions, prefs.captionMode);
 
-  // Left and Right act on whichever row has focus.
-  const focusedChange = useRef<((delta: number) => void) | null>(null);
-  const onFocused = useCallback((change: (delta: number) => void) => {
-    focusedChange.current = change;
+  /**
+   * Left and Right act on whichever row has focus.
+   *
+   * The focused row is remembered by name, and the handlers are rewritten on
+   * every render. Holding the handler itself looked simpler and was wrong: it
+   * closed over the preference as it stood when the row took focus, so every
+   * press recomputed from the same stale value and the setting moved once and
+   * then stuck. Measured on device — Off became Verbatim and never reached
+   * Simplified however many times Right was pressed.
+   */
+  const focusedKey = useRef<string | null>(null);
+  const onFocused = useCallback((key: string) => {
+    focusedKey.current = key;
   }, []);
-  useOverlayValueKeys((delta) => focusedChange.current?.(delta), true);
+  const handlers: Record<string, (delta: number) => void> = {
+    mode: (d) => onChange({ captionMode: cycle(modes, prefs.captionMode, d) }),
+    size: (d) => onChange({ captionSize: cycle(SIZES, prefs.captionSize, d) }),
+  };
+  const live = useRef(handlers);
+  live.current = handlers;
+  useOverlayValueKeys((delta) => {
+    const key = focusedKey.current;
+    if (key) live.current[key]?.(delta);
+  }, true);
 
   return (
     <View style={styles.panel} accessibilityViewIsModal>
@@ -116,19 +136,21 @@ export const CaptionMenu = ({
 
       <Row
         first
+        rowKey="mode"
         label="Captions"
         value={MODE_LABEL[prefs.captionMode]}
         onFocused={onFocused}
-        onChange={(d) => onChange({ captionMode: cycle(modes, prefs.captionMode, d) })}
+        onChange={(d) => handlers.mode(d)}
       />
 
       {/* Nothing below matters when there is no text on screen. */}
       {prefs.captionMode !== 'off' ? (
         <Row
+          rowKey="size"
           label="Text size"
           value={SIZE_LABEL[prefs.captionSize]}
           onFocused={onFocused}
-          onChange={(d) => onChange({ captionSize: cycle(SIZES, prefs.captionSize, d) })}
+          onChange={(d) => handlers.size(d)}
         />
       ) : null}
 

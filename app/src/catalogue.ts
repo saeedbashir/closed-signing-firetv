@@ -93,6 +93,12 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
         "language": "en",
         "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/demo-corner-inset/captions.en.vtt",
         "format": "webvtt"
+      },
+      {
+        "kind": "simplified",
+        "language": "en",
+        "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/demo-corner-inset/captions.simple.en.vtt",
+        "format": "webvtt"
       }
     ]
   },
