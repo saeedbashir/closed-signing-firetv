@@ -13,6 +13,7 @@ import { Body, CardTitle, Metadata, ScreenTitle, SectionHeading } from '../compo
 import { colour, layout, safeArea, space } from '../design/tokens';
 import { formatDuration, isLowConfidence, type CatalogueEntry } from '../stm/types';
 import type { Preferences } from '../state/preferences';
+import { px } from '../design/scale';
 
 const Card = ({
   entry,
@@ -159,18 +160,18 @@ const styles = StyleSheet.create({
     width: layout.card.width - space(3),
     height: layout.card.height,
     backgroundColor: colour.bgRaised,
-    borderRadius: 8,
+    borderRadius: px(8),
     justifyContent: 'flex-end',
     padding: space(1),
   },
   cardTitle: { marginTop: space(1.5) },
   progressTrack: {
-    height: 6,
+    height: px(6),
     backgroundColor: colour.borderSubtle,
-    borderRadius: 3,
+    borderRadius: px(3),
     marginTop: space(1),
   },
-  progressFill: { height: 6, backgroundColor: colour.accent, borderRadius: 3 },
+  progressFill: { height: px(6), backgroundColor: colour.accent, borderRadius: px(3) },
   empty: {
     flex: 1,
     backgroundColor: colour.bgBase,

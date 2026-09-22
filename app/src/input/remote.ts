@@ -87,3 +87,25 @@ export function useRemote(
     if (action) onAction(action);
   });
 }
+
+/**
+ * Left and Right inside an overlay panel.
+ *
+ * The panels are vertical lists, so the platform's focus system uses Up and
+ * Down and leaves Left and Right free for changing the focused row's value.
+ * Both panels told the viewer "Left and right to change" while only Select did
+ * anything, and Select can only cycle forwards — so a viewer who overshot had
+ * to go all the way round. Measured on device 2026-09-22.
+ *
+ * `seekBack` and `seekForward` are the same two keys under player-centric
+ * names; inside an overlay they mean decrease and increase.
+ */
+export function useOverlayValueKeys(
+  onDelta: (delta: number) => void,
+  enabled: boolean,
+): void {
+  useRemote((action) => {
+    if (action === 'seekBack') onDelta(-1);
+    else if (action === 'seekForward') onDelta(1);
+  }, enabled);
+}

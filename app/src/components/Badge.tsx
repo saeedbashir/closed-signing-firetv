@@ -9,6 +9,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { colour, space } from '../design/tokens';
 import { Metadata } from './Text';
+import { px } from '../design/scale';
 
 export const SignLanguageBadge = ({
   languages,
@@ -34,7 +35,7 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     paddingHorizontal: space(1.5),
     paddingVertical: space(0.5),
-    borderRadius: 6,
+    borderRadius: px(6),
     borderLeftWidth: 4,
     backgroundColor: colour.bgRaised,
   },

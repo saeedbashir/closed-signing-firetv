@@ -10,7 +10,7 @@
  * judgement about readability, and you cannot judge readability against a
  * frozen frame with no words on it.
  */
-import React from 'react';
+import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Focusable } from '../components/Focusable';
 import { Body, Metadata, SectionHeading } from '../components/Text';
@@ -18,6 +18,8 @@ import { colour, layout, safeArea, space, type CaptionSize } from '../design/tok
 import { cycle, type CaptionMode, type Preferences } from '../state/preferences';
 import type { Caption } from '../stm/types';
 import { isUnreviewed, trackForMode } from '../stm/useCaptions';
+import { useOverlayValueKeys } from '../input/remote';
+import { px } from '../design/scale';
 
 const SIZES: readonly CaptionSize[] = ['small', 'medium', 'large'];
 
@@ -52,11 +54,13 @@ const Row = ({
   value,
   onChange,
   first,
+  onFocused,
 }: {
   label: string;
   value: string;
   onChange: (delta: number) => void;
   first?: boolean;
+  onFocused?: (change: (delta: number) => void) => void;
 }): React.JSX.Element => (
   <Focusable
     style={styles.row}
@@ -64,6 +68,9 @@ const Row = ({
     hasTVPreferredFocus={first}
     accessibilityLabel={`${label}, ${value}`}
     onPress={() => onChange(1)}
+    onFocusChange={(focused) => {
+      if (focused) onFocused?.(onChange);
+    }}
   >
     {(focused) => (
       <View style={styles.rowInner}>
@@ -96,6 +103,13 @@ export const CaptionMenu = ({
   const modes = availableModes(captions);
   const selected = trackForMode(captions, prefs.captionMode);
 
+  // Left and Right act on whichever row has focus.
+  const focusedChange = useRef<((delta: number) => void) | null>(null);
+  const onFocused = useCallback((change: (delta: number) => void) => {
+    focusedChange.current = change;
+  }, []);
+  useOverlayValueKeys((delta) => focusedChange.current?.(delta), true);
+
   return (
     <View style={styles.panel} accessibilityViewIsModal>
       <SectionHeading style={styles.heading}>Captions</SectionHeading>
@@ -104,6 +118,7 @@ export const CaptionMenu = ({
         first
         label="Captions"
         value={MODE_LABEL[prefs.captionMode]}
+        onFocused={onFocused}
         onChange={(d) => onChange({ captionMode: cycle(modes, prefs.captionMode, d) })}
       />
 
@@ -112,6 +127,7 @@ export const CaptionMenu = ({
         <Row
           label="Text size"
           value={SIZE_LABEL[prefs.captionSize]}
+          onFocused={onFocused}
           onChange={(d) => onChange({ captionSize: cycle(SIZES, prefs.captionSize, d) })}
         />
       ) : null}
@@ -153,14 +169,14 @@ const styles = StyleSheet.create({
     padding: layout.overlayPadding,
     borderRadius: layout.overlayRadius,
     backgroundColor: colour.bgRaised,
-    borderWidth: 1,
+    borderWidth: px(1),
     borderColor: colour.borderSubtle,
   },
   heading: { marginBottom: space(2) },
   row: { paddingVertical: space(1.5) },
   rowInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   valueGroup: { flexDirection: 'row', alignItems: 'center' },
-  chevron: { width: 24, textAlign: 'center' },
+  chevron: { width: px(24), textAlign: 'center' },
   note: { marginTop: space(2) },
   hint: { marginTop: space(3) },
   done: { marginTop: space(2), alignItems: 'center', paddingVertical: space(1.5) },

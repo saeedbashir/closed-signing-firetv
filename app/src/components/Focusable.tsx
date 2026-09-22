@@ -10,6 +10,7 @@
 import React, { useCallback, useState } from 'react';
 import { Pressable, StyleSheet, type ViewStyle } from 'react-native';
 import { colour, focus } from '../design/tokens';
+import { px } from '../design/scale';
 
 export type FocusableProps = {
   children: React.ReactNode | ((focused: boolean) => React.ReactNode);
@@ -66,7 +67,7 @@ export const Focusable = ({
 const styles = StyleSheet.create({
   base: {
     backgroundColor: colour.bgSurface,
-    borderRadius: 12,
+    borderRadius: px(12),
     borderWidth: focus.ringWidth,
     // Transparent rather than absent, so nothing shifts by 4px when focus lands.
     borderColor: 'transparent',

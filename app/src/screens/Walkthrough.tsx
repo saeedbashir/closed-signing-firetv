@@ -16,6 +16,7 @@ import { StyleSheet, View } from 'react-native';
 import { Focusable } from '../components/Focusable';
 import { Body, Metadata, ScreenTitle } from '../components/Text';
 import { colour, safeArea, space } from '../design/tokens';
+import { px } from '../design/scale';
 
 type Illustration = 'place' | 'hide' | 'captions';
 
@@ -117,47 +118,47 @@ const styles = StyleSheet.create({
     paddingVertical: safeArea.vertical,
     justifyContent: 'center',
   },
-  preview: { height: 380, marginBottom: space(4), justifyContent: 'center' },
+  preview: { height: px(380), marginBottom: space(4), justifyContent: 'center' },
   screen: {
-    width: 640,
-    height: 360,
-    borderRadius: 12,
+    width: px(640),
+    height: px(360),
+    borderRadius: px(12),
     backgroundColor: colour.bgSurface,
-    borderWidth: 2,
+    borderWidth: px(2),
     borderColor: colour.borderSubtle,
   },
   signer: {
     position: 'absolute',
-    width: 150,
-    height: 112,
-    borderRadius: 6,
+    width: px(150),
+    height: px(112),
+    borderRadius: px(6),
     backgroundColor: colour.accent,
   },
   /** Dashed outline, no fill: a position not currently in use. */
   signerGhost: {
     backgroundColor: 'transparent',
-    borderWidth: 2,
+    borderWidth: px(2),
     borderStyle: 'dashed',
     borderColor: colour.textSecondary,
   },
-  topLeft: { left: 16, top: 16 },
-  bottomRight: { right: 16, bottom: 16 },
+  topLeft: { left: px(16), top: px(16) },
+  bottomRight: { right: px(16), bottom: px(16) },
   captionLine: {
     position: 'absolute',
-    height: 14,
-    borderRadius: 7,
+    height: px(14),
+    borderRadius: px(7),
     backgroundColor: colour.captionText,
-    left: 40,
+    left: px(40),
   },
-  captionLineOne: { bottom: 62, width: 380 },
-  captionLineTwo: { bottom: 34, width: 250 },
-  title: { maxWidth: 1300 },
-  body: { marginTop: space(2), maxWidth: 1100 },
+  captionLineOne: { bottom: px(62), width: px(380) },
+  captionLineTwo: { bottom: px(34), width: px(250) },
+  title: { maxWidth: px(1300) },
+  body: { marginTop: space(2), maxWidth: px(1100) },
   dots: { flexDirection: 'row', marginTop: space(3) },
   dot: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    width: px(14),
+    height: px(14),
+    borderRadius: px(7),
     backgroundColor: colour.borderSubtle,
     marginRight: space(1),
   },

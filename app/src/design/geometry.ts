@@ -13,10 +13,14 @@ import {
   type SignerCorner,
   type SignerSize,
 } from './tokens';
+import { px } from './scale';
+import { SCREEN } from './scale';
 
 export type Box = { left: number; top: number; width: number; height: number };
 
-export const SCREEN = { width: 1920, height: 1080 } as const;
+// The logical window, not the panel resolution. See design/scale.ts — the two
+// differ by the device's scale factor and conflating them doubled every layout.
+export { SCREEN } from './scale';
 
 /**
  * The signer layer's box for a given corner and size.
@@ -60,7 +64,7 @@ export type CaptionPlacement = { bottom: number; left: number; right: number };
 export function captionPlacement(
   signer: Box | null,
   screen: { width: number; height: number } = SCREEN,
-  minTextWidth = 720,
+  minTextWidth = px(720),
   /**
    * Height of the transport bar when it is showing, 0 when it is not.
    *
@@ -79,20 +83,20 @@ export function captionPlacement(
   if (!signer) return base;
 
   const signerBottom = signer.top + signer.height;
-  const overlapsCaptionBand = signerBottom > screen.height - safeArea.vertical - 160;
+  const overlapsCaptionBand = signerBottom > screen.height - safeArea.vertical - px(160);
   if (!overlapsCaptionBand) return base;
 
   const signerIsLeft = signer.left < screen.width / 2;
   const shifted = signerIsLeft
-    ? { ...base, left: signer.left + signer.width + 48 }
-    : { ...base, right: screen.width - signer.left + 48 };
+    ? { ...base, left: signer.left + signer.width + px(48) }
+    : { ...base, right: screen.width - signer.left + px(48) };
 
   const remaining = screen.width - shifted.left - shifted.right;
   if (remaining >= minTextWidth) return shifted;
 
   // Too narrow beside the signer: go above it instead. Already clear of the
   // transport bar, so no further lift.
-  return { ...base, bottom: Math.max(base.bottom, screen.height - signer.top + 24) };
+  return { ...base, bottom: Math.max(base.bottom, screen.height - signer.top + px(24)) };
 }
 
 /** Card position within a rail, used for the focus scroll offset. */

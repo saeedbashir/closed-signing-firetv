@@ -27,6 +27,7 @@ import type { Preferences } from '../state/preferences';
 import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
 import { isUnreviewed, trackForMode, useCaptions } from '../stm/useCaptions';
 import { activeCue } from '../stm/webvtt';
+import { px } from '../design/scale';
 
 /** Set true to trace both surfaces in the device log, as Experiment 2 did. */
 const LOG_SURFACES = false;
@@ -273,6 +274,14 @@ export const Player = ({
   const onRemote = useCallback(
     (action: RemoteAction) => {
       diag(`remote action=${action}`);
+      if (anyOverlayOpen) {
+        // The panel owns everything except the way out.
+        if (action === 'back') {
+          setControlsOpen(false);
+          setCaptionMenuOpen(false);
+        }
+        return;
+      }
       switch (action) {
         case 'playPause': {
           const paused = mainRef.current.player?.paused ?? true;
@@ -311,32 +320,49 @@ export const Player = ({
           break;
       }
     },
-    [bothSurfaces, leave, mainRef, onOpenCaptionMenu, onOpenSettings, seekBy],
+    [anyOverlayOpen, bothSurfaces, leave, mainRef, onOpenCaptionMenu, onOpenSettings, seekBy],
   );
 
-  // While an overlay is open it owns the remote: Up and Down move its focus.
-  useRemote(onRemote, !anyOverlayOpen);
+  // Always subscribed. While an overlay is open it owns Up, Down, Left and
+  // Right — but Back has to keep working, because both panels tell the viewer
+  // "Back to close" and nothing was implementing it, so the only way out was to
+  // find the Done button.
+  useRemote(onRemote, true);
 
   return (
     <View style={styles.root}>
-      {main.player ? (
-        <KeplerVideoView
-          style={StyleSheet.absoluteFill}
-          videoPlayer={main.player}
-          scalingmode="fit"
-        />
-      ) : null}
+      {/* A positioned parent, with the video filling it.
+          KeplerVideoView ignores position and size applied to itself: given
+          `StyleSheet.absoluteFill` directly it rendered at half size, and given
+          explicit left/top/width/height it drew centre-screen instead. Measured
+          on device 2026-09-22, see friction-log/007. The geometry has to live on
+          an ordinary View and the surface fills that. */}
+      <View style={StyleSheet.absoluteFill}>
+        {main.player ? (
+          <KeplerVideoView
+            style={StyleSheet.absoluteFill}
+            videoPlayer={main.player}
+            scalingmode="fit"
+          />
+        ) : null}
+      </View>
 
-      {prefs.signerVisible && signer.player && box ? (
-        <KeplerVideoView
+      {prefs.signerVisible && box ? (
+        <View
           style={[
             styles.signer,
             { left: box.left, top: box.top, width: box.width, height: box.height },
             { opacity: signerOpacity[prefs.signerOpacity] },
           ]}
-          videoPlayer={signer.player}
-          scalingmode="fit"
-        />
+        >
+          {signer.player ? (
+            <KeplerVideoView
+              style={StyleSheet.absoluteFill}
+              videoPlayer={signer.player}
+              scalingmode="fit"
+            />
+          ) : null}
+        </View>
       ) : null}
 
       {/* Degrade, never block. */}
@@ -403,7 +429,7 @@ export const Player = ({
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000000' },
-  signer: { position: 'absolute', borderRadius: 8, overflow: 'hidden' },
+  signer: { position: 'absolute', borderRadius: px(8), overflow: 'hidden' },
   notice: {
     position: 'absolute',
     bottom: space(3),
@@ -411,14 +437,14 @@ const styles = StyleSheet.create({
     backgroundColor: colour.captionBg,
     paddingHorizontal: space(2),
     paddingVertical: space(1),
-    borderRadius: 8,
+    borderRadius: px(8),
   },
   captionPlate: {
     position: 'absolute',
     backgroundColor: colour.captionBg,
     paddingHorizontal: space(2),
     paddingVertical: space(1),
-    borderRadius: 8,
+    borderRadius: px(8),
   },
   captionProvenance: { color: colour.textSecondary, marginBottom: space(1) },
   captionText: { color: colour.captionText, textAlign: 'center' },

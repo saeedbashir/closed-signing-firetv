@@ -15,6 +15,7 @@ import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Body, Metadata } from './Text';
 import { colour, safeArea, space } from '../design/tokens';
+import { px } from '../design/scale';
 
 /**
  * How much vertical room the bar occupies, including its padding.
@@ -22,7 +23,7 @@ import { colour, safeArea, space } from '../design/tokens';
  * Exported because the caption layer has to move out of the way, and the two
  * numbers must not drift apart.
  */
-export const TRANSPORT_HEIGHT = 156;
+export const TRANSPORT_HEIGHT = px(156);
 
 /**
  * Position as a clock.
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: space(3),
     paddingVertical: space(2),
-    borderRadius: 16,
+    borderRadius: px(16),
     // The bar sits over moving video, so it carries its own ground rather than
     // trusting the frame behind it to be dark.
     backgroundColor: colour.captionBg,
@@ -102,13 +103,13 @@ const styles = StyleSheet.create({
   title: { color: colour.textPrimary, flexShrink: 1 },
   paused: { color: colour.accent, marginLeft: space(2) },
   track: {
-    height: 8,
-    borderRadius: 4,
+    height: px(8),
+    borderRadius: px(4),
     backgroundColor: colour.borderSubtle,
     marginTop: space(2),
     overflow: 'hidden',
   },
-  fill: { height: 8, borderRadius: 4, backgroundColor: colour.accent },
+  fill: { height: px(8), borderRadius: px(4), backgroundColor: colour.accent },
   timeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space(1) },
   time: { color: colour.textSecondary },
 });

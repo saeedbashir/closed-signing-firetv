@@ -12,7 +12,7 @@
  * Every change applies instantly and writes to the profile on dismiss. No Save
  * button, no confirmation. Undoing is just moving it back.
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Focusable } from '../components/Focusable';
 import { Body, Metadata, SectionHeading } from '../components/Text';
@@ -28,6 +28,12 @@ import {
   type SignerSize,
 } from '../design/tokens';
 import { cycle, type Preferences } from '../state/preferences';
+import { useOverlayValueKeys } from '../input/remote';
+import { px } from '../design/scale';
+
+/** The 2x2 corner grid, sized so the container always matches its contents. */
+const GRID_CELL = px(56);
+const GRID_GAP = px(5);
 
 const SIZES: readonly SignerSize[] = ['small', 'medium', 'large'];
 const OPACITIES: readonly SignerOpacity[] = ['full', 'high', 'medium'];
@@ -55,11 +61,13 @@ const ValueRow = ({
   value,
   onChange,
   first,
+  onFocused,
 }: {
   label: string;
   value: string;
   onChange: (delta: number) => void;
   first?: boolean;
+  onFocused?: (change: (delta: number) => void) => void;
 }): React.JSX.Element => (
   <Focusable
     style={styles.row}
@@ -67,6 +75,9 @@ const ValueRow = ({
     hasTVPreferredFocus={first}
     accessibilityLabel={`${label}, ${value}`}
     onPress={() => onChange(1)}
+    onFocusChange={(focused) => {
+      if (focused) onFocused?.(onChange);
+    }}
   >
     {(focused) => (
       <View style={styles.rowInner}>
@@ -110,6 +121,13 @@ export const SignerControls = ({
 }: SignerControlsProps): React.JSX.Element => {
   const anchorLeft = prefs.signerCorner.endsWith('right');
 
+  // Left and Right act on whichever row has focus.
+  const focusedChange = useRef<((delta: number) => void) | null>(null);
+  const onFocused = useCallback((change: (delta: number) => void) => {
+    focusedChange.current = change;
+  }, []);
+  useOverlayValueKeys((delta) => focusedChange.current?.(delta), true);
+
   const toggleVisible = useCallback(
     () => onChange({ signerVisible: !prefs.signerVisible }),
     [onChange, prefs.signerVisible],
@@ -124,6 +142,7 @@ export const SignerControls = ({
 
       <ValueRow
         first
+        onFocused={onFocused}
         label="Show interpreter"
         value={prefs.signerVisible ? 'On' : 'Off'}
         onChange={toggleVisible}
@@ -133,6 +152,7 @@ export const SignerControls = ({
       {prefs.signerVisible ? (
         <>
           <ValueRow
+            onFocused={onFocused}
             label="Position"
             value={CORNER_LABEL[prefs.signerCorner]}
             onChange={(d) =>
@@ -144,11 +164,13 @@ export const SignerControls = ({
           {sizeAndOpacityAvailable ? (
             <>
               <ValueRow
+                onFocused={onFocused}
                 label="Size"
                 value={SIZE_LABEL[prefs.signerSize]}
                 onChange={(d) => onChange({ signerSize: cycle(SIZES, prefs.signerSize, d) })}
               />
               <ValueRow
+                onFocused={onFocused}
                 label="Opacity"
                 value={OPACITY_LABEL[prefs.signerOpacity]}
                 onChange={(d) =>
@@ -185,7 +207,7 @@ const styles = StyleSheet.create({
     padding: layout.overlayPadding,
     borderRadius: layout.overlayRadius,
     backgroundColor: colour.bgRaised,
-    borderWidth: 1,
+    borderWidth: px(1),
     borderColor: colour.borderSubtle,
   },
   anchorLeft: { left: safeArea.horizontal },
@@ -194,20 +216,24 @@ const styles = StyleSheet.create({
   row: { paddingHorizontal: space(2), paddingVertical: space(1.5), marginBottom: space(1) },
   rowInner: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   valueGroup: { flexDirection: 'row', alignItems: 'center' },
-  chevron: { width: 28, textAlign: 'center' },
+  chevron: { width: px(28), textAlign: 'center' },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: 132,
+    // Derived, not a literal. Each value is rounded to whole pixels
+    // independently, so a hand-written container width can disagree with the
+    // sum of its contents: px(132) rounds to 66 while two cells need 68, and
+    // the 2x2 grid silently became a single column. Measured on device.
+    width: GRID_CELL * 2 + GRID_GAP * 4,
     alignSelf: 'center',
     marginVertical: space(1.5),
   },
   gridCell: {
-    width: 56,
-    height: 34,
-    margin: 5,
-    borderRadius: 4,
-    borderWidth: 2,
+    width: GRID_CELL,
+    height: px(34),
+    margin: GRID_GAP,
+    borderRadius: px(4),
+    borderWidth: px(2),
     borderColor: colour.borderSubtle,
   },
   gridCellActive: { backgroundColor: colour.accent, borderColor: colour.accent },

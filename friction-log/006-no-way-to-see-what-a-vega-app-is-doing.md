@@ -46,9 +46,33 @@ com.closedsigning.player[360332]: 2 I GWSI_LOG:94 Injected key:[INPUT] state:0 e
 
 So a script can drive a Vega app but cannot observe one. That is the wrong way round.
 
+## CORRECTION, same day
+
+**This entry overstated the problem, and the correction matters more than the
+complaint.** Capturing the *host window* works and closes the loop completely:
+
+```bash
+screencapture -x full.png     # then crop to the VVD window's bounds
+```
+
+It initially failed with `could not create image from display`, which is macOS
+withholding Screen Recording permission from the terminal — not a platform limit. Once
+granted, the emulator's screen is readable at full 1920x1080, and combined with QMP key
+injection a script can drive *and* observe the whole app. Locating the window with
+`osascript -e 'tell application "System Events" ... get {position, size} of window 1'`
+makes the capture robust when the window moves.
+
+That loop then found, in one session: every layout rendering at double size, a video
+surface ignoring its own position, an overlay that could not be dismissed, and a 2x2
+grid collapsed into a column. None of those were reachable any other way.
+
+So the platform gap is narrower than first written, and specific: **QEMU's `screendump`
+cannot see the plane Vega composites to, and the Vega CLI has no screenshot command.**
+Both remain true. What was wrong was concluding that nothing could observe the app.
+
 ## Workaround
 
-None that closes the loop. Verification falls back to a human watching the emulator
+Capture the host window, as above. Within the device itself, none. Verification falls back to a human watching the emulator
 window and reporting what they see, which does not scale, cannot run in CI, and cannot
 be done by whoever is not at the machine.
 

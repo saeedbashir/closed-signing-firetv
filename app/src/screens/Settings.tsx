@@ -27,6 +27,7 @@ import {
 } from '../design/tokens';
 import { cycle, type CaptionMode, type Preferences } from '../state/preferences';
 import type { TitleManifest } from '../stm/types';
+import { px } from '../design/scale';
 
 const SIZES: readonly SignerSize[] = ['small', 'medium', 'large'];
 const OPACITIES: readonly SignerOpacity[] = ['full', 'high', 'medium'];
@@ -199,12 +200,12 @@ const styles = StyleSheet.create({
   row: { paddingVertical: space(1.5) },
   rowInner: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   valueGroup: { flexDirection: 'row', alignItems: 'center' },
-  chevron: { width: 24, textAlign: 'center' },
+  chevron: { width: px(24), textAlign: 'center' },
   aboutIntro: { marginTop: space(2), marginBottom: space(2) },
   attribution: {
     marginBottom: space(2),
     paddingVertical: space(1.5),
-    borderTopWidth: 1,
+    borderTopWidth: px(1),
     borderTopColor: colour.borderSubtle,
   },
   attributionLine: { marginTop: space(0.5) },

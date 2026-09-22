@@ -38,32 +38,34 @@ export const colour = {
  * Inter is bundled rather than relying on the system font being Amazon Ember.
  * It is under the SIL Open Font License, so it is safe to ship.
  */
+import { px } from './scale';
+
 export const type = {
-  screenTitle: { fontSize: 48, fontWeight: '700', lineHeight: 58 },
-  sectionHeading: { fontSize: 34, fontWeight: '600', lineHeight: 44 },
-  cardTitle: { fontSize: 26, fontWeight: '500', lineHeight: 35 },
-  body: { fontSize: 24, fontWeight: '400', lineHeight: 35 },
-  metadata: { fontSize: 20, fontWeight: '400', lineHeight: 28 },
-  caption: { fontSize: 40, fontWeight: '500', lineHeight: 54 },
+  screenTitle: { fontSize: px(48), fontWeight: '700', lineHeight: px(58) },
+  sectionHeading: { fontSize: px(34), fontWeight: '600', lineHeight: px(44) },
+  cardTitle: { fontSize: px(26), fontWeight: '500', lineHeight: px(35) },
+  body: { fontSize: px(24), fontWeight: '400', lineHeight: px(35) },
+  metadata: { fontSize: px(20), fontWeight: '400', lineHeight: px(28) },
+  caption: { fontSize: px(40), fontWeight: '500', lineHeight: px(54) },
 } as const;
 
 /** Viewer-adjustable caption sizes. */
-export const captionSize = { small: 32, medium: 40, large: 52 } as const;
+export const captionSize = { small: px(32), medium: px(40), large: px(52) } as const;
 export type CaptionSize = keyof typeof captionSize;
 
 /** 8px base unit. All spacing is a multiple of it. */
-export const space = (n: number): number => n * 8;
+export const space = (n: number): number => px(n * 8);
 
 /** Nothing interactive or legible sits outside the safe area. */
-export const safeArea = { horizontal: 96, vertical: 54 } as const;
+export const safeArea = { horizontal: px(96), vertical: px(54) } as const;
 
 export const layout = {
-  card: { width: 320, height: 180 },
-  railGutter: 32,
-  railTitleGap: 24,
-  overlayPanelWidth: 480,
-  overlayPadding: 32,
-  overlayRadius: 24,
+  card: { width: px(320), height: px(180) },
+  railGutter: px(32),
+  railTitleGap: px(24),
+  overlayPanelWidth: px(480),
+  overlayPadding: px(32),
+  overlayRadius: px(24),
 } as const;
 
 /**
@@ -74,8 +76,8 @@ export const layout = {
  * when the amber ring means nothing to them. Never signal with colour alone.
  */
 export const focus = {
-  ringWidth: 4,
-  ringOffset: 4,
+  ringWidth: px(4),
+  ringOffset: px(4),
   scale: 1.06,
   durationMs: 150,
 } as const;
@@ -107,4 +109,4 @@ export const signerCorners: readonly SignerCorner[] = [
 ] as const;
 
 /** Inset from the safe area edge, in the chosen corner. */
-export const signerInset = 48;
+export const signerInset = px(48);

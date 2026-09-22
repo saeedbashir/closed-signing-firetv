@@ -10,6 +10,7 @@ import { StyleSheet, View } from 'react-native';
 import { colour, safeArea, space } from '../design/tokens';
 import { Focusable } from './Focusable';
 import { Body, ScreenTitle } from './Text';
+import { px } from '../design/scale';
 
 export const ErrorState = ({
   title,
@@ -40,6 +41,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: safeArea.horizontal,
   },
-  detail: { marginTop: space(2), maxWidth: 1100 },
+  detail: { marginTop: space(2), maxWidth: px(1100) },
   button: { marginTop: space(4), alignSelf: 'flex-start', paddingHorizontal: space(4), paddingVertical: space(2) },
 });

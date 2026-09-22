@@ -17,6 +17,7 @@ import {
   humanSignTracks,
   type TitleManifest,
 } from '../stm/types';
+import { px } from '../design/scale';
 
 export const TitleDetail = ({
   manifest,
@@ -96,12 +97,12 @@ export const TitleDetail = ({
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colour.bgBase },
   content: { paddingHorizontal: safeArea.horizontal, paddingVertical: safeArea.vertical },
-  still: { height: 320, borderRadius: 12, backgroundColor: colour.bgSurface },
+  still: { height: px(320), borderRadius: px(12), backgroundColor: colour.bgSurface },
   title: { marginTop: space(3) },
   metaRow: { flexDirection: 'row', marginTop: space(1) },
   dot: { marginHorizontal: space(1) },
   badges: { marginTop: space(2) },
-  para: { marginTop: space(2), maxWidth: 1200 },
+  para: { marginTop: space(2), maxWidth: px(1200) },
   actions: { flexDirection: 'row', marginTop: space(4) },
   primary: {
     backgroundColor: colour.accent,
@@ -115,12 +116,12 @@ const styles = StyleSheet.create({
     paddingVertical: space(2),
   },
   progressTrack: {
-    height: 6,
-    width: 520,
+    height: px(6),
+    width: px(520),
     backgroundColor: colour.borderSubtle,
-    borderRadius: 3,
+    borderRadius: px(3),
     marginTop: space(2),
   },
-  progressFill: { height: 6, backgroundColor: colour.accent, borderRadius: 3 },
-  attribution: { marginTop: space(5), maxWidth: 1200 },
+  progressFill: { height: px(6), backgroundColor: colour.accent, borderRadius: px(3) },
+  attribution: { marginTop: space(5), maxWidth: px(1200) },
 });
