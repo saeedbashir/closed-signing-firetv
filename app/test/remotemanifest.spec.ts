@@ -22,11 +22,13 @@ function mockFetch(impl: () => Promise<unknown>): void {
   (globalThis as { fetch: unknown }).fetch = impl as unknown;
 }
 
-const respond = (body: unknown, status = 200) => async () => ({
-  ok: status >= 200 && status < 300,
-  status,
-  json: async () => body,
-});
+const respond = (body: unknown, status = 200, headers: Record<string, string> = {}) =>
+  async () => ({
+    ok: status >= 200 && status < 300,
+    status,
+    headers: { get: (k: string) => headers[k.toLowerCase()] ?? null },
+    text: async () => JSON.stringify(body),
+  });
 
 describe('addresses that cannot work', () => {
   it('asks for an address when given nothing', async () => {
@@ -60,9 +62,8 @@ describe('addresses that cannot work', () => {
     mockFetch((async () => ({
       ok: true,
       status: 200,
-      json: async () => {
-        throw new Error('not json');
-      },
+      headers: { get: () => null },
+      text: async () => '<!doctype html><html>a web page</html>',
     })) as unknown as () => Promise<unknown>);
     const r = await loadManifest('https://example.test/page.html');
     expect(r.ok).toBe(false);
@@ -114,5 +115,48 @@ describe('a manifest that works', () => {
   it('tolerates surrounding whitespace, which a pasted address often has', async () => {
     mockFetch(respond(valid) as unknown as () => Promise<unknown>);
     expect((await loadManifest('  https://example.test/good.json  ')).ok).toBe(true);
+  });
+});
+
+describe('a server that misbehaves', () => {
+  it('gives up rather than hanging for ever', async () => {
+    // fetch has no timeout of its own: a server that accepts the connection and
+    // then says nothing would leave "Opening..." on screen with no way back.
+    jest.useFakeTimers();
+    mockFetch(
+      ((_u: string, init?: { signal?: AbortSignal }) =>
+        new Promise((_resolve, reject) => {
+          init?.signal?.addEventListener('abort', () => reject(new Error('aborted')));
+        })) as unknown as () => Promise<unknown>,
+    );
+    const pending = loadManifest('https://example.test/never-answers.json');
+    jest.advanceTimersByTime(15_000);
+    const r = await pending;
+    jest.useRealTimers();
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toMatch(/too long/);
+  });
+
+  it('refuses something far too large before parsing it', async () => {
+    mockFetch(
+      respond({}, 200, { 'content-length': String(50 * 1024 * 1024) }) as unknown as () => Promise<unknown>,
+    );
+    const r = await loadManifest('https://example.test/huge.bin');
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toMatch(/far too large/);
+  });
+
+  it('still refuses when the server declares no size', async () => {
+    mockFetch(
+      (async () => ({
+        ok: true,
+        status: 200,
+        headers: { get: () => null },
+        text: async () => 'x'.repeat(3 * 1024 * 1024),
+      })) as unknown as () => Promise<unknown>,
+    );
+    const r = await loadManifest('https://example.test/huge-undeclared');
+    expect(r.ok).toBe(false);
+    if (!r.ok) expect(r.reason).toMatch(/far too large/);
   });
 });

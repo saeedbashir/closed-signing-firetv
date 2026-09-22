@@ -396,7 +396,19 @@ export const Player = ({
         </View>
       ) : null}
 
-      {/* Degrade, never block. */}
+      {/* Degrade, never block — but never leave a black screen unexplained
+          either. A manifest can load perfectly and still name media that 404s
+          or will not decode, and without this the viewer gets darkness and no
+          reason for it. That is the likeliest failure for a title opened by
+          address, where nobody has checked the media beforehand. */}
+      {main.failed ? (
+        <View style={styles.notice}>
+          <Metadata>
+            This programme could not be played. The manifest loaded, but its video did not.
+          </Metadata>
+        </View>
+      ) : null}
+
       {signer.failed ? (
         <View style={styles.notice}>
           <Metadata>The interpreter is unavailable for this title.</Metadata>
