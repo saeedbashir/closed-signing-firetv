@@ -9,13 +9,20 @@ import { StorageStack } from '../lib/storage-stack';
 const app = new cdk.App();
 const config = readConfig(app);
 
-// Left environment-agnostic when no credentials are configured, so `cdk synth`
-// works on a fresh clone with no AWS account. `cdk deploy` picks up the
-// account and region from the caller's usual AWS configuration.
-const env =
-  process.env.CDK_DEFAULT_ACCOUNT && process.env.CDK_DEFAULT_REGION
-    ? { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION }
-    : undefined;
+// Environment-agnostic on purpose, and always — not only when credentials are
+// absent. `cdk deploy` still takes the account and region from the caller's
+// AWS configuration; what changes is that nothing here asks the account any
+// questions at synth time.
+//
+// The version that pinned `env` from CDK_DEFAULT_ACCOUNT/REGION made the VPC
+// look up availability zones through the account, and on an account whose
+// organisation policy denies `ec2:DescribeAvailabilityZones` that turned
+// `cdk synth` into "Synthesis finished with errors" the moment credentials were
+// configured — while passing on a machine with none. A synth whose result
+// depends on who runs it is not a synth a judge can trust. Agnostic, the VPC
+// resolves its zones with `Fn::GetAZs` at deploy time instead; `maxAzs` is
+// capped at two in this mode, which is what it is set to.
+const env = undefined;
 
 const prefix = 'ClosedSigning';
 

@@ -1,15 +1,27 @@
 # Infrastructure
 
-Four CDK stacks. `cdk synth` works on a fresh clone with **no AWS account**, so
-the templates can be read without deploying anything.
+Four CDK stacks. `cdk synth` works on a fresh clone with **no AWS account**, and
+gives the same result on a machine that has one: the stacks are
+environment-agnostic on purpose, so nothing asks the account a question at synth
+time. (The earlier version pinned the environment when credentials were present,
+which made the VPC look up availability zones through the account — and on an
+account whose organisation policy denies that call, synth reported errors for
+exactly the people who had configured AWS. Fixed 2026-09-22; see `bin/app.ts`.)
 
 ```sh
 cd infra
 npm ci
-npx cdk synth          # no credentials needed
+npx cdk synth          # no credentials needed, and identical with them
 npx jest               # stack tests
-npx cdk deploy --all   # needs credentials
+npx cdk deploy --all   # needs credentials on an account that permits CloudFormation
 ```
+
+**Deployment status, 2026-09-22:** not deployed. The account available to the
+project sits under a service control policy that denies CloudFormation, S3 bucket
+creation, EC2, Batch and ECR; and Bedrock invocation waits on the Anthropic use
+case form being accepted for the account. `HOSTING.md` records the exact errors
+and what stands in meanwhile. These stacks are the design, tested and
+synthesised; they are not yet a running system, and the submission says so.
 
 | Stack | What it holds |
 | --- | --- |
@@ -67,6 +79,13 @@ Model access is granted per model in the Bedrock console, and the criteria
 differ by model. Claude Sonnet 5 and Haiku 4.5 are open to all Bedrock
 customers; Claude Opus 5 is gated. All three are permitted by the policy, so
 switching is a pipeline flag (`--bedrock-model`) and needs no redeploy.
+
+Before any of that, the account itself has to have the **Anthropic use case
+form** accepted. Until it is, every Anthropic model returns `Model use case
+details have not been submitted for this account` on the runtime API and a 403
+`not available for this account` on the Messages API endpoint — measured
+2026-09-22. That is an account-level gate, not a policy one, and no IAM change
+opens it.
 
 **Known uncertainty.** The pipeline calls the Messages API endpoint, so the IAM
 action is `bedrock-mantle:CreateInference`, not `bedrock:InvokeModel`. The

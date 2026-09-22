@@ -4,16 +4,38 @@ Media is served from **Cloudflare R2**, not S3.
 
 ## Why not AWS
 
-The AWS account available to this project is on the Free Plan, which places it
-inside an AWS-managed organisation whose service control policy denies
-`s3:CreateBucket`, CloudFormation, EC2, Batch and ECR. A service control policy
-overrides IAM, so the AdministratorAccess on the IAM user makes no difference.
-Bedrock is blocked separately: the Anthropic use case form must be submitted by
-the organisation's management account, which this account is not.
+The AWS account available to this project (<project-account>) is on the Free Plan,
+which places it inside an AWS-managed organisation whose service control policy
+denies `s3:CreateBucket`, CloudFormation, EC2, Batch and ECR. A service control
+policy overrides IAM, so the AdministratorAccess on the IAM user makes no
+difference. Re-checked 2026-09-22: `cloudformation:ListStacks` is an explicit
+deny by `p-o59ka7dj`, and the account holds no buckets.
 
-The CDK stacks in `infra/` are still the infrastructure story and still
-synthesise without an account. They describe what this would deploy to on a
-normal AWS account. R2 stands in for S3 and CloudFront on the Free Plan.
+Bedrock is a separate, narrower block, and it is **pending rather than closed**.
+The control plane answers — `bedrock list-foundation-models` returns the
+Anthropic models — but invoking one fails on the Anthropic use case form, which
+has to be accepted for the account:
+
+```
+bedrock-runtime invoke-model (us.anthropic.claude-haiku-4-5-20251001-v1:0):
+  ResourceNotFoundException: Model use case details have not been submitted for
+  this account. Fill out the Anthropic use case details form before using the
+  model. If you have already filled out the form, try again in 15 minutes.
+
+Messages API endpoint (AnthropicBedrockMantle, the pipeline's path):
+  403 permission_error: anthropic.claude-haiku-4-5 is not available for this account.
+```
+
+Measured 2026-09-22 with one-token probes. The form has been requested; until it
+is accepted the simplifier in `signed-track-manifest` cannot run against this
+account, and the simplified track in the catalogue is hand-written and labelled
+as such (no `generatedBy`). The day the form clears, `stm run --simplify` is the
+only step needed to produce a `generatedBy: amazon-bedrock`, `reviewed: false`
+track for a real title — nothing else in the pipeline or the app changes.
+
+The CDK stacks in `infra/` are still the infrastructure story. They synthesise
+with or without credentials and describe what this deploys to on an account
+outside that organisation. R2 stands in for S3 and CloudFront on the Free Plan.
 
 ## Why R2 suits this project anyway
 
