@@ -68,15 +68,18 @@ aws s3 ls s3://closed-signing --profile cloudflare-r2 --endpoint-url "$R2" --reg
 ## Publishing a processed title
 
 ```sh
-# 1. process
-stm run catalogue/sources.yaml --out out --work work
+# 1. process (from the signed-track-manifest checkout)
+stm run ../closed-signing-firetv/catalogue/sources.yaml --id <id> --out out --work work
 
-# 2. rewrite the manifest's relative URLs to absolute R2 ones, then upload
-aws s3 cp out/<id>/ "s3://closed-signing/titles/<id>/" --recursive \
-  --profile cloudflare-r2 --endpoint-url "$R2" --region auto
+# 2. make the manifest's URLs absolute, validate, upload, and check every file answers
+tools/publish-title.sh out <id>
 
-# 3. regenerate app/src/catalogue.ts from the manifests and rebuild
+# 3. regenerate app/src/catalogue.ts from the published manifests and rebuild
+node tools/build-catalogue.mjs https://pub-…r2.dev/titles/<id>/manifest.json [...]
 ```
+
+Step 2 was three lines of prose here until 2026-09-22; it is a script now because
+the two full-length titles were the first time it was done twice.
 
 Verify the device can actually reach it before assuming it works — the failure
 mode is silent and looks like a codec error:

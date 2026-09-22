@@ -51,8 +51,38 @@
 #     notes: ""
 
 sources:
-  - id: sp-fmqs-bsl-2026-09-17
+  # The full session, 34 minutes, downloaded 2026-09-22 with Saeed's authorisation.
+  # The stream URL is the one the event page's Share tab shows; it is served to
+  # the page by GET /Player/PlaybackModel/{eventId}, saved beside the file as
+  # fmqs-party-leaders-2026-09-17.playbackmodel.json for provenance. Same house
+  # crop as the excerpts. This is the title that shows what the excerpts cannot:
+  # the interpreter idle during divisions and procedural pauses, which is what the
+  # player's auto-dim exists for, and window growth over a whole broadcast rather
+  # than two minutes of one.
+  - id: sp-fmqs-bsl-2026-09-17-full
     title: "First Minister's Questions (Party Leaders), British Sign Language"
+    url: https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026
+    publisher: The Scottish Parliament
+    production_credit: "verified: in-house, Scottish Parliament TV"
+    licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
+    attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
+    acquisition_route: "publisher's own stream (hlsStreamUrl from /Player/PlaybackModel/{eventId}, as shown on the event page's Share tab)"
+    local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/fmqs-party-leaders-2026-09-17-full.mp4
+    sign_language: bfi
+    language_label: British Sign Language
+    crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    layout: side-panel
+    verdict: candidate
+    notes: >-
+      Full session, 2048 s. True side panel, so nothing is occluded and no fill is
+      needed. House crop checked at t = 2, 60, 600, 1200, 1800, 2000 and 2040 s:
+      the panel side reads the same flat backdrop from x=1080 at every one, so the
+      rectangle holds from first frame to last. Signing activity: 11 idle stretches
+      of 2-8 s over the session (0:24, 4:39, 8:21, 27:28 among them), 42 s in all —
+      the title on which the player's auto-dim shows on real content.
+
+  - id: sp-fmqs-bsl-2026-09-17
+    title: "First Minister's Questions (Party Leaders), British Sign Language — 2-minute excerpt"
     url: https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026
     publisher: The Scottish Parliament
     production_credit: "verified: in-house, Scottish Parliament TV"
@@ -98,8 +128,33 @@ sources:
   # so this is the Parliament's house layout, not a per-event measurement.
   # Each carries a different interpreter, which is worth having: it shows the
   # extraction is not tuned to one person.
-  - id: sp-fmqs-backbench-bsl-2026-09-15
+  # Full session, 32 minutes, downloaded 2026-09-22 (same route as the Party
+  # Leaders session above). The house crop was checked at seven points from t=2 s
+  # to t=1900 s: the panel side reads the same flat backdrop from x=1080 at every
+  # one, so the rectangle holds from the first frame — where the interpreter is
+  # still walking into position — to the last.
+  - id: sp-fmqs-backbench-bsl-2026-09-15-full
     title: "First Minister's Questions (Backbench Members), British Sign Language"
+    url: https://www.scottishparliament.tv/meeting/first-ministers-questions-backbench-members-bsl-september-15-2026
+    publisher: The Scottish Parliament
+    production_credit: "verified: in-house, Scottish Parliament TV"
+    licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
+    attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
+    acquisition_route: "publisher's own stream, listed on the event page's Share tab"
+    local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/sp-b-full.mp4
+    sign_language: bfi
+    language_label: British Sign Language
+    crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    layout: side-panel
+    verdict: candidate
+    notes: >-
+      Full session, 1917 s. True side panel; no fill needed. Signing activity:
+      continuous — 16 s under threshold in 32 minutes, 5 of them after the session
+      closes. FMQs has no divisions and the interpreter signs the procedural words
+      too; auto-dim is correct here and invisible.
+
+  - id: sp-fmqs-backbench-bsl-2026-09-15
+    title: "First Minister's Questions (Backbench Members), British Sign Language — 2-minute excerpt"
     url: https://www.scottishparliament.tv/meeting/first-ministers-questions-backbench-members-bsl-september-15-2026
     publisher: The Scottish Parliament
     production_credit: "verified: in-house, Scottish Parliament TV"

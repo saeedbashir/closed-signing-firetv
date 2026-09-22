@@ -27,3 +27,4 @@ model access.
 | [010](friction-log/010-nothing-moves-focus-to-a-panel-that-appears.md) | 2026-09-22 | Vega SDK / RN focus | major | Nothing documented moves focus to a panel that appears over a focused screen |
 | [011](friction-log/011-the-bundled-asyncstorage-does-nothing-and-says-so-to-no-one.md) | 2026-09-22 | Vega SDK / RN storage | major | The bundled `AsyncStorage` does nothing, and says so to no one |
 | [012](friction-log/012-view-opacity-does-not-apply-to-keplervideoview.md) | 2026-09-22 | Vega SDK / w3cmedia | major | `opacity` on a View does not apply to the `KeplerVideoView` inside it |
+| [013](friction-log/013-hls-plays-from-src-although-the-readme-says-it-cannot.md) | 2026-09-22 | Vega SDK / w3cmedia | minor | HLS plays from `src`, although the README says it cannot |

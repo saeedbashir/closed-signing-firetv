@@ -30,8 +30,13 @@ import { DIAG } from '../diagnostics';
 /** Something to open on a fresh install, so the feature can be seen without typing. */
 const EXAMPLES: readonly Recent[] = [
   {
+    url: 'https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17-full/manifest.json',
+    title: "Example — First Minister's Questions (BSL), the full session",
+    openedAt: 0,
+  },
+  {
     url: 'https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17/manifest.json',
-    title: "Example — First Minister's Questions (BSL)",
+    title: "Example — the same session, a 2-minute excerpt",
     openedAt: 0,
   },
   {
@@ -48,6 +53,13 @@ const EXAMPLES: readonly Recent[] = [
         {
           url: 'https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/_test-autodim/manifest.json',
           title: 'TEST FIXTURE — auto-dim, synthetic activity',
+          openedAt: 0,
+        },
+        // Does Vega play the publisher's HLS stream directly? Main video is the
+        // Parliament's own .m3u8; the signer is a published MP4.
+        {
+          url: 'https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/_test-hls/manifest.json',
+          title: 'TEST FIXTURE — HLS main video, straight from the publisher',
           openedAt: 0,
         },
       ]
@@ -88,7 +100,13 @@ export const OpenUrl = ({
     [onOpened],
   );
 
-  const list = recents.length > 0 ? recents : EXAMPLES;
+  // Recents replace the examples once there are any. Diagnostic builds keep the
+  // test fixtures reachable regardless, after whatever the viewer opened.
+  const fixtures = EXAMPLES.filter((e) => e.title.startsWith('TEST FIXTURE'));
+  const list =
+    recents.length > 0
+      ? [...recents, ...fixtures.filter((f) => !recents.some((r) => r.url === f.url))]
+      : EXAMPLES;
 
   return (
     <View style={styles.root}>

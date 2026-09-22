@@ -13,10 +13,11 @@
  * tells the control overlay to stop offering controls that would do nothing.
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, Image, StyleSheet, View } from 'react-native';
 import { KeplerVideoView, VideoPlayer } from '@amazon-devices/react-native-w3cmedia';
 import { Focusable } from '../components/Focusable';
-import { Body, Metadata, SectionHeading } from '../components/Text';
+import { Body, Metadata, ScreenTitle, SectionHeading } from '../components/Text';
+import { ErrorState } from '../components/ErrorState';
 import { TRANSPORT_HEIGHT, TransportControls } from '../components/TransportControls';
 import { SCREEN, captionPlacement, signerBox } from '../design/geometry';
 import {
@@ -603,18 +604,38 @@ export const Player = ({
           or will not decode, and without this the viewer gets darkness and no
           reason for it. That is the likeliest failure for a title opened by
           address, where nobody has checked the media beforehand. */}
+      {/* Loading is a screen, not a pill. The first version was a small plate at
+          the bottom of an otherwise black picture, which for the several seconds
+          a remote stream takes to start read exactly like a failure. The poster
+          gives the eye the programme it is waiting for; the words say why it is
+          not there yet. Gone the moment the first frame arrives. */}
       {!ready && !main.failed ? (
-        <View style={styles.notice} accessibilityLiveRegion="polite">
-          <Metadata>Loading…</Metadata>
+        <View style={styles.loading} accessibilityLiveRegion="polite">
+          <Image
+            source={{ uri: manifest.video.poster }}
+            style={[StyleSheet.absoluteFill, styles.loadingPoster]}
+            resizeMode="cover"
+            accessible={false}
+          />
+          <View style={styles.loadingText}>
+            <ScreenTitle numberOfLines={2}>{manifest.title}</ScreenTitle>
+            <Metadata dim style={styles.loadingLine}>
+              {manifest.source.publisher}
+            </Metadata>
+            <Body style={styles.loadingLine}>Loading…</Body>
+          </View>
         </View>
       ) : null}
 
+      {/* When the main video fails there is no programme, so this is not a
+          notice over a picture: it is the screen, with the one way out. */}
       {main.failed ? (
-        <View style={styles.notice}>
-          <Metadata>
-            This programme could not be played. The manifest loaded, but its video did not.
-          </Metadata>
-        </View>
+        <ErrorState
+          title="This programme could not be played"
+          detail="The manifest loaded, but its video did not. It may have moved, or it may be in a form this player cannot decode."
+          actionLabel="Back to the title"
+          onAction={leave}
+        />
       ) : null}
 
       {signer.failed ? (
@@ -773,6 +794,16 @@ const styles = StyleSheet.create({
   },
   signer: { position: 'absolute', borderRadius: px(8), overflow: 'hidden' },
   scrim: { backgroundColor: '#000000' },
+  loading: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colour.bgBase,
+    justifyContent: 'center',
+    paddingHorizontal: safeArea.horizontal,
+  },
+  // Faint on purpose: it is a backdrop for the words, not the picture itself.
+  loadingPoster: { opacity: 0.22 },
+  loadingText: { maxWidth: px(1200) },
+  loadingLine: { marginTop: space(1.5) },
   notice: {
     position: 'absolute',
     bottom: space(3),

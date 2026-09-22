@@ -75,8 +75,10 @@ watch for a side effect to know whether it worked.
 ## Time lost
 
 About three hours, over four APIs and six build-install-observe cycles. Two of
-those cycles went on building an on-screen probe, because `KPLogger` output never
-appeared in `vega device start-log-stream` from a Release build — at info, where
-the log itself reports suppressing a thousand lines at that level, or at warning,
-where nothing appeared at all while the platform's own W3CMEDIA lines kept
-flowing. See 006: on this platform the screen is still the only instrument.
+those cycles went on building an on-screen probe, because `KPLogger` output did
+not appear in `vega device start-log-stream` when we looked — at info the log
+itself reports suppressing a thousand lines at that level, and at warning the
+lines were there but the stream flushes late, so a grep seconds after the event
+found nothing. (Corrected later the same day: the warnings do arrive, tagged
+`[KeplerScript-Native]`, a minute or so behind.) For a question about focus
+timing the screen was the right instrument regardless; see 006.

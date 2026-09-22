@@ -6,12 +6,14 @@
  * reaches `vega device start-log-stream`. KPLogger writes through a native
  * turbomodule and shows up in the system log where it can be read.
  *
- * With one caveat found on 2026-09-22: from a Release build none of these
- * lines appeared in `start-log-stream` at all, at info or at warning, while
- * the platform's own W3CMEDIA lines kept flowing throughout. So the log route
- * cannot be relied on for a Release build, and anything that has to be
- * observed there is better rendered on screen and photographed. See
- * friction-log/006.
+ * Two things learned on 2026-09-22, the second correcting the first. Info is
+ * rate-limited away (the log says so itself), so `diag` writes at warning.
+ * And warnings do arrive — tagged `[KeplerScript-Native] [ClosedSigning] …` —
+ * but `start-log-stream` flushes them late: a grep run seconds after the event
+ * found nothing, which for an afternoon read as "the log route does not work in
+ * a Release build" and was written up as such. It does work; give it a minute.
+ * The on-screen `DIAG` trace remains the right tool for anything that has to be
+ * read at the moment it happens. See friction-log/006.
  */
 import { KPLogger } from '@amazon-devices/react-native-kepler/Libraries/Logger/Logger';
 

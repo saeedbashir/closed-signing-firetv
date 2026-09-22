@@ -68,8 +68,8 @@ were not obvious:
 
 With that, `AsyncStorage.getItem`/`setItem` work: a preference changed, the app force-
 stopped and relaunched, and the preference was there. Verified with an on-screen
-diagnostic line (`storage: ok · seen=true`), because the device log carries nothing
-from a Release build.
+diagnostic line (`storage: ok · seen=true`) — quicker than waiting for
+`start-log-stream`, which delivers the app's own warnings a minute or so late.
 
 ## Suggestion
 

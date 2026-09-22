@@ -28,7 +28,7 @@ export const ErrorState = ({
     <Body dim style={styles.detail}>
       {detail}
     </Body>
-    <Focusable onPress={onAction} hasTVPreferredFocus style={styles.button}>
+    <Focusable onPress={onAction} hasTVPreferredFocus claimsFocus style={styles.button}>
       <Body>{actionLabel}</Body>
     </Focusable>
   </View>
@@ -36,11 +36,17 @@ export const ErrorState = ({
 
 const styles = StyleSheet.create({
   root: {
-    flex: 1,
+    // Fills whatever it is placed in: a route, or the player over a dead video.
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: colour.bgBase,
     justifyContent: 'center',
     paddingHorizontal: safeArea.horizontal,
   },
   detail: { marginTop: space(2), maxWidth: px(1100) },
-  button: { marginTop: space(4), alignSelf: 'flex-start', paddingHorizontal: space(4), paddingVertical: space(2) },
+  button: {
+    marginTop: space(4),
+    alignSelf: 'flex-start',
+    paddingHorizontal: space(4),
+    paddingVertical: space(2),
+  },
 });

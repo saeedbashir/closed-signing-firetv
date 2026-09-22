@@ -51,12 +51,17 @@ Nothing in the SDK reports what a Vega app is doing (friction-log/006). What wor
   F4 (Play/Pause) and F5 (Fast forward) to the device window with AppleScript
   `key code 118` / `96` instead. macOS takes F1–F3 for itself.
 - **Screen:** `screencapture -R` of the device window, then measure pixels. Contrast,
-  layout, opacity and the auto-dim were all verified this way; the device log never
-  carried a line from this app in a Release build.
+  layout, opacity and the auto-dim were all verified this way.
+- **Log:** `vega device start-log-stream` does carry the app's `diag()` lines, at
+  warning level and tagged `[KeplerScript-Native] [ClosedSigning]` — but a minute or
+  so late, so grep after the event has flushed, not during it. Info-level lines are
+  rate-limited away by the platform.
 - **Diagnostics:** `src/diagnostics.ts` has a `DIAG` flag. On, the player shows an
-  on-screen trace and the Open-by-address screen lists a test fixture manifest with a
-  synthetic activity track (`titles/_test-autodim/`, alternating 15 s signing and
-  15 s still). Off for every shipped build.
+  on-screen trace and the Open-by-address screen lists two test fixture manifests
+  after the recents: `titles/_test-autodim/` (a synthetic activity track alternating
+  15 s signing and 15 s still, for watching the auto-dim transitions) and
+  `titles/_test-hls/` (the publisher's own HLS stream as the main video, which
+  friction-log/013 records does play). Off for every shipped build.
 
 ## The catalogue
 
