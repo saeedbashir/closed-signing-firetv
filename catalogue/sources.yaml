@@ -50,4 +50,27 @@
 #     verdict: candidate
 #     notes: ""
 
-sources: []
+sources:
+  - id: sp-fmqs-bsl-2026-09-17
+    title: "First Minister's Questions (Party Leaders), British Sign Language"
+    url: https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026
+    publisher: The Scottish Parliament
+    production_credit: "verified: in-house, Scottish Parliament TV"
+    licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
+    attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
+    acquisition_route: "publisher's own stream, listed on the event page's Share tab"
+    local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/fmqs-excerpt.mp4
+    sign_language: bfi
+    language_label: British Sign Language
+    # Hand-measured off a coordinate grid, which is what the gate prescribes for
+    # demo titles while automatic bounding sits at 0.727 IoU. The chamber picture
+    # ends at x=1080 and the interpreter's panel runs to the right edge; the bands
+    # above and below are Parliament branding and belong to neither.
+    crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    layout: side-panel
+    verdict: candidate
+    notes: >-
+      A true side panel: nothing is occluded, so no fill is needed. A 120s excerpt
+      for testing. SPCB Corporate Identity is not licensed to us, so the crop takes
+      the chamber picture and the panel and not the branding.
+

@@ -24,6 +24,16 @@ export const BUNDLED_CATALOGUE: Catalogue = {
       "signLanguages": [
         "ase"
       ]
+    },
+    {
+      "id": "sp-fmqs-bsl-2026-09-17",
+      "title": "First Minister's Questions (Party Leaders), British Sign Language",
+      "durationMs": 120008,
+      "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17/poster.jpg",
+      "manifestUrl": "bundled",
+      "signLanguages": [
+        "bfi"
+      ]
     }
   ]
 };
@@ -85,5 +95,55 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
         "format": "webvtt"
       }
     ]
+  },
+  "sp-fmqs-bsl-2026-09-17": {
+    "stmVersion": "0.1",
+    "id": "sp-fmqs-bsl-2026-09-17",
+    "title": "First Minister's Questions (Party Leaders), British Sign Language",
+    "durationMs": 120008,
+    "source": {
+      "publisher": "The Scottish Parliament",
+      "url": "https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026",
+      "licence": "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)",
+      "attribution": "Contains information licensed under the Scottish Parliament Copyright Licence.",
+      "productionCredit": "verified: in-house, Scottish Parliament TV",
+      "acquisitionRoute": "publisher's own stream, listed on the event page's Share tab"
+    },
+    "video": {
+      "main": {
+        "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17/main.mp4",
+        "width": 1080,
+        "height": 1080,
+        "codec": "h264"
+      },
+      "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17/poster.jpg"
+    },
+    "signLanguage": [
+      {
+        "language": "bfi",
+        "languageLabel": "British Sign Language",
+        "provenance": "human-interpreter",
+        "extraction": {
+          "method": "manual-crop",
+          "sourceLayout": "side-panel",
+          "confidence": 1,
+          "cropRect": {
+            "x": 1080,
+            "y": 108,
+            "w": 840,
+            "h": 760
+          },
+          "fillMethod": "none"
+        },
+        "track": {
+          "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17/signer-bfi.mp4",
+          "width": 596,
+          "height": 540,
+          "codec": "h264",
+          "syncOffsetMs": 0
+        }
+      }
+    ],
+    "captions": []
   }
 };
