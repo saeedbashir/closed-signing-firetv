@@ -22,6 +22,7 @@ import { captionSize, colour, motion, signerOpacity, space } from '../design/tok
 import { SignerControls } from './SignerControls';
 import { CaptionMenu } from './CaptionMenu';
 import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
+import { useBack } from '../input/useBack';
 import { diag } from '../diagnostics';
 import type { Preferences } from '../state/preferences';
 import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
@@ -328,6 +329,20 @@ export const Player = ({
   // "Back to close" and nothing was implementing it, so the only way out was to
   // find the Done button.
   useRemote(onRemote, true);
+
+  // Back arrives through the platform's back handler, not the TV event handler.
+  // Unhandled it exits the app, which from the player meant quitting to the
+  // launcher and losing the viewer's place.
+  const onBack = useCallback(() => {
+    if (anyOverlayOpen) {
+      setControlsOpen(false);
+      setCaptionMenuOpen(false);
+      return true;
+    }
+    leave();
+    return true;
+  }, [anyOverlayOpen, leave]);
+  useBack(onBack);
 
   return (
     <View style={styles.root}>

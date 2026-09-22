@@ -18,7 +18,7 @@ export const BUNDLED_CATALOGUE: Catalogue = {
     {
       "id": "demo-corner-inset",
       "title": "Demonstration — interpreter in a corner inset",
-      "durationMs": 6000,
+      "durationMs": 120000,
       "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/demo-corner-inset/poster.jpg",
       "manifestUrl": "bundled",
       "signLanguages": [
@@ -43,7 +43,7 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
     "stmVersion": "0.1",
     "id": "demo-corner-inset",
     "title": "Demonstration — interpreter in a corner inset",
-    "durationMs": 6000,
+    "durationMs": 120000,
     "source": {
       "publisher": "Synthetic, built for this project",
       "url": "https://commons.wikimedia.org/wiki/File:Lange-MigrantMother02.jpg",

@@ -7,6 +7,7 @@
  */
 import React, { useCallback, useMemo, useReducer, useState } from 'react';
 import { diag } from './diagnostics';
+import { useBack } from './input/useBack';
 import { Settings } from './screens/Settings';
 import { StyleSheet, View } from 'react-native';
 import { ErrorState } from './components/ErrorState';
@@ -36,6 +37,15 @@ export const App = (): React.JSX.Element => {
   const route = currentRoute(nav);
   // Temporary: the screen cannot be inspected from a script, so say where we are.
   diag(`route=${route.name} stack=${nav.stack.map((r) => r.name).join('>')}`);
+  // Back pops the stack everywhere the player is not. Returning false at the
+  // root is what lets the viewer actually leave the app.
+  const onBack = useCallback(() => {
+    if (nav.stack.length <= 1) return false;
+    dispatch({ type: 'back' });
+    return true;
+  }, [nav.stack.length]);
+  useBack(onBack);
+
   const patch = useCallback(
     (p: Partial<Preferences>) => setPrefs((cur) => applyPatch(cur, p)),
     [],
