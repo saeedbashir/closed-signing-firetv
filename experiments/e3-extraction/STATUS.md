@@ -188,6 +188,31 @@ bound the region tightly enough to publish unattended.**
   sampled 14 times, so 14/14 detection is weaker evidence of generality than the
   count suggests.
 
+### Does a full broadcast help? No — measured 2026-09-22
+
+The one lead left open above was that window growth might behave on a whole
+broadcast where it over-grows on a two-minute excerpt (a 24-minute archive.org run
+had once given 0.993). Tested on the full 32-minute Backbench session, detection
+only, 36 minutes of wall clock:
+
+```
+                          rect                      IoU vs house crop
+excerpt, 120 s (17 Sep)   {1038,  84, 882, 996}     0.727
+full session, 1917 s      {1038,  84, 882, 996}     0.727
+```
+
+Identical to the pixel. The window stops where it always stops on this
+publisher's layout — at the magenta branding bands above and below, and 42 px into
+the chamber picture on the left — because those are the edges the growth test can
+see, and they do not move with duration. Length was never the variable; the layout
+is. The 0.993 elsewhere was a different layout, not a longer clip.
+
+So the honest position stands and is now bounded from both sides: the pipeline
+finds the interpreter and classifies the layout on real content of any length,
+and its rectangle is the same wrong rectangle on any length. Fixing it means
+teaching growth to stop at the panel's own edge rather than the frame's decoration,
+which is the spatial-uniformity idea above — not more footage.
+
 ## Verdict against the gate
 
 **Marginal, and specifically fixable.** Detection is solved; bounding is not, and the
