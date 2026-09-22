@@ -58,5 +58,6 @@
     "targets": [
       "tv"
     ]
-  }
+  },
+  "description": "Closed Signing for Fire TV: a Vega OS player that puts the sign language interpreter under the viewer\u2019s control."
 }

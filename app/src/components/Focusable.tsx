@@ -20,7 +20,14 @@
  * 13.5:1 throughout.
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Pressable, StyleSheet, type View, type ViewStyle } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  type AccessibilityRole,
+  type AccessibilityValue,
+  type View,
+  type ViewStyle,
+} from 'react-native';
 import { colour, focus } from '../design/tokens';
 import { prefersReducedMotion } from '../design/motion';
 import { px } from '../design/scale';
@@ -55,6 +62,14 @@ export type FocusableProps = {
   variant?: 'surface' | 'primary';
   reduceMotion?: boolean;
   accessibilityLabel?: string;
+  /**
+   * `button` unless told otherwise. A control that reads as plain text to a
+   * screen reader is a control that does not exist for that viewer; rows the
+   * viewer adjusts with Left and Right say `adjustable` and carry their value.
+   */
+  accessibilityRole?: AccessibilityRole;
+  accessibilityValue?: AccessibilityValue;
+  accessibilityHint?: string;
 };
 
 export const Focusable = ({
@@ -68,6 +83,9 @@ export const Focusable = ({
   variant = 'surface',
   reduceMotion,
   accessibilityLabel,
+  accessibilityRole = 'button',
+  accessibilityValue,
+  accessibilityHint,
 }: FocusableProps): React.JSX.Element => {
   const [focused, setFocused] = useState(false);
   const host = useRef<FocusableHost | null>(null);
@@ -106,6 +124,9 @@ export const Focusable = ({
       onBlur={() => handle(false)}
       hasTVPreferredFocus={hasTVPreferredFocus}
       accessibilityLabel={accessibilityLabel}
+      accessibilityRole={accessibilityRole}
+      accessibilityValue={accessibilityValue}
+      accessibilityHint={accessibilityHint}
       accessible
       style={[
         variant === 'primary' ? styles.primary : styles.base,

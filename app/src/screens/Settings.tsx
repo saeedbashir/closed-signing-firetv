@@ -14,6 +14,7 @@
 import React, { useCallback, useRef } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Focusable } from '../components/Focusable';
+import { LayoutDiagram } from '../components/LayoutDiagram';
 import { Body, Metadata, SectionHeading } from '../components/Text';
 import {
   colour,
@@ -71,7 +72,10 @@ const Row = ({
     style={styles.row}
     scaleOnFocus={false}
     hasTVPreferredFocus={first}
-    accessibilityLabel={`${label}, ${value}`}
+    accessibilityLabel={label}
+    accessibilityRole="adjustable"
+    accessibilityValue={{ text: value }}
+    accessibilityHint="Left and right to change"
     onPress={() => onChange(1)}
     onFocusChange={(focused) => {
       if (focused) onFocused(rowKey);
@@ -140,51 +144,68 @@ export const Settings = ({
     <ScrollView style={styles.root} contentContainerStyle={styles.content}>
       <SectionHeading style={styles.title}>Settings</SectionHeading>
 
-      <SectionHeading style={styles.section}>Interpreter</SectionHeading>
-      <Row
-        first
-        rowKey="visible"
-        onFocused={onFocused}
-        label="Show interpreter"
-        value={prefs.signerVisible ? 'On' : 'Off'}
-        onChange={handlers.visible}
-      />
-      {prefs.signerVisible ? (
-        <>
+      {/* The rows change the layout; the diagram shows it. Spec: "the same four
+
+          controls, previewed against a still". */}
+
+      <View style={styles.interpreter}>
+        <View style={styles.interpreterRows}>
+          <SectionHeading style={styles.section}>Interpreter</SectionHeading>
           <Row
-            rowKey="corner"
+            first
+            rowKey="visible"
             onFocused={onFocused}
-            label="Position"
-            value={LABEL.corner[prefs.signerCorner]}
-            onChange={handlers.corner}
+            label="Show interpreter"
+            value={prefs.signerVisible ? 'On' : 'Off'}
+            onChange={handlers.visible}
           />
-          <Row
-            rowKey="size"
-            onFocused={onFocused}
-            label="Size"
-            value={LABEL.size[prefs.signerSize]}
-            onChange={handlers.size}
+          {prefs.signerVisible ? (
+            <>
+              <Row
+                rowKey="corner"
+                onFocused={onFocused}
+                label="Position"
+                value={LABEL.corner[prefs.signerCorner]}
+                onChange={handlers.corner}
+              />
+              <Row
+                rowKey="size"
+                onFocused={onFocused}
+                label="Size"
+                value={LABEL.size[prefs.signerSize]}
+                onChange={handlers.size}
+              />
+              <Row
+                rowKey="opacity"
+                onFocused={onFocused}
+                label="Opacity"
+                value={LABEL.opacity[prefs.signerOpacity]}
+                onChange={handlers.opacity}
+              />
+              <Row
+                rowKey="autoDim"
+                onFocused={onFocused}
+                label="Dim when idle"
+                value={prefs.signerAutoDim ? 'On' : 'Off'}
+                onChange={handlers.autoDim}
+              />
+              <Metadata dim style={styles.rowNote}>
+                Fades the interpreter while they are not signing, on titles that carry an activity
+                track. Experimental.
+              </Metadata>
+            </>
+          ) : null}
+        </View>
+
+        <View style={styles.interpreterPreview}>
+          <LayoutDiagram
+            corner={prefs.signerCorner}
+            size={prefs.signerSize}
+            width={px(520)}
+            captions={prefs.captionMode !== 'off'}
           />
-          <Row
-            rowKey="opacity"
-            onFocused={onFocused}
-            label="Opacity"
-            value={LABEL.opacity[prefs.signerOpacity]}
-            onChange={handlers.opacity}
-          />
-          <Row
-            rowKey="autoDim"
-            onFocused={onFocused}
-            label="Dim when idle"
-            value={prefs.signerAutoDim ? 'On' : 'Off'}
-            onChange={handlers.autoDim}
-          />
-          <Metadata dim style={styles.rowNote}>
-            Fades the interpreter while they are not signing, on titles that carry an activity
-            track. Experimental.
-          </Metadata>
-        </>
-      ) : null}
+        </View>
+      </View>
 
       <SectionHeading style={styles.section}>Captions</SectionHeading>
       <Row
@@ -262,6 +283,11 @@ const styles = StyleSheet.create({
   },
   title: { marginBottom: space(3) },
   section: { marginTop: space(4), marginBottom: space(1) },
+  interpreter: { flexDirection: 'row', alignItems: 'flex-start' },
+  interpreterRows: { flex: 1 },
+  // Aligned with the first row rather than the heading, so the heading keeps
+  // its line and the picture sits beside the controls that change it.
+  interpreterPreview: { marginLeft: space(4), marginTop: space(4) + px(52) },
   row: { paddingVertical: space(1.5) },
   rowNote: { marginTop: space(0.5), marginBottom: space(1), marginHorizontal: space(2) },
   rowInner: {

@@ -1,24 +1,36 @@
 /**
  * First-run walkthrough. Shown once, skippable, re-openable from Settings.
  *
- * Each card carries an illustration of what it is describing. They are drawn
- * rather than photographed: a diagram of the screen made from the same tokens
- * as the screen itself cannot drift out of date, needs no asset pipeline, and
- * raises no question about who owns the picture.
+ * Three cards describe, and the fourth lets the viewer do: they put the
+ * interpreter where they want her and choose her size against a live diagram
+ * before the first title ever plays. That is the premise of the product —
+ * "your layout, set once" — and asking once is better than making them
+ * discover the overlay. Skip keeps the defaults; nothing is lost either way.
  *
- * NOT YET BUILT: the spec ends this on a live preview where the viewer sets
- * their default corner and size before entering the app. That is the premise,
- * and asking once is better than making them discover it — but the cards below
- * only describe. Tracked as remaining work.
+ * Each card carries an illustration of what it is describing, drawn from the
+ * same tokens as the screen itself, so a diagram cannot drift out of date,
+ * needs no asset pipeline, and raises no question about who owns the picture.
  */
-import React, { useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Focusable } from '../components/Focusable';
+import { LayoutDiagram } from '../components/LayoutDiagram';
 import { Body, Metadata, ScreenTitle } from '../components/Text';
-import { colour, safeArea, space } from '../design/tokens';
+import { colour, safeArea, signerCorners, space, type SignerSize } from '../design/tokens';
+import { cycle, type Preferences } from '../state/preferences';
+import { useOverlayValueKeys } from '../input/remote';
 import { px } from '../design/scale';
 
-type Illustration = 'place' | 'hide' | 'captions';
+type Illustration = 'place' | 'hide' | 'captions' | 'choose';
+
+const SIZES: readonly SignerSize[] = ['small', 'medium', 'large'];
+const SIZE_LABEL: Record<SignerSize, string> = { small: 'Small', medium: 'Medium', large: 'Large' };
+const CORNER_LABEL: Record<string, string> = {
+  'top-left': 'Top left',
+  'top-right': 'Top right',
+  'bottom-right': 'Bottom right',
+  'bottom-left': 'Bottom left',
+};
 
 const CARDS = [
   {
@@ -35,6 +47,11 @@ const CARDS = [
     title: 'Captions too, verbatim or simplified.',
     body: 'Simplified captions use shorter, plainer wording at a comfortable reading speed.',
     illustration: 'captions' as Illustration,
+  },
+  {
+    title: 'Where would you like her?',
+    body: 'Choose a corner and a size now. You can change them any time while watching, with Up on the remote.',
+    illustration: 'choose' as Illustration,
   },
 ] as const;
 
@@ -72,18 +89,115 @@ const CardArt = ({ kind }: { kind: Illustration }): React.JSX.Element => (
   </View>
 );
 
-export const Walkthrough = ({ onDone }: { onDone: () => void }): React.JSX.Element => {
+/** A row whose value changes with Left and Right, as in the player's overlays. */
+const ChoiceRow = ({
+  label,
+  value,
+  rowKey,
+  onFocused,
+  onChange,
+  first,
+}: {
+  label: string;
+  value: string;
+  rowKey: string;
+  onFocused: (key: string) => void;
+  onChange: (delta: number) => void;
+  /** Takes the focus when the card appears, so Left and Right work at once. */
+  first?: boolean;
+}): React.JSX.Element => (
+  <Focusable
+    style={styles.choiceRow}
+    scaleOnFocus={false}
+    claimsFocus={first}
+    accessibilityLabel={label}
+    accessibilityRole="adjustable"
+    accessibilityValue={{ text: value }}
+    accessibilityHint="Left and right to change"
+    onPress={() => onChange(1)}
+    onFocusChange={(focused) => {
+      if (focused) onFocused(rowKey);
+    }}
+  >
+    {(focused) => (
+      <View style={styles.choiceInner}>
+        <Body dim={!focused}>{label}</Body>
+        <View style={styles.valueGroup}>
+          <Metadata dim={!focused} style={styles.chevron}>
+            {focused ? '‹' : ' '}
+          </Metadata>
+          <Body>{value}</Body>
+          <Metadata dim={!focused} style={styles.chevron}>
+            {focused ? '›' : ' '}
+          </Metadata>
+        </View>
+      </View>
+    )}
+  </Focusable>
+);
+
+export const Walkthrough = ({
+  prefs,
+  onChange,
+  onDone,
+}: {
+  prefs: Preferences;
+  onChange: (patch: Partial<Preferences>) => void;
+  onDone: () => void;
+}): React.JSX.Element => {
   const [index, setIndex] = useState(0);
   const card = CARDS[index] ?? CARDS[0];
   const last = index === CARDS.length - 1;
+  const choosing = card.illustration === 'choose';
+
+  // Left and Right act on whichever row has focus — the same arrangement as
+  // the overlays and Settings, and for the same stale-closure reason.
+  const focusedKey = useRef<string | null>(null);
+  const onFocused = useCallback((key: string) => {
+    focusedKey.current = key;
+  }, []);
+  const handlers: Record<string, (delta: number) => void> = {
+    corner: (d) => onChange({ signerCorner: cycle(signerCorners, prefs.signerCorner, d) }),
+    size: (d) => onChange({ signerSize: cycle(SIZES, prefs.signerSize, d) }),
+  };
+  const live = useRef(handlers);
+  live.current = handlers;
+  useOverlayValueKeys((delta) => {
+    const key = focusedKey.current;
+    if (key) live.current[key]?.(delta);
+  }, choosing);
 
   return (
     <View style={styles.root}>
-      <CardArt kind={card.illustration} />
+      {choosing ? (
+        <LayoutDiagram corner={prefs.signerCorner} size={prefs.signerSize} width={px(800)} />
+      ) : (
+        <CardArt kind={card.illustration} />
+      )}
       <ScreenTitle style={styles.title}>{card.title}</ScreenTitle>
       <Body dim style={styles.body}>
         {card.body}
       </Body>
+
+      {choosing ? (
+        <View style={styles.choices}>
+          <ChoiceRow
+            first
+            label="Position"
+            value={CORNER_LABEL[prefs.signerCorner] ?? prefs.signerCorner}
+            rowKey="corner"
+            onFocused={onFocused}
+            onChange={handlers.corner}
+          />
+          <ChoiceRow
+            label="Size"
+            value={SIZE_LABEL[prefs.signerSize]}
+            rowKey="size"
+            onFocused={onFocused}
+            onChange={handlers.size}
+          />
+        </View>
+      ) : null}
 
       <View style={styles.dots}>
         {CARDS.map((c, i) => (
@@ -93,7 +207,8 @@ export const Walkthrough = ({ onDone }: { onDone: () => void }): React.JSX.Eleme
 
       <View style={styles.actions}>
         <Focusable
-          hasTVPreferredFocus
+          hasTVPreferredFocus={!choosing}
+          claimsFocus={!choosing}
           variant="primary"
           style={styles.primary}
           onPress={() => (last ? onDone() : setIndex(index + 1))}
@@ -155,6 +270,11 @@ const styles = StyleSheet.create({
   captionLineTwo: { bottom: px(34), width: px(250) },
   title: { maxWidth: px(1300) },
   body: { marginTop: space(2), maxWidth: px(1100) },
+  choices: { marginTop: space(3), maxWidth: px(800) },
+  choiceRow: { paddingHorizontal: space(2), paddingVertical: space(1.5), marginBottom: space(1) },
+  choiceInner: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  valueGroup: { flexDirection: 'row', alignItems: 'center' },
+  chevron: { width: px(28), textAlign: 'center' },
   dots: { flexDirection: 'row', marginTop: space(3) },
   dot: {
     width: px(14),

@@ -111,9 +111,10 @@ export const App = (): React.JSX.Element => {
     const first = titles[0];
     dispatch({
       type: 'replace',
-      route: DEV_AUTOPLAY && first
-        ? { name: 'player', titleId: first.id, resumeMs: 0 }
-        : prefs.walkthroughSeen
+      route:
+        DEV_AUTOPLAY && first
+          ? { name: 'player', titleId: first.id, resumeMs: 0 }
+          : prefs.walkthroughSeen
           ? { name: 'home' }
           : { name: 'walkthrough' },
     });
@@ -123,6 +124,8 @@ export const App = (): React.JSX.Element => {
   if (route.name === 'walkthrough') {
     return (
       <Walkthrough
+        prefs={prefs}
+        onChange={patch}
         onDone={() => {
           patch({ walkthroughSeen: true });
           dispatch({ type: 'replace', route: { name: 'home' } });
@@ -191,7 +194,9 @@ export const App = (): React.JSX.Element => {
       <Player
         manifest={manifest}
         prefs={prefs}
+        resumeMs={route.resumeMs}
         onPatch={patch}
+        onOpenSettings={() => dispatch({ type: 'push', route: { name: 'settings' } })}
         onProgress={(positionMs) =>
           setPrefs((cur) =>
             cur ? rememberPosition(cur, manifest.id, positionMs, manifest.durationMs) : cur,

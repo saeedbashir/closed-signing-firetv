@@ -48,9 +48,7 @@ export function formatClock(ms: number): string {
   const m = Math.floor(total / 60) % 60;
   const h = Math.floor(total / 3600);
   const mm = h > 0 ? String(m).padStart(2, '0') : String(m);
-  return h > 0
-    ? `${h}:${mm}:${String(s).padStart(2, '0')}`
-    : `${mm}:${String(s).padStart(2, '0')}`;
+  return h > 0 ? `${h}:${mm}:${String(s).padStart(2, '0')}` : `${mm}:${String(s).padStart(2, '0')}`;
 }
 
 /** Fraction played, clamped, and safe when the duration is unknown. */
@@ -86,6 +84,15 @@ export const TransportControls = ({
     <View
       style={[styles.root, reserveRight > 0 ? { paddingRight: reserveRight } : null]}
       accessibilityRole="progressbar"
+      accessibilityLabel={title}
+      // A progress bar that declares its role and withholds its value announces
+      // "progress bar" and nothing else — worse than saying nothing.
+      accessibilityValue={{
+        min: 0,
+        max: Math.max(0, Math.round(durationMs)),
+        now: Math.round(positionMs),
+        text: `${formatClock(positionMs)} of ${formatClock(durationMs)}${paused ? ', paused' : ''}`,
+      }}
     >
       <View style={styles.headerRow}>
         <Body style={styles.title} numberOfLines={1}>

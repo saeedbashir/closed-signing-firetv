@@ -9,10 +9,13 @@ cdk.out/
 *.tsbuildinfo
 coverage/
 
-# Media never goes in git except the small bundled titles
+# Media never goes in git except the small bundled title the app ships with.
+# The exception used to point at catalogue/bundled/, a directory that never
+# existed, so the two files bundledMedia.ts require()s were silently ignored and
+# a fresh clone could not bundle. Found 2026-09-22.
 catalogue/work/
 catalogue/out/
 *.mp4
 *.webm
 *.mov
-!catalogue/bundled/**/*.mp4
+!app/assets/*.mp4

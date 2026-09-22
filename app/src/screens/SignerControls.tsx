@@ -75,7 +75,10 @@ const ValueRow = ({
     style={styles.row}
     scaleOnFocus={false}
     hasTVPreferredFocus={first}
-    accessibilityLabel={`${label}, ${value}`}
+    accessibilityLabel={label}
+    accessibilityRole="adjustable"
+    accessibilityValue={{ text: value }}
+    accessibilityHint="Left and right to change"
     onPress={() => onChange(1)}
     onFocusChange={(focused) => {
       if (focused) onFocused?.(rowKey);

@@ -85,15 +85,21 @@ of a licence we expect would probably be granted if asked.
 
 | id | Title | Publisher | Production credit | Licence basis | Acquisition route | Captions | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| _pending download_ | First Minister's Questions (BSL) and related proceedings | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | Scottish Parliament Copyright Licence, aligned with OGL v3.0 | Publisher's own Download tab on scottishparliament.tv, emailed 24-hour link | Official Report published separately; WebVTT not yet confirmed | Verified side-panel layout: chamber picture and interpreter sit side by side, nothing occluded, no fill needed |
+| `sp-fmqs-bsl-2026-09-17` | First Minister's Questions (Party Leaders), BSL — 120 s excerpt | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | Scottish Parliament Copyright Licence, aligned with OGL v3.0 | Publisher's own stream, from the event page's Share tab | None published with the stream (verified: no text track in the HLS or DASH manifests) | Side panel; hand-measured crop `{1080,108,840,760}`; `method: manual-crop` |
+| `sp-fmqs-backbench-bsl-2026-09-15` | First Minister's Questions (Backbench Members), BSL — 120 s excerpt | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | as above | as above | None | Same house crop |
+| `sp-ministerial-standards-bsl-2026-09-02` | Ministerial Statement: Raising Standards and Delivering Excellence for Every Child, BSL — 120 s excerpt | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | as above | as above | None | Same house crop |
+| `sp-debate-programme-government-bsl-2026-09-01` | Scottish Government Debate: Programme for Government 2026-31, BSL — 120 s excerpt | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | as above | as above | None | Same house crop |
+| `demo-corner-inset` | Demonstration — interpreter in a corner inset (synthetic) | Built for this project | `harness/make_corpus.py` over a test pattern | Public domain: the person is Dorothea Lange's *Migrant Mother* (FSA, 1936, US federal work); the pattern is generated | Not acquired; generated | Hand-written verbatim and simplified tracks (no `generatedBy`) | Corner inset; `method: detected-crop`, confidence 0.7045 |
 
 ### Obligations we carry for Scottish Parliament material
 
 Three, from the licence at https://www.parliament.scot/about/copyright:
 
 1. **Attribution, verbatim:** `Contains information licensed under the Scottish
-   Parliament Copyright Licence`, with a link where the surface allows one. Defined
-   once in `app/src/stm/attribution.ts`; never retyped.
+   Parliament Copyright Licence`, with a link where the surface allows one. It lives
+   in each title's manifest as `source.attribution` and is displayed from there on the
+   title page and in Settings — one string, written by the pipeline from
+   `catalogue/sources.yaml`, never retyped in the app.
 2. **No implication of official status or SPCB endorsement.** The app presents these
    as source material with a credit, never as a Parliament product.
 3. **Never for party-political purposes or advertising endorsement.**

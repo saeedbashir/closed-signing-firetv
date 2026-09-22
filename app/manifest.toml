@@ -1,9 +1,11 @@
 schema-version = 1
 
 [package]
-title = "Basic UI React Native Application for project closedsigning"
+title = "Closed Signing"
 version = "0.1.0"
 id = "com.closedsigning.player"
+# The launcher tile. Drawn by tools/icon.swift from the design tokens; regenerate, do not edit.
+icon = "@image/ClosedSigning.png"
 
 [os.version]
 min = "1.2"

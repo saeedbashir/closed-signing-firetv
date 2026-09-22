@@ -41,6 +41,7 @@ import { bundledMain, bundledSigner } from '../bundledMedia';
 import { activeCue } from '../stm/webvtt';
 import { px } from '../design/scale';
 import { hasFinished, playbackDuration } from '../playback';
+import { signerTimeFor } from '../playback/sync';
 import { IdleDetector, activityAt } from '../playback/idle';
 import { prefersReducedMotion } from '../design/motion';
 
@@ -53,13 +54,32 @@ const REPLAY_GRACE_MS = 1500;
 type Surface = { player: VideoPlayer | null; failed: boolean };
 
 /**
+ * Seek once the player knows enough to seek, then give up rather than never start.
+ *
+ * A `currentTime` set straight after `load()` is set against a player that has
+ * not read its metadata yet, and is lost. Resume — "Play" on the title page
+ * offering to pick up where the viewer left — went through exactly this path
+ * and always started from the beginning, which nobody noticed because the
+ * position was never persisted either (audit, 2026-09-22).
+ */
+async function seekOnceSeekable(p: VideoPlayer, seconds: number): Promise<void> {
+  for (let i = 0; i < 40 && p.readyState < 1; i += 1) {
+    await new Promise<void>((r) => setTimeout(() => r(), 100));
+  }
+  if (p.readyState >= 1) p.currentTime = seconds;
+}
+
+/**
  * One media surface. Kept as a hook so the main video and the signer layer are
  * literally the same code path — if the second one behaves differently, that
  * is the platform telling us something, not our own asymmetry.
  */
-function useSurface(src: string | null, autoplay: boolean) {
+function useSurface(src: string | null, autoplay: boolean, startAtS = 0) {
   const ref = useRef<Surface>({ player: null, failed: false });
   const [, force] = useState(0);
+  // Read once at mount. A resume position is a property of how this playback
+  // began, not something that should tear the surface down if it changed.
+  const startAt = useRef(startAtS);
 
   useEffect(() => {
     let cancelled = false;
@@ -75,6 +95,8 @@ function useSurface(src: string | null, autoplay: boolean) {
         p.src = src;
         p.pause();
         p.load();
+        if (startAt.current > 0) await seekOnceSeekable(p, startAt.current);
+        if (cancelled) return;
         ref.current = { player: p, failed: false };
         if (autoplay) await p.play();
         force((n) => n + 1);
@@ -103,8 +125,8 @@ export const Player = ({
   onPatch,
   onExit,
   onProgress,
-  onOpenCaptionMenu,
   onOpenSettings,
+  resumeMs = 0,
   sizeAndOpacityAvailable = true,
 }: {
   manifest: TitleManifest;
@@ -113,10 +135,10 @@ export const Player = ({
   onExit: (positionMs: number) => void;
   /** Called periodically so a position survives the app being closed under us. */
   onProgress?: (positionMs: number) => void;
-  /** Not yet built. Wired so the key works the day the screen lands. */
-  onOpenCaptionMenu?: () => void;
-  /** Not yet built. Wired so the key works the day the screen lands. */
+  /** The Menu key. Settings is a screen of its own, so the shell owns the navigation. */
   onOpenSettings?: () => void;
+  /** Where to start, from the title page's Resume. 0 starts from the beginning. */
+  resumeMs?: number;
   sizeAndOpacityAvailable?: boolean;
 }): React.JSX.Element => {
   const [controlsOpen, setControlsOpen] = useState(false);
@@ -133,8 +155,14 @@ export const Player = ({
     ? bundledSigner(manifest.id, signTrack.language) ?? signTrack.track.url
     : null;
 
-  const mainRef = useSurface(mainSrc, true);
-  const signerRef = useSurface(prefs.signerVisible ? signerSrc : null, true);
+  // The signer runs `syncOffsetMs` behind the programme, and every seek keeps it there.
+  const syncOffsetMs = signTrack?.track.syncOffsetMs ?? 0;
+  const mainRef = useSurface(mainSrc, true, resumeMs / 1000);
+  const signerRef = useSurface(
+    prefs.signerVisible ? signerSrc : null,
+    true,
+    signerTimeFor(resumeMs / 1000, syncOffsetMs),
+  );
   const main = mainRef.current;
   const signer = signerRef.current;
 
@@ -223,6 +251,14 @@ export const Player = ({
   const durationMs = manifest.durationMs;
 
   /**
+   * Has the first frame arrived? Between Play and the picture there were
+   * several seconds of plain black on a remote title — indistinguishable from
+   * a failure until it either played or the notice appeared. One word on
+   * screen says which it is.
+   */
+  const [ready, setReady] = useState(false);
+
+  /**
    * Auto-dim: fade the interpreter while they are idle, if the viewer asked.
    *
    * The manifest's activity track says how much they moved each second; the
@@ -244,6 +280,7 @@ export const Player = ({
     const id = setInterval(() => {
       const p = mainRef.current.player;
       if (!p) return;
+      if (p.readyState >= 2) setReady(true);
       if (Date.now() - replayedAt.current < REPLAY_GRACE_MS) return;
       const duration = playbackDuration(p.duration, durationMs);
       const finished = hasFinished({
@@ -408,26 +445,28 @@ export const Player = ({
   /** Start again from the beginning, both layers together. */
   const replay = useCallback(() => {
     replayedAt.current = Date.now();
+    const sig = signerRef.current.player;
+    if (sig) sig.currentTime = signerTimeFor(0, syncOffsetMs);
     bothSurfaces((p) => {
-      p.currentTime = 0;
+      if (p !== sig) p.currentTime = 0;
       p.play().catch(() => undefined);
     });
     detector?.reset();
     setDimmed(false);
     setEnded(false);
     setChromeVisible(true);
-  }, [bothSurfaces, detector]);
+  }, [bothSurfaces, detector, signerRef, syncOffsetMs]);
 
   const seekBy = useCallback(
     (seconds: number) => {
       const anchor = mainRef.current.player;
       if (!anchor) return;
       const target = Math.max(0, anchor.currentTime + seconds);
-      bothSurfaces((p) => {
-        p.currentTime = target;
-      });
+      anchor.currentTime = target;
+      const sig = signerRef.current.player;
+      if (sig) sig.currentTime = signerTimeFor(target, syncOffsetMs);
     },
-    [bothSurfaces, mainRef],
+    [mainRef, signerRef, syncOffsetMs],
   );
 
   const onRemote = useCallback(
@@ -468,7 +507,6 @@ export const Player = ({
           break;
         case 'captionMenu':
           setCaptionMenuOpen(true);
-          onOpenCaptionMenu?.();
           break;
         case 'toggleChrome':
           setChromeVisible((v) => !v);
@@ -481,7 +519,7 @@ export const Player = ({
           break;
       }
     },
-    [bothSurfaces, ended, leave, mainRef, onOpenCaptionMenu, onOpenSettings, replay, seekBy],
+    [bothSurfaces, ended, leave, mainRef, onOpenSettings, replay, seekBy],
   );
 
   // Only while no overlay is open. Two live `useTVEventHandler` subscriptions
@@ -560,6 +598,12 @@ export const Player = ({
           or will not decode, and without this the viewer gets darkness and no
           reason for it. That is the likeliest failure for a title opened by
           address, where nobody has checked the media beforehand. */}
+      {!ready && !main.failed ? (
+        <View style={styles.notice} accessibilityLiveRegion="polite">
+          <Metadata>Loading…</Metadata>
+        </View>
+      ) : null}
+
       {main.failed ? (
         <View style={styles.notice}>
           <Metadata>

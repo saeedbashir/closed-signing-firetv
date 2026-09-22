@@ -1,9 +1,10 @@
 /**
  * Home: a vertically scrolling page of horizontal rails.
  *
- * Rails are Continue watching (hidden when empty), All titles, and By source
- * grouped by publisher as the catalogue settles. Nothing clever — the browse
- * screen exists to reach the player, which is the product.
+ * Two rails: Continue watching (hidden when empty) and All titles. Nothing
+ * clever — the browse screen exists to reach the player, which is the product.
+ * A By-source rail was planned for when the catalogue had more than one
+ * publisher; it does not yet.
  */
 import React, { useMemo } from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
