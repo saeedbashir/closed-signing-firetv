@@ -94,6 +94,7 @@ export const Walkthrough = ({ onDone }: { onDone: () => void }): React.JSX.Eleme
       <View style={styles.actions}>
         <Focusable
           hasTVPreferredFocus
+          variant="primary"
           style={styles.primary}
           onPress={() => (last ? onDone() : setIndex(index + 1))}
         >
@@ -164,11 +165,7 @@ const styles = StyleSheet.create({
   },
   dotActive: { backgroundColor: colour.accent },
   actions: { flexDirection: 'row', marginTop: space(4) },
-  primary: {
-    backgroundColor: colour.accent,
-    paddingHorizontal: space(5),
-    paddingVertical: space(2),
-  },
+  primary: { paddingHorizontal: space(5), paddingVertical: space(2) },
   primaryLabel: { color: colour.onAccent },
   secondary: { marginLeft: space(2), paddingHorizontal: space(4), paddingVertical: space(2) },
   hint: { marginTop: space(3) },

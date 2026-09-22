@@ -76,6 +76,7 @@ export const TitleDetail = ({
       <View style={styles.actions}>
         <Focusable
           hasTVPreferredFocus
+          variant="primary"
           style={styles.primary}
           onPress={() => onPlay(resumeMs)}
         >
@@ -117,11 +118,7 @@ const styles = StyleSheet.create({
   badges: { marginTop: space(2) },
   para: { marginTop: space(2), maxWidth: px(1200) },
   actions: { flexDirection: 'row', marginTop: space(4) },
-  primary: {
-    backgroundColor: colour.accent,
-    paddingHorizontal: space(5),
-    paddingVertical: space(2),
-  },
+  primary: { paddingHorizontal: space(5), paddingVertical: space(2) },
   primaryLabel: { color: colour.onAccent },
   secondary: {
     marginLeft: space(2),

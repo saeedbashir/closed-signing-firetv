@@ -31,6 +31,11 @@ export type RemoteAction =
  * fault and sends you looking in the wrong place. Where the field is absent we
  * treat the event as a single press, because one action is the safe failure and
  * none is not.
+ *
+ * This holds for every key the platform actually delivers. Traced on screen on
+ * 2026-09-22 — `right/0 right/1`, `play/0 play/1`, `forward/0 forward/1` — so
+ * no key arrives as a release on its own, whatever `inputd`'s own log suggests
+ * about which halves it forwards to which client.
  */
 const isPress = (evt: HWEvent): boolean =>
   evt.eventKeyAction === undefined || evt.eventKeyAction === 0;
@@ -57,8 +62,28 @@ const isPress = (evt: HWEvent): boolean =>
 const ACTIONS: Readonly<Record<string, RemoteAction>> = {
   playpause: 'playPause',
   pause: 'playPause',
+  play: 'playPause',
   left: 'seekBack',
   right: 'seekForward',
+  // The dedicated transport keys, which a Fire TV remote has and the virtual
+  // device's on-screen remote draws. They did nothing at all until now: the bar
+  // told the viewer to skip with Left and Right while the two buttons plainly
+  // meant for it were ignored, and Play/Pause — the one control every viewer
+  // reaches for first — did nothing either.
+  //
+  // The names are the whole bug. Tracing the events on screen on 2026-09-22
+  // showed Play/Pause arriving as `play` and fast forward as `forward`, and
+  // neither was in this table: `playpause` was, and it never fires. Every
+  // spelling the SDK uses is accepted now, because the type file's union says
+  // `skip_backward` where the prose above it says `rewind`, and there is no
+  // way to tell from the documentation which one a given remote will send.
+  // Rewind is the one pair member left unproven: macOS takes F3 for Mission
+  // Control before the virtual device ever sees it.
+  rewind: 'seekBack',
+  skip_backward: 'seekBack',
+  forward: 'seekForward',
+  fastforward: 'seekForward',
+  skip_forward: 'seekForward',
   up: 'signerControls',
   down: 'captionMenu',
   select: 'toggleChrome',

@@ -15,10 +15,11 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { KeplerVideoView, VideoPlayer } from '@amazon-devices/react-native-w3cmedia';
-import { Body, Metadata } from '../components/Text';
+import { Focusable } from '../components/Focusable';
+import { Body, Metadata, SectionHeading } from '../components/Text';
 import { TRANSPORT_HEIGHT, TransportControls } from '../components/TransportControls';
 import { SCREEN, captionPlacement, signerBox } from '../design/geometry';
-import { captionSize, colour, motion, safeArea, signerOpacity, space } from '../design/tokens';
+import { captionSize, colour, layout, motion, safeArea, signerOpacity, space } from '../design/tokens';
 import { SignerControls } from './SignerControls';
 import { CaptionMenu } from './CaptionMenu';
 import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
@@ -30,9 +31,13 @@ import { isUnreviewed, trackForMode, useCaptions } from '../stm/useCaptions';
 import { bundledMain, bundledSigner } from '../bundledMedia';
 import { activeCue } from '../stm/webvtt';
 import { px } from '../design/scale';
+import { hasFinished, playbackDuration } from '../playback';
 
 /** Set true to trace both surfaces in the device log, as Experiment 2 did. */
 const LOG_SURFACES = false;
+
+/** How long after Watch again to stop asking whether the programme has ended. */
+const REPLAY_GRACE_MS = 1500;
 
 type Surface = { player: VideoPlayer | null; failed: boolean };
 
@@ -183,6 +188,45 @@ export const Player = ({
    * hidden bar is a cost paid for nothing, on a device with a budget.
    */
   const [positionMs, setPositionMs] = useState(0);
+
+  /**
+   * Has the programme finished?
+   *
+   * Polled rather than taken from an `ended` event, because both surfaces have
+   * to agree and the main one is the authority. Without this the viewer reached
+   * the end of a title and got a frozen frame with no way to replay and no way
+   * out except the remote — which is exactly the dead end an on-screen Exit was
+   * added to avoid.
+   *
+   * The flag alone was not enough. Measured on device 2026-09-22: the transport
+   * bar read 2:00 of 2:00 with the progress bar full and `ended` stayed false,
+   * so the panel never appeared. The position is therefore the primary signal
+   * and the flag corroborates it — whichever says the programme is over wins.
+   *
+   * The grace window is there because `currentTime = 0` is not observed
+   * instantly. Without it the first poll after Watch again still read the old
+   * position and put the panel straight back over the restarted video.
+   */
+  const [ended, setEnded] = useState(false);
+  const replayedAt = useRef(0);
+  const durationMs = manifest.durationMs;
+  useEffect(() => {
+    const id = setInterval(() => {
+      const p = mainRef.current.player;
+      if (!p) return;
+      if (Date.now() - replayedAt.current < REPLAY_GRACE_MS) return;
+      const duration = playbackDuration(p.duration, durationMs);
+      const finished = hasFinished({ currentTime: p.currentTime, duration, endedFlag: p.ended });
+      setEnded((was) => {
+        if (finished !== was) {
+          diag(`ended ${was} to ${finished} at ${p.currentTime.toFixed(2)}/${duration} flag=${p.ended}`);
+        }
+        return finished;
+      });
+    }, 500);
+    return () => clearInterval(id);
+  }, [durationMs, mainRef]);
+
   useEffect(() => {
     diag(`chrome visible=${chromeVisible} overlay=${anyOverlayOpen}`);
   }, [chromeVisible, anyOverlayOpen]);
@@ -283,6 +327,17 @@ export const Player = ({
     [mainRef, signerRef],
   );
 
+  /** Start again from the beginning, both layers together. */
+  const replay = useCallback(() => {
+    replayedAt.current = Date.now();
+    bothSurfaces((p) => {
+      p.currentTime = 0;
+      p.play().catch(() => undefined);
+    });
+    setEnded(false);
+    setChromeVisible(true);
+  }, [bothSurfaces]);
+
   const seekBy = useCallback(
     (seconds: number) => {
       const anchor = mainRef.current.player;
@@ -298,6 +353,16 @@ export const Player = ({
   const onRemote = useCallback(
     (action: RemoteAction) => {
       diag(`remote action=${action}`);
+      // At the end of the programme the panel owns the screen. The subscription
+      // stays live rather than being switched off, because switching it off
+      // would also drop Play — which at the end means play it again. Left and
+      // Right are deliberately not seeks here: they move between the panel's
+      // two buttons, which the focus system does on its own.
+      if (ended) {
+        if (action === 'playPause') replay();
+        else if (action === 'back') leave();
+        return;
+      }
       switch (action) {
         case 'playPause': {
           const paused = mainRef.current.player?.paused ?? true;
@@ -336,7 +401,7 @@ export const Player = ({
           break;
       }
     },
-    [bothSurfaces, leave, mainRef, onOpenCaptionMenu, onOpenSettings, seekBy],
+    [bothSurfaces, ended, leave, mainRef, onOpenCaptionMenu, onOpenSettings, replay, seekBy],
   );
 
   // Only while no overlay is open. Two live `useTVEventHandler` subscriptions
@@ -440,7 +505,35 @@ export const Player = ({
         </View>
       ) : null}
 
-      {chromeVisible && !anyOverlayOpen ? (
+      {/* The end of the programme is a state, not an absence. */}
+      {ended && !anyOverlayOpen ? (
+        <View style={styles.endPanel}>
+          <SectionHeading style={styles.endHeading}>That is the end of this programme</SectionHeading>
+          <View style={styles.endActions}>
+            <Focusable
+              variant="primary"
+              style={styles.endPrimary}
+              scaleOnFocus={false}
+              hasTVPreferredFocus
+              claimsFocus={ended}
+              accessibilityLabel="Play this programme again from the start"
+              onPress={replay}
+            >
+              <Body style={styles.endPrimaryLabel}>Watch again</Body>
+            </Focusable>
+            <Focusable
+              style={styles.endSecondary}
+              scaleOnFocus={false}
+              accessibilityLabel="Go back to the title page"
+              onPress={leave}
+            >
+              <Body>Back to the title</Body>
+            </Focusable>
+          </View>
+        </View>
+      ) : null}
+
+      {chromeVisible && !ended && !anyOverlayOpen ? (
         <TransportControls
           title={manifest.title}
           positionMs={positionMs}
@@ -479,6 +572,27 @@ export const Player = ({
 
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: '#000000' },
+  endPanel: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    // Dim rather than black: the last frame staying faintly visible says the
+    // programme ended, where a black screen says something went wrong.
+    backgroundColor: 'rgba(0, 0, 0, 0.72)',
+  },
+  endHeading: { marginBottom: space(3) },
+  endActions: { flexDirection: 'row' },
+  endPrimary: {
+    paddingHorizontal: space(5),
+    paddingVertical: space(2),
+    borderRadius: layout.overlayRadius,
+  },
+  endPrimaryLabel: { color: colour.onAccent },
+  endSecondary: { marginLeft: space(2), paddingHorizontal: space(4), paddingVertical: space(2) },
   signer: { position: 'absolute', borderRadius: px(8), overflow: 'hidden' },
   notice: {
     position: 'absolute',

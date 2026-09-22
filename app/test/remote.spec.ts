@@ -15,8 +15,16 @@ const release = (eventType: string): HWEvent => ({ eventType, eventKeyAction: 1 
 describe('the spec mapping', () => {
   it.each<[string, RemoteAction]>([
     ['playpause', 'playPause'],
+    ['play', 'playPause'],
+    ['pause', 'playPause'],
     ['left', 'seekBack'],
     ['right', 'seekForward'],
+    // The dedicated transport keys, under both names the SDK uses for them.
+    ['rewind', 'seekBack'],
+    ['skip_backward', 'seekBack'],
+    ['forward', 'seekForward'],
+    ['fastforward', 'seekForward'],
+    ['skip_forward', 'seekForward'],
     ['up', 'signerControls'],
     ['down', 'captionMenu'],
     ['select', 'toggleChrome'],
@@ -32,7 +40,7 @@ describe('the spec mapping', () => {
 });
 
 describe('press and release', () => {
-  it.each(['playpause', 'left', 'right', 'up', 'down', 'select', 'menu', 'back'])(
+  it.each(['playpause', 'play', 'left', 'right', 'forward', 'up', 'down', 'select', 'menu', 'back'])(
     'acts on the press of %s but not the release',
     (key) => {
       expect(remoteAction(press(key))).not.toBeNull();
@@ -47,6 +55,19 @@ describe('press and release', () => {
 
   it('ignores an unrecognised key action rather than guessing', () => {
     expect(remoteAction({ eventType: 'select', eventKeyAction: -1 })).toBeNull();
+  });
+});
+
+describe('the names this platform actually sends', () => {
+  // Traced on screen on 2026-09-22, because the names are the whole bug: the
+  // table had `playpause` and the device sends `play`, so the one control every
+  // viewer reaches for first did nothing at all and nothing failed anywhere.
+  it.each<[string, RemoteAction]>([
+    ['right', 'seekForward'],
+    ['play', 'playPause'],
+    ['forward', 'seekForward'],
+  ])('handles %s, seen coming from the device', (key, action) => {
+    expect(remoteAction(press(key))).toBe(action);
   });
 });
 

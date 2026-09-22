@@ -107,9 +107,11 @@ export const TransportControls = ({
 
       <View style={styles.footerRow}>
         {/* Naming the keys is what makes them discoverable. Nothing else on
-            screen tells a viewer that Up and Down do anything at all. */}
-        <Metadata style={styles.hints}>
-          Up: interpreter · Down: captions · Left and Right: skip 10 seconds
+            screen tells a viewer that these keys do anything at all — and
+            Play/Pause was missing from this list while being the one control
+            every viewer looks for first. Ordered by how often it is wanted. */}
+        <Metadata style={styles.hints} numberOfLines={1}>
+          Play/Pause · Left and Right: skip 10 seconds · Up: interpreter · Down: captions
         </Metadata>
         <Focusable
           style={styles.exit}

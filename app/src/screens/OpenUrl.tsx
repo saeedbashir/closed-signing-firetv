@@ -121,7 +121,12 @@ export const OpenUrl = ({
       />
 
       <View style={styles.actions}>
-        <Focusable style={styles.primary} onPress={() => void open(url)} scaleOnFocus={false}>
+        <Focusable
+          variant="primary"
+          style={styles.primary}
+          onPress={() => void open(url)}
+          scaleOnFocus={false}
+        >
           <Body style={styles.primaryLabel}>{busy ? 'Opening…' : 'Open'}</Body>
         </Focusable>
         <Focusable style={styles.secondary} onPress={onBack} scaleOnFocus={false}>
@@ -162,7 +167,6 @@ const styles = StyleSheet.create({
   },
   actions: { flexDirection: 'row', marginTop: space(3) },
   primary: {
-    backgroundColor: colour.accent,
     paddingHorizontal: space(5),
     paddingVertical: space(2),
     borderRadius: layout.overlayRadius,

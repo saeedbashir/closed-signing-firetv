@@ -27,6 +27,10 @@ export const colour = {
   textPrimary: '#F2F5F7',
   textSecondary: '#A3B1BF',
   accent: '#FFB020',
+  // A filled button cannot show an amber ring on an amber fill, so focus on one
+  // is a brighter fill plus a dark ring. 1.31x the luminance of `accent`, which
+  // is a plain step up in brightness without becoming a different colour.
+  accentFocused: '#FFD27A',
   accentPressed: '#E09400',
   onAccent: '#0B0F14',
   stateGood: '#3DDC97',

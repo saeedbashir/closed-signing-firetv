@@ -16,6 +16,11 @@
     {
       "files": ["package.json", "kepler-compatibility.json"],
       "parser": "jsonc-eslint-parser"
+    },
+    {
+      "files": ["test/**/*.ts"],
+      "env": { "jest": true },
+      "globals": { "globalThis": "readonly", "AbortSignal": "readonly" }
     }
   ],
   "ignorePatterns": [
