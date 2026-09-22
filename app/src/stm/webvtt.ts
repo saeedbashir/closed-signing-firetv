@@ -111,7 +111,7 @@ export function activeCue(cues: readonly Cue[], timeMs: number): Cue | null {
   let hi = cues.length - 1;
   let best: Cue | null = null;
   while (lo <= hi) {
-    const mid = (lo + hi) >> 1;
+    const mid = Math.floor((lo + hi) / 2);
     const cue = cues[mid];
     if (cue.startMs <= timeMs) {
       if (timeMs < cue.endMs) best = cue;

@@ -7,6 +7,7 @@
  */
 import React, { useCallback, useMemo, useReducer, useState } from 'react';
 import { diag } from './diagnostics';
+import { Settings } from './screens/Settings';
 import { StyleSheet, View } from 'react-native';
 import { ErrorState } from './components/ErrorState';
 import { colour } from './design/tokens';
@@ -68,6 +69,18 @@ export const App = (): React.JSX.Element => {
           patch({ walkthroughSeen: true });
           dispatch({ type: 'replace', route: { name: 'home' } });
         }}
+      />
+    );
+  }
+
+  if (route.name === 'settings') {
+    return (
+      <Settings
+        prefs={prefs}
+        manifests={Object.values(BUNDLED_MANIFESTS)}
+        onChange={patch}
+        onReplayWalkthrough={() => dispatch({ type: 'replace', route: { name: 'walkthrough' } })}
+        onBack={() => dispatch({ type: 'back' })}
       />
     );
   }

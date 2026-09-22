@@ -20,6 +20,7 @@ import { TRANSPORT_HEIGHT, TransportControls } from '../components/TransportCont
 import { captionPlacement, signerBox } from '../design/geometry';
 import { captionSize, colour, motion, signerOpacity, space } from '../design/tokens';
 import { SignerControls } from './SignerControls';
+import { CaptionMenu } from './CaptionMenu';
 import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
 import { diag } from '../diagnostics';
 import type { Preferences } from '../state/preferences';
@@ -97,6 +98,8 @@ export const Player = ({
   sizeAndOpacityAvailable?: boolean;
 }): React.JSX.Element => {
   const [controlsOpen, setControlsOpen] = useState(false);
+  const [captionMenuOpen, setCaptionMenuOpen] = useState(false);
+  const anyOverlayOpen = controlsOpen || captionMenuOpen;
   const [chromeVisible, setChromeVisible] = useState(false);
 
   const signTrack = useMemo(() => humanSignTracks(manifest)[0] ?? null, [manifest]);
@@ -171,8 +174,8 @@ export const Player = ({
    */
   const [positionMs, setPositionMs] = useState(0);
   useEffect(() => {
-    diag(`chrome visible=${chromeVisible} controlsOpen=${controlsOpen}`);
-  }, [chromeVisible, controlsOpen]);
+    diag(`chrome visible=${chromeVisible} overlay=${anyOverlayOpen}`);
+  }, [chromeVisible, anyOverlayOpen]);
 
   useEffect(() => {
     if (!chromeVisible) return;
@@ -184,10 +187,10 @@ export const Player = ({
 
   // Chrome appears on demand and leaves on its own.
   useEffect(() => {
-    if (!chromeVisible || controlsOpen) return;
+    if (!chromeVisible || anyOverlayOpen) return;
     const t = setTimeout(() => setChromeVisible(false), motion.chromeIdleMs);
     return () => clearTimeout(t);
-  }, [chromeVisible, controlsOpen]);
+  }, [chromeVisible, anyOverlayOpen]);
 
   const position = useCallback(() => mainRef.current.player?.currentTime ?? 0, [mainRef]);
 
@@ -294,6 +297,7 @@ export const Player = ({
           setControlsOpen(true);
           break;
         case 'captionMenu':
+          setCaptionMenuOpen(true);
           onOpenCaptionMenu?.();
           break;
         case 'toggleChrome':
@@ -310,8 +314,8 @@ export const Player = ({
     [bothSurfaces, leave, mainRef, onOpenCaptionMenu, onOpenSettings, seekBy],
   );
 
-  // While the overlay is open it owns the remote: Up and Down move its focus.
-  useRemote(onRemote, !controlsOpen);
+  // While an overlay is open it owns the remote: Up and Down move its focus.
+  useRemote(onRemote, !anyOverlayOpen);
 
   return (
     <View style={styles.root}>
@@ -367,12 +371,21 @@ export const Player = ({
         </View>
       ) : null}
 
-      {chromeVisible && !controlsOpen ? (
+      {chromeVisible && !anyOverlayOpen ? (
         <TransportControls
           title={manifest.title}
           positionMs={positionMs}
           durationMs={manifest.durationMs}
           paused={main.player?.paused ?? true}
+        />
+      ) : null}
+
+      {captionMenuOpen ? (
+        <CaptionMenu
+          prefs={prefs}
+          captions={manifest.captions}
+          onChange={onPatch}
+          onDismiss={() => setCaptionMenuOpen(false)}
         />
       ) : null}
 
