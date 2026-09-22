@@ -72,14 +72,15 @@ Both remain true. What was wrong was concluding that nothing could observe the a
 
 ## Workaround
 
-Capture the host window, as above. Within the device itself, none. Verification falls back to a human watching the emulator
-window and reporting what they see, which does not scale, cannot run in CI, and cannot
-be done by whoever is not at the machine.
+Capture the host window, as above. Nothing from inside the device, and nothing from the
+Vega CLI.
 
-Partial mitigations used here: assert as much as possible in Jest against the pure
-functions (the WebVTT parser was validated against 10 real caption files and 2,949
-cues without a device), and confirm the package installs, launches and stays running.
-Neither tells you whether anything was drawn.
+The remaining limitation is that host-window capture needs a windowing system and a
+granted permission, so it works on a developer's machine and not in headless CI. Jest
+against the pure functions still carries most of the load — the WebVTT parser was
+validated against 10 real caption files and 2,949 cues with no device at all — but it
+cannot tell you whether anything was drawn, which is exactly where every bug in this
+session lived.
 
 ## Suggestion
 
