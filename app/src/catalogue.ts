@@ -34,6 +34,26 @@ export const BUNDLED_CATALOGUE: Catalogue = {
       "signLanguages": [
         "bfi"
       ]
+    },
+    {
+      "id": "sp-fmqs-backbench-bsl-2026-09-15",
+      "title": "First Minister's Questions (Backbench Members), British Sign Language",
+      "durationMs": 120048,
+      "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15/poster.jpg",
+      "manifestUrl": "bundled",
+      "signLanguages": [
+        "bfi"
+      ]
+    },
+    {
+      "id": "sp-ministerial-standards-bsl-2026-09-02",
+      "title": "Ministerial Statement: Raising Standards and Delivering Excellence for Every Child, British Sign Language",
+      "durationMs": 120009,
+      "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-ministerial-standards-bsl-2026-09-02/poster.jpg",
+      "manifestUrl": "bundled",
+      "signLanguages": [
+        "bfi"
+      ]
     }
   ]
 };
@@ -143,6 +163,106 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
         },
         "track": {
           "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17/signer-bfi.mp4",
+          "width": 596,
+          "height": 540,
+          "codec": "h264",
+          "syncOffsetMs": 0
+        }
+      }
+    ],
+    "captions": []
+  },
+  "sp-fmqs-backbench-bsl-2026-09-15": {
+    "stmVersion": "0.1",
+    "id": "sp-fmqs-backbench-bsl-2026-09-15",
+    "title": "First Minister's Questions (Backbench Members), British Sign Language",
+    "durationMs": 120048,
+    "source": {
+      "publisher": "The Scottish Parliament",
+      "url": "https://www.scottishparliament.tv/meeting/first-ministers-questions-backbench-members-bsl-september-15-2026",
+      "licence": "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)",
+      "attribution": "Contains information licensed under the Scottish Parliament Copyright Licence.",
+      "productionCredit": "verified: in-house, Scottish Parliament TV",
+      "acquisitionRoute": "publisher's own stream, listed on the event page's Share tab"
+    },
+    "video": {
+      "main": {
+        "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15/main.mp4",
+        "width": 1080,
+        "height": 1080,
+        "codec": "h264"
+      },
+      "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15/poster.jpg"
+    },
+    "signLanguage": [
+      {
+        "language": "bfi",
+        "languageLabel": "British Sign Language",
+        "provenance": "human-interpreter",
+        "extraction": {
+          "method": "manual-crop",
+          "sourceLayout": "side-panel",
+          "confidence": 1,
+          "cropRect": {
+            "x": 1080,
+            "y": 108,
+            "w": 840,
+            "h": 760
+          },
+          "fillMethod": "none"
+        },
+        "track": {
+          "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15/signer-bfi.mp4",
+          "width": 596,
+          "height": 540,
+          "codec": "h264",
+          "syncOffsetMs": 0
+        }
+      }
+    ],
+    "captions": []
+  },
+  "sp-ministerial-standards-bsl-2026-09-02": {
+    "stmVersion": "0.1",
+    "id": "sp-ministerial-standards-bsl-2026-09-02",
+    "title": "Ministerial Statement: Raising Standards and Delivering Excellence for Every Child, British Sign Language",
+    "durationMs": 120009,
+    "source": {
+      "publisher": "The Scottish Parliament",
+      "url": "https://www.scottishparliament.tv/meeting/ministerial-statement-raising-standards-and-delivering-excellence-for-every-child-bsl-september-2-2026",
+      "licence": "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)",
+      "attribution": "Contains information licensed under the Scottish Parliament Copyright Licence.",
+      "productionCredit": "verified: in-house, Scottish Parliament TV",
+      "acquisitionRoute": "publisher's own stream, listed on the event page's Share tab"
+    },
+    "video": {
+      "main": {
+        "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-ministerial-standards-bsl-2026-09-02/main.mp4",
+        "width": 1080,
+        "height": 1080,
+        "codec": "h264"
+      },
+      "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-ministerial-standards-bsl-2026-09-02/poster.jpg"
+    },
+    "signLanguage": [
+      {
+        "language": "bfi",
+        "languageLabel": "British Sign Language",
+        "provenance": "human-interpreter",
+        "extraction": {
+          "method": "manual-crop",
+          "sourceLayout": "side-panel",
+          "confidence": 1,
+          "cropRect": {
+            "x": 1080,
+            "y": 108,
+            "w": 840,
+            "h": 760
+          },
+          "fillMethod": "none"
+        },
+        "track": {
+          "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-ministerial-standards-bsl-2026-09-02/signer-bfi.mp4",
           "width": 596,
           "height": 540,
           "codec": "h264",

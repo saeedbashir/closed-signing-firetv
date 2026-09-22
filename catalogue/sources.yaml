@@ -90,3 +90,59 @@ sources:
     language_label: British Sign Language
     verdict: candidate
     notes: Comparison against the hand-measured crop of the same source.
+
+  # Three more Scottish Parliament BSL events, deliberately different
+  # programme types. All three share the same crop: the chamber picture ends
+  # at x=1080 and the panel runs to the right edge, with branding bands above
+  # and below. Measured on each rather than assumed, and identical every time —
+  # so this is the Parliament's house layout, not a per-event measurement.
+  # Each carries a different interpreter, which is worth having: it shows the
+  # extraction is not tuned to one person.
+  - id: sp-fmqs-backbench-bsl-2026-09-15
+    title: "First Minister's Questions (Backbench Members), British Sign Language"
+    url: https://www.scottishparliament.tv/meeting/first-ministers-questions-backbench-members-bsl-september-15-2026
+    publisher: The Scottish Parliament
+    production_credit: "verified: in-house, Scottish Parliament TV"
+    licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
+    attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
+    acquisition_route: "publisher's own stream, listed on the event page's Share tab"
+    local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/sp-b.mp4
+    sign_language: bfi
+    language_label: British Sign Language
+    crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    layout: side-panel
+    verdict: candidate
+    notes: >-
+      120s excerpt. True side panel, so nothing is occluded and no fill is needed.
+  - id: sp-ministerial-standards-bsl-2026-09-02
+    title: "Ministerial Statement: Raising Standards and Delivering Excellence for Every Child, British Sign Language"
+    url: https://www.scottishparliament.tv/meeting/ministerial-statement-raising-standards-and-delivering-excellence-for-every-child-bsl-september-2-2026
+    publisher: The Scottish Parliament
+    production_credit: "verified: in-house, Scottish Parliament TV"
+    licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
+    attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
+    acquisition_route: "publisher's own stream, listed on the event page's Share tab"
+    local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/sp-c.mp4
+    sign_language: bfi
+    language_label: British Sign Language
+    crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    layout: side-panel
+    verdict: candidate
+    notes: >-
+      120s excerpt. True side panel, so nothing is occluded and no fill is needed.
+  - id: sp-debate-programme-government-bsl-2026-09-01
+    title: "Scottish Government Debate: Programme for Government 2026-31, British Sign Language"
+    url: https://www.scottishparliament.tv/meeting/scottish-government-debate-programme-for-government-2026-31-bsl-september-1-2026
+    publisher: The Scottish Parliament
+    production_credit: "verified: in-house, Scottish Parliament TV"
+    licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
+    attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
+    acquisition_route: "publisher's own stream, listed on the event page's Share tab"
+    local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/sp-d.mp4
+    sign_language: bfi
+    language_label: British Sign Language
+    crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    layout: side-panel
+    verdict: candidate
+    notes: >-
+      120s excerpt. True side panel, so nothing is occluded and no fill is needed.
