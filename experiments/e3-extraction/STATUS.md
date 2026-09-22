@@ -136,6 +136,42 @@ baseline gave it away.
 A public-domain NASA photograph is now committed at `harness/source/` with provenance,
 so the guard is rebuildable. 486 KB, and it is a still rather than media.
 
+### Does automatic extraction ship? No — measured on the real title, 2026-09-22
+
+The question that decides what this project may claim. The entry is pitched on
+computer-vision extraction, so a demo built from hand-measured rectangles is a demo of
+an idea. Worth testing rather than assuming, so the Scottish Parliament clip was
+processed twice from the same source: once with a hand-measured `crop_rect`, once with
+none at all.
+
+```
+             cropRect                      main        IoU
+hand      {1080, 108, 840, 760}         1080x1080      1.000 (it is the ground truth)
+automatic {1038,  84, 882, 996}         1038x1080      0.727
+```
+
+Layout was classified **side-panel at confidence 1.00** both times, which is the part
+that works. The bounding is 42 px wide on the left edge and runs to the frame edge top
+and bottom.
+
+`sp-hand-vs-automatic.png` is the two signer tracks side by side, same frame, same
+height. Hand-measured on the left, automatic on the right.
+
+**42 px does not read as a rounding error on screen.** The automatic crop carries a
+strip of the chamber down its left edge with **another person's face and the wooden
+benches clearly visible in it**, and the Parliament's magenta branding band along the
+bottom. Floating over the programme as a layer the viewer has moved to a corner, that
+is not a soft edge — it looks like a mistake.
+
+So the demo titles keep hand-measured rects, which is what the gate prescribes for the
+marginal path, and the manifest says so without being asked: `method` reads
+`manual-crop` where a human measured it and `detected-crop` where the pipeline did. No
+configuration can blur the two.
+
+The honest claim is therefore narrower than the pitch and still true: **the pipeline
+finds the interpreter reliably and classifies the layout correctly; it does not yet
+bound the region tightly enough to publish unattended.**
+
 ### Caveats on this run
 
 - These are 120-second excerpts pulled by range request, except `02.mp4`, which is the

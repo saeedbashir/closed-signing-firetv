@@ -74,3 +74,19 @@ sources:
       for testing. SPCB Corporate Identity is not licensed to us, so the crop takes
       the chamber picture and the panel and not the branding.
 
+  # The same clip with no crop_rect, so the detector has to find the panel
+  # itself. Exists to answer one question: is automatic extraction good enough
+  # to ship, or does the demo have to lean on a hand-measured rectangle?
+  - id: sp-fmqs-bsl-2026-09-17-auto
+    title: "First Minister's Questions (BSL) — automatic extraction"
+    url: https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026
+    publisher: The Scottish Parliament
+    production_credit: "verified: in-house, Scottish Parliament TV"
+    licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
+    attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
+    acquisition_route: "publisher's own stream, listed on the event page's Share tab"
+    local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/fmqs-excerpt.mp4
+    sign_language: bfi
+    language_label: British Sign Language
+    verdict: candidate
+    notes: Comparison against the hand-measured crop of the same source.
