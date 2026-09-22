@@ -2,10 +2,17 @@
  * Transport controls: what is playing, where we are in it, and whether it is
  * paused.
  *
- * Deliberately not focusable. Every action it could offer already has a
- * dedicated key on the remote — Play/Pause, Left, Right — so making these
- * buttons would add a focus ring to move around a row whose entries duplicate
- * keys the viewer is already holding. It is a readout, not a control surface.
+ * It carries exactly one control, and the reason is a platform limit rather
+ * than a design preference. This was deliberately a readout with no focus
+ * targets, on the grounds that every action already had a key on the remote.
+ * Then Back turned out never to reach the app at all (friction-log/008): the
+ * platform takes it, and unhandled it quits to the launcher. So the only way
+ * out of the player was to leave the app entirely. An on-screen Exit is not
+ * decoration here, it is the only door.
+ *
+ * Everything else stays keys, and the bar names them instead of drawing
+ * buttons for them. On a television the useful thing is to teach the remote
+ * the viewer is already holding, not to add focus targets they must travel to.
  *
  * It appears on a transport press and leaves after four seconds. The viewer
  * asked what was happening, got an answer, and the picture goes back to being
@@ -13,6 +20,7 @@
  */
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { Focusable } from './Focusable';
 import { Body, Metadata } from './Text';
 import { colour, safeArea, space } from '../design/tokens';
 import { px } from '../design/scale';
@@ -21,9 +29,11 @@ import { px } from '../design/scale';
  * How much vertical room the bar occupies, including its padding.
  *
  * Exported because the caption layer has to move out of the way, and the two
- * numbers must not drift apart.
+ * numbers must not drift apart. Raised from 156 when the bar gained the hint
+ * row and the exit — a caption sitting behind the controls is exactly the
+ * collision this app exists to avoid.
  */
-export const TRANSPORT_HEIGHT = px(156);
+export const TRANSPORT_HEIGHT = px(196);
 
 /**
  * Position as a clock.
@@ -54,15 +64,29 @@ export const TransportControls = ({
   positionMs,
   durationMs,
   paused,
+  onExit,
+  reserveRight = 0,
 }: {
   title: string;
   positionMs: number;
   durationMs: number;
   paused: boolean;
+  onExit: () => void;
+  /**
+   * Room to leave on the right for the signer layer, in logical pixels.
+   *
+   * The caption layer already refuses to overlap the interpreter; the bar has
+   * to as well, or the Exit button ends up underneath her — which is the exact
+   * collision this app exists to prevent, committed by the app itself.
+   */
+  reserveRight?: number;
 }): React.JSX.Element => {
   const fraction = progressFraction(positionMs, durationMs);
   return (
-    <View style={styles.root} accessibilityRole="progressbar">
+    <View
+      style={[styles.root, reserveRight > 0 ? { paddingRight: reserveRight } : null]}
+      accessibilityRole="progressbar"
+    >
       <View style={styles.headerRow}>
         <Body style={styles.title} numberOfLines={1}>
           {title}
@@ -79,6 +103,23 @@ export const TransportControls = ({
       <View style={styles.timeRow}>
         <Metadata style={styles.time}>{formatClock(positionMs)}</Metadata>
         <Metadata style={styles.time}>{formatClock(durationMs)}</Metadata>
+      </View>
+
+      <View style={styles.footerRow}>
+        {/* Naming the keys is what makes them discoverable. Nothing else on
+            screen tells a viewer that Up and Down do anything at all. */}
+        <Metadata style={styles.hints}>
+          Up: interpreter · Down: captions · Left and Right: skip 10 seconds
+        </Metadata>
+        <Focusable
+          style={styles.exit}
+          scaleOnFocus={false}
+          hasTVPreferredFocus
+          accessibilityLabel="Exit to the title page"
+          onPress={onExit}
+        >
+          {(focused) => <Body dim={!focused}>Exit</Body>}
+        </Focusable>
       </View>
     </View>
   );
@@ -112,4 +153,12 @@ const styles = StyleSheet.create({
   fill: { height: px(8), borderRadius: px(4), backgroundColor: colour.accent },
   timeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: space(1) },
   time: { color: colour.textSecondary },
+  footerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: space(1),
+  },
+  hints: { color: colour.textSecondary, flexShrink: 1 },
+  exit: { paddingHorizontal: space(2), paddingVertical: space(0.5) },
 });

@@ -19,7 +19,11 @@ export const colour = {
   bgBase: '#0B0F14',
   bgSurface: '#151C24',
   bgRaised: '#1F2933',
-  borderSubtle: '#2E3A47',
+  // Raised from #2E3A47, which scored 1.27:1 against bgRaised — effectively
+  // invisible. It matters because the overlay panels sit over video, so their
+  // edge is the only thing separating them from whatever is playing. 3.07:1
+  // against the panel, 4.00:1 against the screen. Measured, not eyeballed.
+  borderSubtle: '#61748A',
   textPrimary: '#F2F5F7',
   textSecondary: '#A3B1BF',
   accent: '#FFB020',

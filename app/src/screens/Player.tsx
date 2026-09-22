@@ -17,8 +17,8 @@ import { StyleSheet, View } from 'react-native';
 import { KeplerVideoView, VideoPlayer } from '@amazon-devices/react-native-w3cmedia';
 import { Body, Metadata } from '../components/Text';
 import { TRANSPORT_HEIGHT, TransportControls } from '../components/TransportControls';
-import { captionPlacement, signerBox } from '../design/geometry';
-import { captionSize, colour, motion, signerOpacity, space } from '../design/tokens';
+import { SCREEN, captionPlacement, signerBox } from '../design/geometry';
+import { captionSize, colour, motion, safeArea, signerOpacity, space } from '../design/tokens';
 import { SignerControls } from './SignerControls';
 import { CaptionMenu } from './CaptionMenu';
 import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
@@ -446,6 +446,13 @@ export const Player = ({
           positionMs={positionMs}
           durationMs={manifest.durationMs}
           paused={main.player?.paused ?? true}
+          onExit={leave}
+          reserveRight={
+            // Only when the interpreter is actually on the right and showing.
+            prefs.signerVisible && box && prefs.signerCorner.endsWith('right')
+              ? SCREEN.width - box.left - safeArea.horizontal + space(2)
+              : 0
+          }
         />
       ) : null}
 
