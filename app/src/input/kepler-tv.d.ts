@@ -19,4 +19,17 @@ declare module 'react-native' {
    * the hook falls back to a TVEventHandler instance.
    */
   export function useTVEventHandler(handler: (evt: HWEvent) => void): void;
+
+  /**
+   * The next-focus hints. Kepler's `TVViewProps` add them to every view
+   * (`Libraries/TV/TVTypes.d.ts`); stock React Native's `PressableProps` do not
+   * carry them, so a `Pressable` that sets `nextFocusDown` is a type error
+   * against a prop that works at runtime. Same shape of gap as the hook above.
+   */
+  interface PressableProps {
+    nextFocusDown?: number;
+    nextFocusUp?: number;
+    nextFocusLeft?: number;
+    nextFocusRight?: number;
+  }
 }

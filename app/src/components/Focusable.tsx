@@ -38,6 +38,8 @@ const TRIES = 6;
 /** Kepler adds `requestTVFocus` to every host view; stock React Native's types do not. */
 type FocusableHost = View & { requestTVFocus?: () => void };
 
+export type { FocusableHost };
+
 export type FocusableProps = {
   children: React.ReactNode | ((focused: boolean) => React.ReactNode);
   onPress?: () => void;
@@ -70,6 +72,17 @@ export type FocusableProps = {
   accessibilityRole?: AccessibilityRole;
   accessibilityValue?: AccessibilityValue;
   accessibilityHint?: string;
+  /**
+   * Where Down and Up go from here, as node handles, when the focus engine's
+   * geometric guess is wrong. On the walkthrough's choice card, Down from a
+   * wide row landed on Skip rather than the primary button beside it — the
+   * row's centre was nearer Skip — so the viewer's natural "Down, Select" would
+   * have skipped their own choices. Measured on device 2026-09-22.
+   */
+  nextFocusDown?: number;
+  nextFocusUp?: number;
+  /** The host node, for callers that need its handle to aim another control at it. */
+  onHostRef?: (node: FocusableHost | null) => void;
 };
 
 export const Focusable = ({
@@ -86,20 +99,37 @@ export const Focusable = ({
   accessibilityRole = 'button',
   accessibilityValue,
   accessibilityHint,
+  nextFocusDown,
+  nextFocusUp,
+  onHostRef,
 }: FocusableProps): React.JSX.Element => {
   const [focused, setFocused] = useState(false);
   const host = useRef<FocusableHost | null>(null);
+  const focusedNow = useRef(false);
 
   const handle = useCallback(
     (next: boolean) => {
+      focusedNow.current = next;
       setFocused(next);
       onFocusChange?.(next);
     },
     [onFocusChange],
   );
 
+  /**
+   * Claim the focus once, when `claimsFocus` turns true — not every time the
+   * focus leaves. The first version re-ran on blur and pulled the focus back
+   * within 100 ms, so the row beneath it could never be reached: Down on the
+   * walkthrough's choice card did nothing, and the end panel's second button
+   * was unreachable. Measured on device 2026-09-22.
+   */
+  const claimed = useRef(false);
   useEffect(() => {
-    if (!claimsFocus || focused) return;
+    if (!claimsFocus) {
+      claimed.current = false;
+      return;
+    }
+    if (claimed.current) return;
     // Asked for repeatedly rather than once. The ref is a host node and
     // `requestTVFocus` is a real function on it — both checked on screen, since
     // the device log carried nothing from a Release build — but calling it on
@@ -110,15 +140,24 @@ export const Focusable = ({
     let tries = 0;
     const id = setInterval(() => {
       tries += 1;
+      if (focusedNow.current || tries >= TRIES) {
+        claimed.current = true;
+        clearInterval(id);
+        return;
+      }
       host.current?.requestTVFocus?.();
-      if (tries >= TRIES) clearInterval(id);
     }, 100);
     return () => clearInterval(id);
-  }, [claimsFocus, focused]);
+  }, [claimsFocus]);
 
   return (
     <Pressable
-      ref={host}
+      ref={(node: FocusableHost | null) => {
+        host.current = node;
+        onHostRef?.(node);
+      }}
+      nextFocusDown={nextFocusDown}
+      nextFocusUp={nextFocusUp}
       onPress={onPress}
       onFocus={() => handle(true)}
       onBlur={() => handle(false)}

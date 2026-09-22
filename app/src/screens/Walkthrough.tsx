@@ -12,8 +12,8 @@
  * needs no asset pipeline, and raises no question about who owns the picture.
  */
 import React, { useCallback, useRef, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Focusable } from '../components/Focusable';
+import { StyleSheet, View, findNodeHandle } from 'react-native';
+import { Focusable, type FocusableHost } from '../components/Focusable';
 import { LayoutDiagram } from '../components/LayoutDiagram';
 import { Body, Metadata, ScreenTitle } from '../components/Text';
 import { colour, safeArea, signerCorners, space, type SignerSize } from '../design/tokens';
@@ -97,6 +97,8 @@ const ChoiceRow = ({
   onFocused,
   onChange,
   first,
+  nextFocusDown,
+  onHostRef,
 }: {
   label: string;
   value: string;
@@ -105,11 +107,15 @@ const ChoiceRow = ({
   onChange: (delta: number) => void;
   /** Takes the focus when the card appears, so Left and Right work at once. */
   first?: boolean;
+  nextFocusDown?: number;
+  onHostRef?: (node: FocusableHost | null) => void;
 }): React.JSX.Element => (
   <Focusable
     style={styles.choiceRow}
     scaleOnFocus={false}
     claimsFocus={first}
+    nextFocusDown={nextFocusDown}
+    onHostRef={onHostRef}
     accessibilityLabel={label}
     accessibilityRole="adjustable"
     accessibilityValue={{ text: value }}
@@ -167,10 +173,19 @@ export const Walkthrough = ({
     if (key) live.current[key]?.(delta);
   }, choosing);
 
+  // Down from the Size row goes to the primary button and Up comes back, so
+  // "Down, Select" on this card does what the viewer meant.
+  const [startHandle, setStartHandle] = useState<number | undefined>(undefined);
+  const [sizeHandle, setSizeHandle] = useState<number | undefined>(undefined);
+  const handleOf = (node: FocusableHost | null) =>
+    node ? findNodeHandle(node) ?? undefined : undefined;
+
   return (
     <View style={styles.root}>
       {choosing ? (
-        <LayoutDiagram corner={prefs.signerCorner} size={prefs.signerSize} width={px(800)} />
+        <View style={styles.preview}>
+          <LayoutDiagram corner={prefs.signerCorner} size={prefs.signerSize} width={px(640)} />
+        </View>
       ) : (
         <CardArt kind={card.illustration} />
       )}
@@ -195,6 +210,8 @@ export const Walkthrough = ({
             rowKey="size"
             onFocused={onFocused}
             onChange={handlers.size}
+            nextFocusDown={startHandle}
+            onHostRef={(n) => setSizeHandle(handleOf(n))}
           />
         </View>
       ) : null}
@@ -209,6 +226,8 @@ export const Walkthrough = ({
         <Focusable
           hasTVPreferredFocus={!choosing}
           claimsFocus={!choosing}
+          nextFocusUp={choosing ? sizeHandle : undefined}
+          onHostRef={(n) => setStartHandle(handleOf(n))}
           variant="primary"
           style={styles.primary}
           onPress={() => (last ? onDone() : setIndex(index + 1))}
