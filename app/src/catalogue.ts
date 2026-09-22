@@ -54,6 +54,16 @@ export const BUNDLED_CATALOGUE: Catalogue = {
       "signLanguages": [
         "bfi"
       ]
+    },
+    {
+      "id": "sp-debate-programme-government-bsl-2026-09-01",
+      "title": "Scottish Government Debate: Programme for Government 2026-31, British Sign Language",
+      "durationMs": 120000,
+      "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-debate-programme-government-bsl-2026-09-01/poster.jpg",
+      "manifestUrl": "bundled",
+      "signLanguages": [
+        "bfi"
+      ]
     }
   ]
 };
@@ -263,6 +273,56 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
         },
         "track": {
           "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-ministerial-standards-bsl-2026-09-02/signer-bfi.mp4",
+          "width": 596,
+          "height": 540,
+          "codec": "h264",
+          "syncOffsetMs": 0
+        }
+      }
+    ],
+    "captions": []
+  },
+  "sp-debate-programme-government-bsl-2026-09-01": {
+    "stmVersion": "0.1",
+    "id": "sp-debate-programme-government-bsl-2026-09-01",
+    "title": "Scottish Government Debate: Programme for Government 2026-31, British Sign Language",
+    "durationMs": 120000,
+    "source": {
+      "publisher": "The Scottish Parliament",
+      "url": "https://www.scottishparliament.tv/meeting/scottish-government-debate-programme-for-government-2026-31-bsl-september-1-2026",
+      "licence": "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)",
+      "attribution": "Contains information licensed under the Scottish Parliament Copyright Licence.",
+      "productionCredit": "verified: in-house, Scottish Parliament TV",
+      "acquisitionRoute": "publisher's own stream, listed on the event page's Share tab"
+    },
+    "video": {
+      "main": {
+        "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-debate-programme-government-bsl-2026-09-01/main.mp4",
+        "width": 1080,
+        "height": 1080,
+        "codec": "h264"
+      },
+      "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-debate-programme-government-bsl-2026-09-01/poster.jpg"
+    },
+    "signLanguage": [
+      {
+        "language": "bfi",
+        "languageLabel": "British Sign Language",
+        "provenance": "human-interpreter",
+        "extraction": {
+          "method": "manual-crop",
+          "sourceLayout": "side-panel",
+          "confidence": 1,
+          "cropRect": {
+            "x": 1080,
+            "y": 108,
+            "w": 840,
+            "h": 760
+          },
+          "fillMethod": "none"
+        },
+        "track": {
+          "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-debate-programme-government-bsl-2026-09-01/signer-bfi.mp4",
           "width": 596,
           "height": 540,
           "codec": "h264",
