@@ -88,6 +88,8 @@ of a licence we expect would probably be granted if asked.
 | `sp-fmqs-bsl-2026-09-17` | First Minister's Questions (Party Leaders), BSL — 120 s excerpt | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | Scottish Parliament Copyright Licence, aligned with OGL v3.0 | Publisher's own stream, from the event page's Share tab | None published with the stream (verified: no text track in the HLS or DASH manifests) | Side panel; hand-measured crop `{1080,108,840,760}`; `method: manual-crop` |
 | `sp-fmqs-backbench-bsl-2026-09-15` | First Minister's Questions (Backbench Members), BSL — 120 s excerpt | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | as above | as above | None | Same house crop |
 | `sp-ministerial-standards-bsl-2026-09-02` | Ministerial Statement: Raising Standards and Delivering Excellence for Every Child, BSL — 120 s excerpt | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | as above | as above | None | Same house crop |
+| `sp-fmqs-bsl-2026-09-17-full` | First Minister's Questions (Party Leaders), BSL — full session, 34 min | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | as above; the caption text is the Official Report, SPCB copyright under the same licence | Publisher's own stream (`hlsStreamUrl` from `/Player/PlaybackModel/{eventId}`) | **Verbatim: the Official Report's text, unchanged, timed automatically** (see "Caption text and timing" below). No `generatedBy`. **Simplified: written by hand from the Report by an AI assistant in the developer's editor**, `generatedBy` set, `reviewed: false`, badged by the player. | Same house crop; `activity` measured over the whole session |
+| `sp-fmqs-backbench-bsl-2026-09-15-full` | First Minister's Questions (Backbench Members), BSL — full session, 32 min | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | as above | as above | None yet — the Official Report item for this session has not been located (the Report's item ids are not derivable from the meeting page) | Same house crop; continuous signing (0.8 % idle) |
 | `sp-debate-programme-government-bsl-2026-09-01` | Scottish Government Debate: Programme for Government 2026-31, BSL — 120 s excerpt | The Scottish Parliament (SPCB) | In-house, Scottish Parliament TV | as above | as above | None | Same house crop |
 | `demo-corner-inset` | Demonstration — interpreter in a corner inset (synthetic) | Built for this project | `harness/make_corpus.py` over a test pattern | Public domain: the person is Dorothea Lange's *Migrant Mother* (FSA, 1936, US federal work); the pattern is generated | Not acquired; generated | Hand-written verbatim and simplified tracks (no `generatedBy`) | Corner inset; `method: detected-crop`, confidence 0.7045 |
 
@@ -114,6 +116,35 @@ Two exclusions bind us as much as the grant does:
 - **The SPCB's Corporate Identity is not licensed.** The broadcast carries a purple
   Parliament frame. We crop to the chamber picture and the interpreter panel and never
   reproduce the logo or wordmark as decoration.
+
+### Caption text and timing on Scottish Parliament titles
+
+The stream carries no text track. The verbatim caption track on a full session
+is the **Official Report** of that item — the Parliament's edited-verbatim record,
+written by its reporters, with speakers named and stage directions such as
+`[Applause.]` kept — and we publish its words **unchanged**. The Report is SPCB
+copyright under the same Scottish Parliament Copyright Licence as the video, so
+the attribution string already on the title covers it.
+
+What we add is *timing*: the pipeline recognises the audio with an open-source
+speech model (faster-whisper, MIT; the model's own words are discarded), aligns the
+Report's words to the recognised words, and cuts cues. On the Party Leaders session
+89 % of the Report's 4,855 words sit on a word the recogniser heard; the rest are
+placed by rule between their neighbours. So the track is human text on machine
+timing, and is labelled exactly that: no `generatedBy` (nothing in it was
+generated), and a `NOTE` at the top of the file naming the source of the words and
+the source of the timing. The alignment figures are in the title's `analysis.json`.
+
+The **simplified** track on the same title is different in kind and labelled
+differently. Its text is not the Report's: it is a plain-English rewrite of the
+Report, written by hand by an AI assistant (Claude) in the developer's editor —
+not by the pipeline, and not by Bedrock, whose access was still pending — and
+its cues take their times from the verbatim cues they replace. It carries
+`generatedBy` naming that origin and `reviewed: false`, the player badges it as
+not checked by a person, and no configuration can present it otherwise.
+Where the Report edited out what was said — a false start, a heckle — the cue
+that would have covered it simply is not there, and where it prints what was not
+said aloud (an expanded title) that text passes briefly at the point it belongs.
 
 ## Models
 

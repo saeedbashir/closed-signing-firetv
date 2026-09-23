@@ -655,13 +655,15 @@ export const Player = ({
             },
           ]}
         >
-          {/* Machine-simplified text is labelled wherever it is shown. The
+          {/* AI-simplified text is labelled wherever it is shown. The
               manifest guarantees `reviewed: false`; saying so only in a file
               the viewer never opens would honour the letter of that and not
-              the point of it. */}
+              the point of it. "By AI" rather than "automatically": the first
+              real track was written by an assistant in an editor, not by the
+              pipeline, and the label has to be true of both. */}
           {isUnreviewed(captionTrack) ? (
             <Metadata style={styles.captionProvenance}>
-              Simplified automatically · not checked by a person
+              Simplified by AI · not checked by a person
             </Metadata>
           ) : null}
           <Body style={[styles.captionText, { fontSize: captionSize[prefs.captionSize] }]}>

@@ -45,11 +45,13 @@ and the friction log.
 
 Nothing in the SDK reports what a Vega app is doing (friction-log/006). What works:
 
-- **Keys:** the Virtual Device exposes a QMP socket at `/tmp/qmp-socket-5554.sock`;
-  `input-send-event` with qcodes `up`/`down`/`left`/`right`/`ret` drives the D-pad
-  and Select. Media keys do not translate through QMP; send the host keyboard's
-  F4 (Play/Pause) and F5 (Fast forward) to the device window with AppleScript
-  `key code 118` / `96` instead. macOS takes F1–F3 for itself.
+- **Keys:** drive the remote from the device itself:
+  `vega device run-cmd -d VirtualDevice --command "inputd-cli button_press KEY_DOWN"`
+  (`KEY_UP/DOWN/LEFT/RIGHT/ENTER` are the D-pad and Select). The QMP socket at
+  `/tmp/qmp-socket-5554.sock` also accepts qcodes, but on 2026-09-23 they arrived as
+  the wrong keys (friction-log/014). Media keys translate through neither; send the
+  host keyboard's F-keys to the focused emulator window (F4 play/pause, F5 forward;
+  macOS keeps F1 and F3 for itself).
 - **Screen:** `screencapture -R` of the device window, then measure pixels. Contrast,
   layout, opacity and the auto-dim were all verified this way.
 - **Log:** `vega device start-log-stream` does carry the app's `diag()` lines, at

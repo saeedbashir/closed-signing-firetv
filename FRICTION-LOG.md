@@ -28,3 +28,4 @@ model access.
 | [011](friction-log/011-the-bundled-asyncstorage-does-nothing-and-says-so-to-no-one.md) | 2026-09-22 | Vega SDK / RN storage | major | The bundled `AsyncStorage` does nothing, and says so to no one |
 | [012](friction-log/012-view-opacity-does-not-apply-to-keplervideoview.md) | 2026-09-22 | Vega SDK / w3cmedia | major | `opacity` on a View does not apply to the `KeplerVideoView` inside it |
 | [013](friction-log/013-hls-plays-from-src-although-the-readme-says-it-cannot.md) | 2026-09-22 | Vega SDK / w3cmedia | minor | HLS plays from `src`, although the README says it cannot |
+| [014](friction-log/014-qmp-qcodes-arrive-as-the-wrong-keys-use-inputd-cli.md) | 2026-09-23 | VVD | major | QMP `send-key` qcodes arrive as the wrong keys; the device's own `inputd-cli` is the injector |

@@ -68,6 +68,9 @@ sources:
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream (hlsStreamUrl from /Player/PlaybackModel/{eventId}, as shown on the event page's Share tab)"
     local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/fmqs-party-leaders-2026-09-17-full.mp4
+    # The Official Report of this item: the publisher's edited-verbatim transcript,
+    # aligned to the audio for the verbatim caption track (text unchanged).
+    official_report: "https://www.parliament.scot/chamber-and-committees/official-report/search-what-was-said-in-parliament/meeting-of-parliament-17-09-2026?meeting=20233&iob=225812"
     sign_language: bfi
     language_label: British Sign Language
     crop_rect: {x: 1080, y: 108, w: 840, h: 760}
