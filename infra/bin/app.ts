@@ -35,6 +35,7 @@ const storage = new StorageStack(app, `${prefix}Storage`, {
 const delivery = new DeliveryStack(app, `${prefix}Delivery`, {
   env,
   retainData: config.retainData,
+  cdn: config.cdn,
   description: 'Closed Signing: asset bucket and CloudFront delivery',
 });
 

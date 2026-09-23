@@ -6,6 +6,8 @@ import { Construct } from 'constructs';
 
 export interface DeliveryStackProps extends cdk.StackProps {
   readonly retainData: boolean;
+  /** Create the CloudFront distribution. See `AppConfig.cdn`. */
+  readonly cdn: boolean;
 }
 
 /**
@@ -21,7 +23,8 @@ export interface DeliveryStackProps extends cdk.StackProps {
  */
 export class DeliveryStack extends cdk.Stack {
   public readonly assets: s3.Bucket;
-  public readonly distribution: cloudfront.Distribution;
+  /** Undefined when deployed with `-c cdn=false`. */
+  public readonly distribution?: cloudfront.Distribution;
 
   constructor(scope: Construct, id: string, props: DeliveryStackProps) {
     super(scope, id, props);
@@ -33,6 +36,17 @@ export class DeliveryStack extends cdk.Stack {
       removalPolicy: props.retainData ? cdk.RemovalPolicy.RETAIN : cdk.RemovalPolicy.DESTROY,
       autoDeleteObjects: !props.retainData,
     });
+
+    new cdk.CfnOutput(this, 'AssetsBucketName', { value: this.assets.bucketName });
+
+    if (!props.cdn) {
+      // Bucket only. The pipeline uploads here regardless; serving is someone
+      // else's job until the account may create CloudFront resources.
+      new cdk.CfnOutput(this, 'DistributionDomainName', {
+        value: '(none: deployed with cdn=false)',
+      });
+      return;
+    }
 
     const origin = origins.S3BucketOrigin.withOriginAccessControl(this.assets);
 
@@ -79,7 +93,6 @@ export class DeliveryStack extends cdk.Stack {
       enableIpv6: true,
     });
 
-    new cdk.CfnOutput(this, 'AssetsBucketName', { value: this.assets.bucketName });
     new cdk.CfnOutput(this, 'DistributionDomainName', {
       value: this.distribution.distributionDomainName,
       description: 'Asset base URL. Put this in the app config.',

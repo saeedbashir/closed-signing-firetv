@@ -31,6 +31,16 @@ export interface AppConfig {
   readonly jobMemoryMib: number;
   /** GiB of task storage. ffmpeg needs room for the source plus both renditions. */
   readonly jobStorageGib: number;
+  /**
+   * Create the CloudFront distribution in front of the assets bucket. Default true.
+   *
+   * `-c cdn=false` deploys the bucket alone. A new AWS account cannot create
+   * CloudFront resources until AWS has verified it ("Your account must be
+   * verified before you can add new CloudFront resources"), and the pipeline
+   * does not need the CDN to run — only the player does, and this project's
+   * player is served from R2 (HOSTING.md). Measured 2026-09-23.
+   */
+  readonly cdn: boolean;
 }
 
 function bool(app: cdk.App, key: string, fallback: boolean): boolean {
@@ -72,5 +82,6 @@ export function readConfig(app: cdk.App): AppConfig {
     jobVcpu: num(app, 'jobVcpu', 4),
     jobMemoryMib: num(app, 'jobMemoryMib', 16384),
     jobStorageGib: num(app, 'jobStorageGib', 50),
+    cdn: bool(app, 'cdn', true),
   };
 }

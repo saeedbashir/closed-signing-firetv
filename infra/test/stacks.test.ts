@@ -10,7 +10,7 @@ function build(context: Record<string, unknown> = {}) {
   const app = new cdk.App({ context });
   const config = readConfig(app);
   const storage = new StorageStack(app, 'Storage', { retainData: config.retainData });
-  const delivery = new DeliveryStack(app, 'Delivery', { retainData: config.retainData });
+  const delivery = new DeliveryStack(app, 'Delivery', { retainData: config.retainData, cdn: config.cdn });
   const captions = new CaptionsStack(app, 'Captions', {
     models: config.bedrockModels,
     resourceScope: config.bedrockResourceScope,
@@ -208,4 +208,13 @@ describe('processing', () => {
     expectResourceRequirement(processing, 'VCPU', '2');
     expectResourceRequirement(processing, 'MEMORY', '8192');
   });
+});
+
+test('cdn=false deploys the assets bucket without a CloudFront distribution', () => {
+  const app = new cdk.App();
+  const stack = new DeliveryStack(app, 'DeliveryNoCdn', { retainData: false, cdn: false });
+  const template = Template.fromStack(stack);
+  template.resourceCountIs('AWS::S3::Bucket', 1);
+  template.resourceCountIs('AWS::CloudFront::Distribution', 0);
+  template.hasOutput('AssetsBucketName', {});
 });
