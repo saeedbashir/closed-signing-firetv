@@ -29,9 +29,46 @@ Messages API endpoint (AnthropicBedrockMantle, the pipeline's path):
 Measured 2026-09-22 with one-token probes. The form has been requested; until it
 is accepted the simplifier in `signed-track-manifest` cannot run against this
 account, and the simplified track in the catalogue is hand-written and labelled
-as such (no `generatedBy`). The day the form clears, `stm run --simplify` is the
-only step needed to produce a `generatedBy: amazon-bedrock`, `reviewed: false`
-track for a real title — nothing else in the pipeline or the app changes.
+as such (`generatedBy` names the assistant that wrote it, `reviewed: false`). The
+day the form clears, `stm run --simplify` is the only step needed to produce a
+`generatedBy: amazon-bedrock`, `reviewed: false` track for a real title — nothing
+else in the pipeline or the app changes.
+
+**Re-checked 2026-09-23, after the account was upgraded to a paid plan** with a
+$20 project spend limit and $250 of credits ($150 "Amazon Devices Global Hackathon
+- Teams A4", $100 Free Tier). The upgrade changed billing, not permissions:
+
+- The same policy, `p-o59ka7dj` in organisation `<management-account>` (the hackathon's,
+  not this account's), still explicitly denies CloudFormation, EC2, Batch, ECR,
+  Lambda, DynamoDB and IAM. `s3 ls` now succeeds (no buckets). The processing
+  stack cannot be deployed in this account by anyone in it; that is disclosed, not
+  worked around.
+- Bedrock is closed at the account level, not per model: `get-foundation-model-
+  availability` reports `authorizationStatus: NOT_AUTHORIZED` and
+  `agreementAvailability: NOT_AVAILABLE` for every model tried — Anthropic
+  (`claude-opus-5`, `claude-haiku-4-5`) **and** Amazon Nova (lite, pro, micro) —
+  and every `converse` call, plain id or `us.` inference profile, fails with
+  `ValidationException: Operation not allowed`. The two APIs behind the console's
+  "Request access" form, `bedrock:GetUseCaseForModelAccess` and
+  `bedrock:ListFoundationModelAgreementOffers`, are themselves denied by the SCP.
+  What the console shows on the Model access page is the remaining unknown.
+
+**Resolved 2026-09-23, later.** The organisation was AWS's own, for the
+"simplified" account experience; activating advanced features made Saeed its
+management account, and the deny turned out to be
+`AdvancedModeRegionRestrictionSecurityControlPolicy` (`p-2p6va4gc`) attached at
+Root. Detached; CloudFormation, ECR, Batch, EC2, Lambda and IAM answer within a
+minute. Bedrock's form API now returns `ResourceNotFoundException` — no use-case
+form on file. But the console refuses the form itself: *"Your account is not
+authorized to perform this action. Please create a support case … with details
+about your use case."* Every model of every provider — Anthropic and Amazon Nova
+alike — reports `authorizationStatus: NOT_AUTHORIZED`, and `create-foundation-
+model-agreement` answers "You have not filled out the request form". That is
+AWS's gate on Bedrock for accounts without history, lifted only by a support
+case. Filed 2026-09-23 (Account and billing → Account → Other Account Issues), after
+setting the payment currency, which had been unset, to USD — AWS's own diagnostic
+named card authorisation as the cause. Until it is lifted the simplified track
+stays hand-written and labelled as such. friction-log/015 has the sequence.
 
 The CDK stacks in `infra/` are still the infrastructure story. They synthesise
 with or without credentials and describe what this deploys to on an account
