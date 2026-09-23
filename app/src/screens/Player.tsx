@@ -644,7 +644,11 @@ export const Player = ({
         </View>
       ) : null}
 
-      {prefs.captionMode !== 'off' ? (
+      {/* The plate exists for a cue. Between cues it would be an empty dark
+          band with only the provenance label in it, which reads as a caption
+          that failed to arrive — so it goes, and comes back with the next cue.
+          A failed track keeps the plate to say so. */}
+      {prefs.captionMode !== 'off' && (cueText !== '' || captionStatus === 'failed') ? (
         <View
           style={[
             styles.captionPlate,
@@ -822,6 +826,9 @@ const styles = StyleSheet.create({
     paddingVertical: space(1),
     borderRadius: px(8),
   },
-  captionProvenance: { color: colour.textSecondary, marginBottom: space(1) },
+  // Centred over the text, not at the plate's edge: the plate spans the screen
+  // and its background vanishes against black, so an edge-aligned label reads
+  // as floating in a corner rather than belonging to the caption.
+  captionProvenance: { color: colour.textSecondary, marginBottom: space(1), alignSelf: 'center' },
   captionText: { color: colour.captionText, textAlign: 'center' },
 });

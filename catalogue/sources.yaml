@@ -145,6 +145,10 @@ sources:
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream, listed on the event page's Share tab"
     local_path: /Users/saeed.bashir/Desktop/closed-signing/sp-download/sp-b-full.mp4
+    # Official Report item "First Minister's Question Time — Back-bench Members", 15 Sep 2026.
+    # Found by listing the chamber sitting's items (meeting 20224); the item ids are
+    # not derivable from the meeting page's URL.
+    official_report: "https://www.parliament.scot/chamber-and-committees/official-report/search-what-was-said-in-parliament/meeting-of-parliament-15-09-2026?meeting=20224&iob=225692"
     sign_language: bfi
     language_label: British Sign Language
     crop_rect: {x: 1080, y: 108, w: 840, h: 760}
