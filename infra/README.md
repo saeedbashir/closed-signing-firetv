@@ -126,3 +126,15 @@ finished title is uploaded to `s3://<assets>/titles/<id>/` without further
 flags; `STM_PUBLIC_BASE`, when set, makes the manifest's URLs absolute under it.
 
 Locally, the same work is just `stm run catalogue/sources.yaml --out out`.
+
+**First run, 2026-09-23:** job `extract-sp-fmqs-backbench-2026-09-15`
+(`f97417a3…`) on the Backbench session, 32 minutes of video: `RUNNING` at 12:17,
+`SUCCEEDED` at 12:55 — 38 minutes on 4 Fargate vCPUs, about $0.15 of compute.
+It fetched the 500 MB source from the sources bucket, cropped, filled, measured
+activity, fetched the Official Report, ran faster-whisper (the `small` model
+downloaded from Hugging Face on first use) and aligned, and uploaded five files to
+`s3://<assets>/titles/sp-fmqs-backbench-bsl-2026-09-15-full/` with the right
+content types. The manifest validates. Its 458 caption cues differ from the
+Mac-built 459 only at cue boundaries: word timestamps from CTranslate2 on a
+different CPU move by a few hundred milliseconds, and the segmenter cuts
+accordingly; the text is the same Report.
