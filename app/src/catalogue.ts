@@ -4353,7 +4353,14 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
         }
       }
     ],
-    "captions": []
+    "captions": [
+      {
+        "kind": "verbatim",
+        "language": "en",
+        "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15-full/captions/verbatim.en.vtt",
+        "format": "webvtt"
+      }
+    ]
   },
   "sp-ministerial-standards-bsl-2026-09-02": {
     "stmVersion": "0.2",
