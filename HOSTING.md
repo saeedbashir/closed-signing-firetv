@@ -80,7 +80,10 @@ CloudFront distribution, which the unverified account may not create). The
 pipeline image is built by CI in `signed-track-manifest` and pushed to the
 stack's ECR repository; `infra/README.md` has the state, including the first
 Batch run (the Backbench session, 38 minutes, valid output). Hosting for the
-player stays on R2.
+player stays on R2. Cost control: activating advanced features deleted the
+project's $20 spend limit; an AWS Budget of $25/month (alerts at 50 % and 80 %
+actual, 100 % forecast) in the management account replaces it. $250 of credits
+($150 hackathon, $100 Free Tier) cover the usage first.
 
 ## Why R2 suits this project anyway
 
