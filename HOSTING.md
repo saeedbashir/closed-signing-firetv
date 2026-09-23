@@ -74,6 +74,13 @@ The CDK stacks in `infra/` are still the infrastructure story. They synthesise
 with or without credentials and describe what this deploys to on an account
 outside that organisation. R2 stands in for S3 and CloudFront on the Free Plan.
 
+**Deployed 2026-09-23, later still:** with the guardrail policy gone, all four
+CDK stacks are up in us-east-1 (`-c cdn=false`: the assets bucket without the
+CloudFront distribution, which the unverified account may not create). The
+pipeline image is built by CI in `signed-track-manifest` and pushed to the
+stack's ECR repository; `infra/README.md` has the state. Hosting for the player
+stays on R2.
+
 ## Why R2 suits this project anyway
 
 - **HTTPS by default**, which is not optional: Vega's media player refuses

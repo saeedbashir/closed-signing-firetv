@@ -16,12 +16,22 @@ npx jest               # stack tests
 npx cdk deploy --all   # needs credentials on an account that permits CloudFormation
 ```
 
-**Deployment status, 2026-09-22:** not deployed. The account available to the
-project sits under a service control policy that denies CloudFormation, S3 bucket
-creation, EC2, Batch and ECR; and Bedrock invocation waits on the Anthropic use
-case form being accepted for the account. `HOSTING.md` records the exact errors
-and what stands in meanwhile. These stacks are the design, tested and
-synthesised; they are not yet a running system, and the submission says so.
+**Deployment status, 2026-09-23: deployed** to account <project-account>, us-east-1,
+with `-c cdn=false`. The account had sat under AWS's simplified-experience
+guardrails (a service control policy denying CloudFormation, EC2, Batch, ECR and
+more); activating advanced features and detaching that policy opened them all
+(`friction-log/015`). Two things the account still cannot do, both waiting on
+AWS's verification of a new account: create CloudFront resources — hence
+`cdn=false`, the assets bucket without the distribution — and invoke Bedrock
+models, so `--simplify` runs nowhere yet and the simplified track in the
+catalogue is hand-written and labelled as such. `HOSTING.md` records the exact
+errors; the player is served from R2 regardless.
+
+The container image is built by `.github/workflows/container.yml` in the
+`signed-track-manifest` repository (where the Dockerfile lives) and pushed to
+this stack's ECR repository over GitHub's OIDC token; the role it assumes,
+`closed-signing-ci-ecr-push`, can push to one repository prefix and nothing
+else.
 
 | Stack | What it holds |
 | --- | --- |
@@ -108,5 +118,11 @@ aws batch submit-job \
       --query "Stacks[0].Outputs[?OutputKey=='JobDefinitionName'].OutputValue" --output text)" \
   --container-overrides '{"command":["run","s3://BUCKET/sources.yaml","--id","wh-briefing-2026-03-14","--simplify"]}'
 ```
+
+The sources file lives in the `sources` bucket and its entries carry
+`media: s3://…` for the staged video (`url` stays the publisher's page, which is
+what the manifest records). The job definition sets `STM_ASSETS_BUCKET`, so the
+finished title is uploaded to `s3://<assets>/titles/<id>/` without further
+flags; `STM_PUBLIC_BASE`, when set, makes the manifest's URLs absolute under it.
 
 Locally, the same work is just `stm run catalogue/sources.yaml --out out`.
