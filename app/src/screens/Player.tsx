@@ -12,14 +12,20 @@
  * pre-composited renditions, and `sizeAndOpacityAvailable` is the flag that
  * tells the control overlay to stop offering controls that would do nothing.
  */
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Image, StyleSheet, View } from 'react-native';
-import { KeplerVideoView, VideoPlayer } from '@amazon-devices/react-native-w3cmedia';
-import { Focusable } from '../components/Focusable';
-import { Body, Metadata, ScreenTitle, SectionHeading } from '../components/Text';
-import { ErrorState } from '../components/ErrorState';
-import { TRANSPORT_HEIGHT, TransportControls } from '../components/TransportControls';
-import { SCREEN, captionPlacement, signerBox } from '../design/geometry';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {Animated, Image, StyleSheet, View} from 'react-native';
+import {
+  KeplerVideoView,
+  VideoPlayer,
+} from '@amazon-devices/react-native-w3cmedia';
+import {Focusable} from '../components/Focusable';
+import {Body, Metadata, ScreenTitle, SectionHeading} from '../components/Text';
+import {ErrorState} from '../components/ErrorState';
+import {
+  TRANSPORT_HEIGHT,
+  TransportControls,
+} from '../components/TransportControls';
+import {SCREEN, captionPlacement, signerBox} from '../design/geometry';
 import {
   captionSize,
   colour,
@@ -30,21 +36,26 @@ import {
   signerOpacity,
   space,
 } from '../design/tokens';
-import { SignerControls } from './SignerControls';
-import { CaptionMenu } from './CaptionMenu';
-import { SEEK_SECONDS, useRemote, type RemoteAction } from '../input/remote';
-import { useBack } from '../input/useBack';
-import { DIAG, diag } from '../diagnostics';
-import type { Preferences } from '../state/preferences';
-import { humanSignTracks, trackAspect, type TitleManifest } from '../stm/types';
-import { isUnreviewed, trackForMode, useCaptions } from '../stm/useCaptions';
-import { bundledMain, bundledSigner } from '../bundledMedia';
-import { activeCue } from '../stm/webvtt';
-import { px } from '../design/scale';
-import { hasFinished, playbackDuration } from '../playback';
-import { signerTimeFor } from '../playback/sync';
-import { IdleDetector, activityAt } from '../playback/idle';
-import { prefersReducedMotion } from '../design/motion';
+import {SignerControls} from './SignerControls';
+import {CaptionMenu} from './CaptionMenu';
+import {SEEK_SECONDS, useRemote, type RemoteAction} from '../input/remote';
+import {useBack} from '../input/useBack';
+import {DIAG, diag} from '../diagnostics';
+import type {Preferences} from '../state/preferences';
+import {
+  formatDuration,
+  humanSignTracks,
+  trackAspect,
+  type TitleManifest,
+} from '../stm/types';
+import {isUnreviewed, trackForMode, useCaptions} from '../stm/useCaptions';
+import {bundledMain, bundledSigner} from '../bundledMedia';
+import {activeCue} from '../stm/webvtt';
+import {px} from '../design/scale';
+import {hasFinished, playbackDuration} from '../playback';
+import {signerTimeFor} from '../playback/sync';
+import {IdleDetector, activityAt} from '../playback/idle';
+import {prefersReducedMotion} from '../design/motion';
 
 /** Set true to trace both surfaces in the device log, as Experiment 2 did. */
 const LOG_SURFACES = false;
@@ -52,7 +63,7 @@ const LOG_SURFACES = false;
 /** How long after Watch again to stop asking whether the programme has ended. */
 const REPLAY_GRACE_MS = 1500;
 
-type Surface = { player: VideoPlayer | null; failed: boolean };
+type Surface = {player: VideoPlayer | null; failed: boolean};
 
 /**
  * Seek once the player knows enough to seek, then give up rather than never start.
@@ -63,7 +74,10 @@ type Surface = { player: VideoPlayer | null; failed: boolean };
  * and always started from the beginning, which nobody noticed because the
  * position was never persisted either (audit, 2026-09-22).
  */
-async function seekOnceSeekable(p: VideoPlayer, seconds: number): Promise<void> {
+async function seekOnceSeekable(
+  p: VideoPlayer,
+  seconds: number,
+): Promise<void> {
   for (let i = 0; i < 40 && p.readyState < 1; i += 1) {
     await new Promise<void>((r) => setTimeout(() => r(), 100));
   }
@@ -76,7 +90,7 @@ async function seekOnceSeekable(p: VideoPlayer, seconds: number): Promise<void> 
  * is the platform telling us something, not our own asymmetry.
  */
 function useSurface(src: string | null, autoplay: boolean, startAtS = 0) {
-  const ref = useRef<Surface>({ player: null, failed: false });
+  const ref = useRef<Surface>({player: null, failed: false});
   const [, force] = useState(0);
   // Read once at mount. A resume position is a property of how this playback
   // began, not something that should tear the surface down if it changed.
@@ -98,13 +112,13 @@ function useSurface(src: string | null, autoplay: boolean, startAtS = 0) {
         p.load();
         if (startAt.current > 0) await seekOnceSeekable(p, startAt.current);
         if (cancelled) return;
-        ref.current = { player: p, failed: false };
+        ref.current = {player: p, failed: false};
         if (autoplay) await p.play();
         force((n) => n + 1);
       } catch {
         // Degrade, never block: a failed signer track still leaves the
         // programme watchable, and the screen says so.
-        ref.current = { player: null, failed: true };
+        ref.current = {player: null, failed: true};
         force((n) => n + 1);
       }
     })();
@@ -113,7 +127,7 @@ function useSurface(src: string | null, autoplay: boolean, startAtS = 0) {
       // Certification requires releasing playback resources when backgrounded.
       // With two surfaces both must come down.
       void p.deinitialize().catch(() => undefined);
-      ref.current = { player: null, failed: false };
+      ref.current = {player: null, failed: false};
     };
   }, [src, autoplay]);
 
@@ -152,7 +166,10 @@ export const Player = ({
   const anyOverlayOpen = controlsOpen || captionMenuOpen;
   const [chromeVisible, setChromeVisible] = useState(false);
 
-  const signTrack = useMemo(() => humanSignTracks(manifest)[0] ?? null, [manifest]);
+  const signTrack = useMemo(
+    () => humanSignTracks(manifest)[0] ?? null,
+    [manifest],
+  );
 
   // Bundled media first, the manifest's URL otherwise. A title that ships with
   // the app plays with no network at all.
@@ -184,11 +201,12 @@ export const Player = ({
     () => trackForMode(manifest.captions, prefs.captionMode),
     [manifest.captions, prefs.captionMode],
   );
-  const { cues, status: captionStatus } = useCaptions(captionTrack);
+  const {cues, status: captionStatus} = useCaptions(captionTrack);
   useEffect(() => {
     diag(
-      `captions mode=${prefs.captionMode} track=${captionTrack?.url ?? 'none'} ` +
-        `status=${captionStatus} cues=${cues.length}`,
+      `captions mode=${prefs.captionMode} track=${
+        captionTrack?.url ?? 'none'
+      } ` + `status=${captionStatus} cues=${cues.length}`,
     );
   }, [captionStatus, cues.length, captionTrack, prefs.captionMode]);
   const [cueText, setCueText] = useState('');
@@ -210,7 +228,13 @@ export const Player = ({
 
   const box = useMemo(
     () =>
-      signTrack ? signerBox(prefs.signerCorner, prefs.signerSize, trackAspect(signTrack)) : null,
+      signTrack
+        ? signerBox(
+            prefs.signerCorner,
+            prefs.signerSize,
+            trackAspect(signTrack),
+          )
+        : null,
     [signTrack, prefs.signerCorner, prefs.signerSize],
   );
   const captions = useMemo(
@@ -275,7 +299,10 @@ export const Player = ({
    * viewers want this is an assumption, and the submission says so.
    */
   const activity = signTrack?.activity ?? null;
-  const detector = useMemo(() => (activity ? new IdleDetector(activity) : null), [activity]);
+  const detector = useMemo(
+    () => (activity ? new IdleDetector(activity) : null),
+    [activity],
+  );
   const autoDim = prefs.signerAutoDim && detector !== null;
   const [dimmed, setDimmed] = useState(false);
   useEffect(() => {
@@ -297,9 +324,9 @@ export const Player = ({
       setEnded((was) => {
         if (finished !== was) {
           diag(
-            `ended ${was} to ${finished} at ${p.currentTime.toFixed(2)}/${duration} flag=${
-              p.ended
-            }`,
+            `ended ${was} to ${finished} at ${p.currentTime.toFixed(
+              2,
+            )}/${duration} flag=${p.ended}`,
           );
         }
         return finished;
@@ -308,7 +335,11 @@ export const Player = ({
         const idle = detector.update(Math.round(p.currentTime * 1000));
         setDimmed((was) => {
           if (idle !== was)
-            diag(`signer ${idle ? 'dim' : 'restore'} at ${p.currentTime.toFixed(1)}`);
+            diag(
+              `signer ${idle ? 'dim' : 'restore'} at ${p.currentTime.toFixed(
+                1,
+              )}`,
+            );
           return idle;
         });
       }
@@ -332,9 +363,12 @@ export const Player = ({
    * Instant under reduced motion — the fade is the movement, and that is the
    * thing the setting removes.
    */
-  const scrimAlpha = useRef(new Animated.Value(1 - signerOpacity[prefs.signerOpacity])).current;
+  const scrimAlpha = useRef(
+    new Animated.Value(1 - signerOpacity[prefs.signerOpacity]),
+  ).current;
   useEffect(() => {
-    const target = 1 - (dimmed ? signerIdleOpacity : signerOpacity[prefs.signerOpacity]);
+    const target =
+      1 - (dimmed ? signerIdleOpacity : signerOpacity[prefs.signerOpacity]);
     if (prefersReducedMotion()) {
       scrimAlpha.setValue(target);
       return;
@@ -354,7 +388,10 @@ export const Player = ({
 
   useEffect(() => {
     if (!chromeVisible && !DIAG) return;
-    const read = () => setPositionMs(Math.round((mainRef.current.player?.currentTime ?? 0) * 1000));
+    const read = () =>
+      setPositionMs(
+        Math.round((mainRef.current.player?.currentTime ?? 0) * 1000),
+      );
     read();
     const id = setInterval(read, 250);
     return () => clearInterval(id);
@@ -367,7 +404,10 @@ export const Player = ({
     return () => clearTimeout(t);
   }, [chromeVisible, anyOverlayOpen]);
 
-  const position = useCallback(() => mainRef.current.player?.currentTime ?? 0, [mainRef]);
+  const position = useCallback(
+    () => mainRef.current.player?.currentTime ?? 0,
+    [mainRef],
+  );
 
   // The screen cannot be inspected from a script, so both surfaces can be
   // reported to the device log once a second. Off by default; the cost is a
@@ -381,7 +421,9 @@ export const Player = ({
       ] as const) {
         const p = r.current.player;
         console.log(
-          `PLAY ${label} ready=${p?.readyState ?? -1} t=${(p?.currentTime ?? 0).toFixed(2)}` +
+          `PLAY ${label} ready=${p?.readyState ?? -1} t=${(
+            p?.currentTime ?? 0
+          ).toFixed(2)}` +
             ` paused=${p?.paused ?? true} failed=${r.current.failed}`,
         );
       }
@@ -403,13 +445,13 @@ export const Player = ({
   // The latest callback is held in a ref so the unmount effect can depend on
   // nothing, and a flag makes the call idempotent.
   const exited = useRef(false);
-  const latest = useRef({ onExit, position });
-  latest.current = { onExit, position };
+  const latest = useRef({onExit, position});
+  latest.current = {onExit, position};
 
   const leave = useCallback(() => {
     if (exited.current) return;
     exited.current = true;
-    const { onExit: exit, position: at } = latest.current;
+    const {onExit: exit, position: at} = latest.current;
     exit(Math.round(at() * 1000));
   }, []);
 
@@ -572,9 +614,13 @@ export const Player = ({
           <View
             style={[
               styles.signer,
-              { left: box.left, top: box.top, width: box.width, height: box.height },
-            ]}
-          >
+              {
+                left: box.left,
+                top: box.top,
+                width: box.width,
+                height: box.height,
+              },
+            ]}>
             {signer.player ? (
               <KeplerVideoView
                 style={StyleSheet.absoluteFill}
@@ -592,8 +638,13 @@ export const Player = ({
             style={[
               styles.signer,
               styles.scrim,
-              { left: box.left, top: box.top, width: box.width, height: box.height },
-              { opacity: scrimAlpha },
+              {
+                left: box.left,
+                top: box.top,
+                width: box.width,
+                height: box.height,
+              },
+              {opacity: scrimAlpha},
             ]}
           />
         </>
@@ -612,7 +663,7 @@ export const Player = ({
       {!ready && !main.failed ? (
         <View style={styles.loading} accessibilityLiveRegion="polite">
           <Image
-            source={{ uri: manifest.video.poster }}
+            source={{uri: manifest.video.poster}}
             style={[StyleSheet.absoluteFill, styles.loadingPoster]}
             resizeMode="cover"
             accessible={false}
@@ -648,7 +699,8 @@ export const Player = ({
           band with only the provenance label in it, which reads as a caption
           that failed to arrive — so it goes, and comes back with the next cue.
           A failed track keeps the plate to say so. */}
-      {prefs.captionMode !== 'off' && (cueText !== '' || captionStatus === 'failed') ? (
+      {prefs.captionMode !== 'off' &&
+      (cueText !== '' || captionStatus === 'failed') ? (
         <View
           style={[
             styles.captionPlate,
@@ -657,8 +709,7 @@ export const Player = ({
               left: captions.left,
               right: captions.right,
             },
-          ]}
-        >
+          ]}>
           {/* AI-simplified text is labelled wherever it is shown. The
               manifest guarantees `reviewed: false`; saying so only in a file
               the viewer never opens would honour the letter of that and not
@@ -670,7 +721,11 @@ export const Player = ({
               Simplified by AI · not checked by a person
             </Metadata>
           ) : null}
-          <Body style={[styles.captionText, { fontSize: captionSize[prefs.captionSize] }]}>
+          <Body
+            style={[
+              styles.captionText,
+              {fontSize: captionSize[prefs.captionSize]},
+            ]}>
             {cueText}
           </Body>
           {captionStatus === 'failed' ? (
@@ -684,29 +739,36 @@ export const Player = ({
       {/* The end of the programme is a state, not an absence. */}
       {ended && !anyOverlayOpen ? (
         <View style={styles.endPanel}>
-          <SectionHeading style={styles.endHeading}>
-            That is the end of this programme
-          </SectionHeading>
-          <View style={styles.endActions}>
-            <Focusable
-              variant="primary"
-              style={styles.endPrimary}
-              scaleOnFocus={false}
-              hasTVPreferredFocus
-              claimsFocus={ended}
-              accessibilityLabel="Play this programme again from the start"
-              onPress={replay}
-            >
-              <Body style={styles.endPrimaryLabel}>Watch again</Body>
-            </Focusable>
-            <Focusable
-              style={styles.endSecondary}
-              scaleOnFocus={false}
-              accessibilityLabel="Go back to the title page"
-              onPress={leave}
-            >
-              <Body>Back to the title</Body>
-            </Focusable>
+          {/* A solid card, not text on the last frame: whatever that frame
+              holds — often a face — the words stay readable. */}
+          <View style={styles.endCard}>
+            <Metadata style={styles.endEyebrow}>End of programme</Metadata>
+            <SectionHeading numberOfLines={2} style={styles.endTitle}>
+              {manifest.title}
+            </SectionHeading>
+            <Metadata style={styles.endMeta}>
+              {manifest.source.publisher} ·{' '}
+              {formatDuration(manifest.durationMs)}
+            </Metadata>
+            <View style={styles.endActions}>
+              <Focusable
+                variant="primary"
+                style={styles.endPrimary}
+                scaleOnFocus={false}
+                hasTVPreferredFocus
+                claimsFocus={ended}
+                accessibilityLabel="Play this programme again from the start"
+                onPress={replay}>
+                <Body style={styles.endPrimaryLabel}>Watch again</Body>
+              </Focusable>
+              <Focusable
+                style={styles.endSecondary}
+                scaleOnFocus={false}
+                accessibilityLabel="Go back to the title page"
+                onPress={leave}>
+                <Body>Back to the title</Body>
+              </Focusable>
+            </View>
           </View>
         </View>
       ) : null}
@@ -764,7 +826,7 @@ export const Player = ({
 };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: '#000000' },
+  root: {flex: 1, backgroundColor: '#000000'},
   endPanel: {
     position: 'absolute',
     left: 0,
@@ -774,10 +836,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     // Dim rather than black: the last frame staying faintly visible says the
-    // programme ended, where a black screen says something went wrong.
-    backgroundColor: 'rgba(0, 0, 0, 0.72)',
+    // programme ended, where a black screen says something went wrong. Deep
+    // enough (it covers the interpreter's box too) that it reads as a
+    // backdrop, not a frozen video.
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
   },
-  endHeading: { marginBottom: space(3) },
+  endCard: {
+    backgroundColor: colour.bgSurface,
+    borderRadius: layout.overlayRadius,
+    padding: px(48),
+    maxWidth: px(880),
+  },
+  endEyebrow: {color: colour.textSecondary, marginBottom: space(1)},
+  endTitle: {color: colour.textPrimary},
+  endMeta: {
+    color: colour.textSecondary,
+    marginTop: space(1),
+    marginBottom: space(4),
+  },
   trace: {
     position: 'absolute',
     left: safeArea.horizontal,
@@ -786,20 +862,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: space(2),
     paddingVertical: space(1),
   },
-  endActions: { flexDirection: 'row' },
+  endActions: {flexDirection: 'row'},
   endPrimary: {
     paddingHorizontal: space(5),
     paddingVertical: space(2),
     borderRadius: layout.overlayRadius,
   },
-  endPrimaryLabel: { color: colour.onAccent },
+  endPrimaryLabel: {color: colour.onAccent},
   endSecondary: {
+    // Raised, so on the card it still reads as a button, not a line of text.
+    backgroundColor: colour.bgRaised,
+    borderRadius: layout.overlayRadius,
     marginLeft: space(2),
     paddingHorizontal: space(4),
     paddingVertical: space(2),
   },
-  signer: { position: 'absolute', borderRadius: px(8), overflow: 'hidden' },
-  scrim: { backgroundColor: '#000000' },
+  signer: {position: 'absolute', borderRadius: px(8), overflow: 'hidden'},
+  scrim: {backgroundColor: '#000000'},
   loading: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: colour.bgBase,
@@ -807,9 +886,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: safeArea.horizontal,
   },
   // Faint on purpose: it is a backdrop for the words, not the picture itself.
-  loadingPoster: { opacity: 0.22 },
-  loadingText: { maxWidth: px(1200) },
-  loadingLine: { marginTop: space(1.5) },
+  loadingPoster: {opacity: 0.22},
+  loadingText: {maxWidth: px(1200)},
+  loadingLine: {marginTop: space(1.5)},
   notice: {
     position: 'absolute',
     bottom: space(3),
@@ -829,6 +908,10 @@ const styles = StyleSheet.create({
   // Centred over the text, not at the plate's edge: the plate spans the screen
   // and its background vanishes against black, so an edge-aligned label reads
   // as floating in a corner rather than belonging to the caption.
-  captionProvenance: { color: colour.textSecondary, marginBottom: space(1), alignSelf: 'center' },
-  captionText: { color: colour.captionText, textAlign: 'center' },
+  captionProvenance: {
+    color: colour.textSecondary,
+    marginBottom: space(1),
+    alignSelf: 'center',
+  },
+  captionText: {color: colour.captionText, textAlign: 'center'},
 });

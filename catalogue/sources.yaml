@@ -14,7 +14,8 @@
 #   title              display title
 #   url                where it was published (the page, not necessarily the file)
 #   publisher          who published it
-#   production_credit  who actually produced it; "verified: in-house" or the contractor's name
+#   production_credit  who actually produced it, as shown to viewers ("In-house, Scottish Parliament TV",
+#                      or the contractor's name). Verified before entry; say how in notes, not here.
 #   licence            public-domain-usgov | cc0-1.0 | cc-by-4.0 | <SPDX id> | unclear
 #   attribution        the text the app will display on the title detail screen
 #   acquisition_route  agency download page | public archive (which) | direct request | (never a YouTube rip)
@@ -39,7 +40,7 @@
 #     title: "Example briefing, 14 March 2026"
 #     url: https://www.example.gov/briefings/2026-03-14
 #     publisher: Example Agency
-#     production_credit: "verified: in-house"
+#     production_credit: "In-house"
 #     licence: public-domain-usgov
 #     attribution: "Example Agency. Public domain."
 #     acquisition_route: agency download page
@@ -63,7 +64,7 @@ sources:
     title: "First Minister's Questions (Party Leaders), British Sign Language"
     url: https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026
     publisher: The Scottish Parliament
-    production_credit: "verified: in-house, Scottish Parliament TV"
+    production_credit: "In-house, Scottish Parliament TV"
     licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream (hlsStreamUrl from /Player/PlaybackModel/{eventId}, as shown on the event page's Share tab)"
@@ -88,7 +89,7 @@ sources:
     title: "First Minister's Questions (Party Leaders), British Sign Language — 2-minute excerpt"
     url: https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026
     publisher: The Scottish Parliament
-    production_credit: "verified: in-house, Scottish Parliament TV"
+    production_credit: "In-house, Scottish Parliament TV"
     licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream, listed on the event page's Share tab"
@@ -114,7 +115,7 @@ sources:
     title: "First Minister's Questions (BSL) — automatic extraction"
     url: https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026
     publisher: The Scottish Parliament
-    production_credit: "verified: in-house, Scottish Parliament TV"
+    production_credit: "In-house, Scottish Parliament TV"
     licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream, listed on the event page's Share tab"
@@ -140,7 +141,7 @@ sources:
     title: "First Minister's Questions (Backbench Members), British Sign Language"
     url: https://www.scottishparliament.tv/meeting/first-ministers-questions-backbench-members-bsl-september-15-2026
     publisher: The Scottish Parliament
-    production_credit: "verified: in-house, Scottish Parliament TV"
+    production_credit: "In-house, Scottish Parliament TV"
     licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream, listed on the event page's Share tab"
@@ -164,7 +165,7 @@ sources:
     title: "First Minister's Questions (Backbench Members), British Sign Language — 2-minute excerpt"
     url: https://www.scottishparliament.tv/meeting/first-ministers-questions-backbench-members-bsl-september-15-2026
     publisher: The Scottish Parliament
-    production_credit: "verified: in-house, Scottish Parliament TV"
+    production_credit: "In-house, Scottish Parliament TV"
     licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream, listed on the event page's Share tab"
@@ -180,7 +181,7 @@ sources:
     title: "Ministerial Statement: Raising Standards and Delivering Excellence for Every Child, British Sign Language"
     url: https://www.scottishparliament.tv/meeting/ministerial-statement-raising-standards-and-delivering-excellence-for-every-child-bsl-september-2-2026
     publisher: The Scottish Parliament
-    production_credit: "verified: in-house, Scottish Parliament TV"
+    production_credit: "In-house, Scottish Parliament TV"
     licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream, listed on the event page's Share tab"
@@ -196,7 +197,7 @@ sources:
     title: "Scottish Government Debate: Programme for Government 2026-31, British Sign Language"
     url: https://www.scottishparliament.tv/meeting/scottish-government-debate-programme-for-government-2026-31-bsl-september-1-2026
     publisher: The Scottish Parliament
-    production_credit: "verified: in-house, Scottish Parliament TV"
+    production_credit: "In-house, Scottish Parliament TV"
     licence: "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)"
     attribution: "Contains information licensed under the Scottish Parliament Copyright Licence."
     acquisition_route: "publisher's own stream, listed on the event page's Share tab"

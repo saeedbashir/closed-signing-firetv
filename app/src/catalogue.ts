@@ -273,7 +273,7 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
       "url": "https://www.scottishparliament.tv/meeting/first-ministers-questions-party-leaders-bsl-september-17-2026",
       "licence": "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)",
       "attribution": "Contains information licensed under the Scottish Parliament Copyright Licence.",
-      "productionCredit": "verified: in-house, Scottish Parliament TV",
+      "productionCredit": "In-house, Scottish Parliament TV",
       "acquisitionRoute": "publisher's own stream (hlsStreamUrl from /Player/PlaybackModel/{eventId}, as shown on the event page's Share tab)"
     },
     "video": {
@@ -2392,7 +2392,7 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
       "url": "https://www.scottishparliament.tv/meeting/first-ministers-questions-backbench-members-bsl-september-15-2026",
       "licence": "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)",
       "attribution": "Contains information licensed under the Scottish Parliament Copyright Licence.",
-      "productionCredit": "verified: in-house, Scottish Parliament TV",
+      "productionCredit": "In-house, Scottish Parliament TV",
       "acquisitionRoute": "publisher's own stream, listed on the event page's Share tab"
     },
     "video": {
@@ -4372,7 +4372,7 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
       "url": "https://www.scottishparliament.tv/meeting/ministerial-statement-raising-standards-and-delivering-excellence-for-every-child-bsl-september-2-2026",
       "licence": "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)",
       "attribution": "Contains information licensed under the Scottish Parliament Copyright Licence.",
-      "productionCredit": "verified: in-house, Scottish Parliament TV",
+      "productionCredit": "In-house, Scottish Parliament TV",
       "acquisitionRoute": "publisher's own stream, listed on the event page's Share tab"
     },
     "video": {
@@ -4548,7 +4548,7 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
       "url": "https://www.scottishparliament.tv/meeting/scottish-government-debate-programme-for-government-2026-31-bsl-september-1-2026",
       "licence": "Scottish Parliament Copyright Licence (aligned with OGL-UK-3.0)",
       "attribution": "Contains information licensed under the Scottish Parliament Copyright Licence.",
-      "productionCredit": "verified: in-house, Scottish Parliament TV",
+      "productionCredit": "In-house, Scottish Parliament TV",
       "acquisitionRoute": "publisher's own stream, listed on the event page's Share tab"
     },
     "video": {
