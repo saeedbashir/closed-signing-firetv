@@ -58,6 +58,16 @@ export class ProcessingStack extends cdk.Stack {
     });
     props.sources.grantRead(jobRole);
     props.assets.grantReadWrite(jobRole);
+    // Amazon Transcribe as the alignment clock. Jobs read the media with the
+    // caller's credentials (the grantRead above) and, with no output bucket
+    // given, hand back a short-lived link to the result: start and poll are
+    // the only calls. Transcribe has no resource-level permissions for these.
+    jobRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ['transcribe:StartTranscriptionJob', 'transcribe:GetTranscriptionJob'],
+        resources: ['*'],
+      }),
+    );
 
     const logGroup = new logs.LogGroup(this, 'JobLogs', {
       retention: logs.RetentionDays.TWO_WEEKS,
@@ -87,6 +97,10 @@ export class ProcessingStack extends cdk.Stack {
         STM_ASSETS_BUCKET: props.assets.bucketName,
         // The detector cache lives on task storage; the image ships no weights.
         STM_MODEL_DIR: '/tmp/models',
+        // On AWS, Amazon Transcribe is the clock for caption alignment: managed,
+        // no model download, 80 s for a 32-minute session. Whisper stays the
+        // default everywhere else. Measurements in signed-track-manifest asr.py.
+        STM_ASR: 'transcribe',
       },
       // Overridden per submission with the title id; see infra/README.md.
       command: ['--help'],

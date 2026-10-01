@@ -218,3 +218,20 @@ test('cdn=false deploys the assets bucket without a CloudFront distribution', ()
   template.resourceCountIs('AWS::CloudFront::Distribution', 0);
   template.hasOutput('AssetsBucketName', {});
 });
+
+test('the extraction job may call Amazon Transcribe and uses it as the clock', () => {
+  const { processing } = build();
+  processing.hasResourceProperties('AWS::IAM::Policy', {
+    PolicyDocument: Match.objectLike({
+      Statement: Match.arrayWith([
+        Match.objectLike({
+          Action: ['transcribe:StartTranscriptionJob', 'transcribe:GetTranscriptionJob'],
+          Effect: 'Allow',
+        }),
+      ]),
+    }),
+  });
+  const jobDefs = processing.findResources('AWS::Batch::JobDefinition');
+  expect(JSON.stringify(jobDefs)).toContain('"Name":"STM_ASR","Value":"transcribe"');
+});
+
