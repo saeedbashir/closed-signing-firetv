@@ -38,8 +38,8 @@ else in the pipeline or the app changes.
 $20 project spend limit and $250 of credits ($150 "Amazon Devices Global Hackathon
 - Teams A4", $100 Free Tier). The upgrade changed billing, not permissions:
 
-- The same policy, `p-o59ka7dj` in organisation `<management-account>` (the hackathon's,
-  not this account's), still explicitly denies CloudFormation, EC2, Batch, ECR,
+- The same policy, `p-o59ka7dj` in organisation `<management-account>` (AWS's own guardrail organisation for the
+  simplified account experience, as it later turned out — see below), still explicitly denies CloudFormation, EC2, Batch, ECR,
   Lambda, DynamoDB and IAM. `s3 ls` now succeeds (no buckets). The processing
   stack cannot be deployed in this account by anyone in it; that is disclosed, not
   worked around.
@@ -120,6 +120,8 @@ aws s3 ls s3://closed-signing --profile cloudflare-r2 --endpoint-url "$R2" --reg
 stm run ../closed-signing-firetv/catalogue/sources.yaml --id <id> --out out --work work
 
 # 2. make the manifest's URLs absolute, validate, upload, and check every file answers
+export R2_BUCKET=closed-signing R2_PUBLIC_BASE=https://pub-<hash>.r2.dev \
+       R2_ENDPOINT=https://<r2-account-id>.r2.cloudflarestorage.com
 tools/publish-title.sh out <id>
 
 # 3. regenerate app/src/catalogue.ts from the published manifests and rebuild

@@ -8,15 +8,25 @@
 # analysis report. HOSTING.md described these three steps in prose; this is the
 # prose as a command, so a judge can publish a title the same way we did.
 #
-# Needs the `cloudflare-r2` AWS profile (HOSTING.md) and `validate-stm` on PATH or
-# a uv checkout of signed-track-manifest beside this repository.
+# Configuration comes from the environment, so the script names no account:
+#
+#   R2_BUCKET        bucket name                     e.g. closed-signing
+#   R2_PUBLIC_BASE   public URL of the bucket        e.g. https://pub-<hash>.r2.dev
+#   R2_ENDPOINT      S3 API endpoint                 https://<account-id>.r2.cloudflarestorage.com
+#   R2_PROFILE       AWS CLI profile with R2 keys    default: cloudflare-r2
+#
+# and `validate-stm` on PATH or a uv checkout of signed-track-manifest beside this
+# repository. Any S3-compatible store works the same way.
 set -euo pipefail
 
 OUT="${1:?out dir}"; ID="${2:?title id}"
+: "${R2_BUCKET:?set R2_BUCKET (see the header of this script)}"
+: "${R2_PUBLIC_BASE:?set R2_PUBLIC_BASE (see the header of this script)}"
+: "${R2_ENDPOINT:?set R2_ENDPOINT (see the header of this script)}"
+R2_PROFILE="${R2_PROFILE:-cloudflare-r2}"
 DIR="$OUT/$ID"
-BUCKET="s3://closed-signing/titles/$ID"
-PUBLIC="https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/$ID"
-R2_ENDPOINT="${R2_ENDPOINT:-https://<r2-account-id>.r2.cloudflarestorage.com}"
+BUCKET="s3://$R2_BUCKET/titles/$ID"
+PUBLIC="${R2_PUBLIC_BASE%/}/titles/$ID"
 
 [ -f "$DIR/manifest.json" ] || { echo "no manifest at $DIR/manifest.json" >&2; exit 1; }
 
@@ -44,7 +54,7 @@ else
 fi
 
 aws s3 cp "$DIR/" "$BUCKET/" --recursive --exclude "analysis.json" \
-  --profile cloudflare-r2 --endpoint-url "$R2_ENDPOINT" --region auto --only-show-errors
+  --profile "$R2_PROFILE" --endpoint-url "$R2_ENDPOINT" --region auto --only-show-errors
 echo "uploaded to $BUCKET"
 
 # The failure mode is silent and looks like a codec error on the device, so check

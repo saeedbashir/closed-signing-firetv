@@ -134,7 +134,11 @@ It fetched the 500 MB source from the sources bucket, cropped, filled, measured
 activity, fetched the Official Report, ran faster-whisper (the `small` model
 downloaded from Hugging Face on first use) and aligned, and uploaded five files to
 `s3://<assets>/titles/sp-fmqs-backbench-bsl-2026-09-15-full/` with the right
-content types. The manifest validates. Its 458 caption cues differ from the
+content types. The manifest validates. Since 2026-10-01 the job uses Amazon
+Transcribe for the caption timings (`STM_ASR=transcribe` on the job definition;
+the job role may start and poll Transcribe jobs, and nothing else was added):
+Bedrock is closed to the account, so Transcribe is the AWS AI service in the
+pipeline. Its 458 caption cues differ from the
 Mac-built 459 only at cue boundaries: word timestamps from CTranslate2 on a
 different CPU move by a few hundred milliseconds, and the segmenter cuts
 accordingly; the text is the same Report.
