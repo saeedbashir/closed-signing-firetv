@@ -68,6 +68,23 @@ Amazon Bedrock was meant to write the simplified track; the account has been
 refused Anthropic model access (support case open, `friction-log/015`), so the
 simplified track in the catalogue was written by hand and is labelled as such.
 
+## What's next
+
+1. **Testing with Deaf viewers**, through Deaf-led organisations — nobody who signs
+   has used this yet, and their answers decide the defaults.
+2. **People checking the AI-written captions**: a review step where a named
+   reviewer signs a simplified track off (`Caption.mark_reviewed` in the format)
+   and the on-screen badge says who.
+3. **Automatic bounding** good enough to drop the hand-measured rectangle (a
+   spatial-uniformity stopping rule, shipped only if it beats IoU 0.727).
+4. **More publishers and sign languages**, from footage they already publish.
+5. **Publisher export**: the interpreter feed delivered as its own layer, no
+   extraction needed.
+6. **Live**, as the ITU model intends: the interpreter as a second stream.
+7. **Fire TV hardware and the Appstore.**
+8. **Wider access**: screen reader on hardware for deafblind viewers;
+   viewer-adjustable interpreter timing.
+
 ## Run it
 
 See [`app/README.md`](app/README.md): SDK versions, build, install on the Vega
