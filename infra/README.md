@@ -138,7 +138,9 @@ content types. The manifest validates. Since 2026-10-01 the job uses Amazon
 Transcribe for the caption timings (`STM_ASR=transcribe` on the job definition;
 the job role may start and poll Transcribe jobs, and nothing else was added):
 Bedrock is closed to the account, so Transcribe is the AWS AI service in the
-pipeline. Its 458 caption cues differ from the
+pipeline. Second run, the same session with Transcribe as the clock (job
+definition revision 2): `SUCCEEDED` in 29 minutes, 3,866 of 4,615 Report words
+anchored (84 %), 461 cues, five files uploaded. Its 458 caption cues differ from the
 Mac-built 459 only at cue boundaries: word timestamps from CTranslate2 on a
 different CPU move by a few hundred milliseconds, and the segmenter cuts
 accordingly; the text is the same Report.
