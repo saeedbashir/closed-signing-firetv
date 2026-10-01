@@ -17,28 +17,56 @@ performed by a human interpreter, and the format records that with a required
 `provenance` field. The pipeline finds a person and cuts a rectangle; it does not
 recognise signs or interpret meaning.
 
-## Status — 22 September 2026
+## What works
 
-Working end to end on the Vega Virtual Device (SDK 0.24.12044): two video surfaces
-decoding at real time, the signer layer under D-pad control, captions with collision
-avoidance, preferences persisted, any HTTPS manifest openable by address, and an
-opt-in fade of the interpreter while she is idle, driven by the manifest's
-per-second activity track.
+Verified on the Vega Virtual Device (SDK 0.24.12044), release build:
 
-Five titles ship in the bundled catalogue: four Scottish Parliament BSL sessions
-(120-second excerpts, hand-measured crop, under the Scottish Parliament Copyright
-Licence) and one synthetic demonstration title. Media is served from Cloudflare R2
-over HTTPS — see `HOSTING.md` for why not S3 yet.
+- **Two video layers at real time** — the programme, and the interpreter as a
+  separate surface the viewer moves to any corner, resizes, fades or hides from
+  the remote. Set once in a first-run walkthrough, remembered after.
+- **Captions that are the publisher's own words.** The verbatim track on both
+  Scottish Parliament sessions is the Parliament's Official Report, timed to the
+  audio automatically (85–89 % of its words anchored to the recognised speech)
+  and published unchanged. Speaker names on each change; stage directions such as
+  `[Applause.]` kept. Captions move out of the interpreter's way.
+- **A simplified caption track** on the Party Leaders session — plain English for
+  viewers whose first language is a signed one — labelled on screen as written by
+  AI and not checked by a person, as the format requires.
+- **Auto-dim**: the interpreter fades a little while the interpreter is not signing
+  (applause, pauses) and returns the moment signing starts, driven by a per-second activity track
+  the pipeline measures and the manifest carries.
+- Resume where you left off, a loading screen, an end-of-programme card, any HTTPS
+  manifest openable by address, plain-sentence errors with one focused action.
 
-Automatic extraction finds the interpreter on every real broadcast tried and
-classifies the layout correctly, but does not yet bound her tightly enough to
-publish unattended; the shipped titles use a hand-measured rectangle and the
-manifest says so (`method: manual-crop`). `experiments/e3-extraction/STATUS.md` has
-the numbers.
+## What is in the catalogue
 
-Built for the Build, Ship, Shape: Amazon Developer Hackathon — Fire TV track, with
-the AWS Builder and Open Source mini challenges. Private during the build; public on
-submission day.
+| Title | Length | Captions |
+| --- | --- | --- |
+| First Minister's Questions (Party Leaders), BSL — 17 Sep 2026 | 34:08 | Verbatim (Official Report) · Simplified |
+| First Minister's Questions (Backbench Members), BSL — 15 Sep 2026 | 31:57 | Verbatim (Official Report) |
+| Ministerial Statement and Government Debate, BSL — two excerpts | 2:00 each | — |
+| Demonstration — interpreter in a corner inset (synthetic) | 2:00 | Verbatim · Simplified |
+
+Scottish Parliament material is used under the Scottish Parliament Copyright
+Licence; every title's basis is in [`CONTENT-LICENCES.md`](CONTENT-LICENCES.md).
+Media is served from Cloudflare R2 over HTTPS ([`HOSTING.md`](HOSTING.md)).
+
+The interpreter rectangle on the Parliament titles is hand-measured (the manifest
+says so: `method: manual-crop`). The pipeline's automatic extraction finds the
+interpreter on every real broadcast tried and classifies the layout, but does not
+yet bound the interpreter tightly enough to publish unattended — IoU 0.727 against ground
+truth; [`experiments/e3-extraction/STATUS.md`](experiments/e3-extraction/STATUS.md).
+
+## On AWS
+
+The processing side runs on AWS, deployed with the CDK in [`infra/`](infra/):
+S3 for sources and assets, ECR for the pipeline image (built by GitHub Actions
+over OIDC — no stored keys), and **AWS Batch on Fargate** running the extraction
+end to end: a full 32-minute session in about 40 minutes, for about $0.15 of
+compute. **Amazon Transcribe** is the clock for caption alignment on AWS.
+Amazon Bedrock was meant to write the simplified track; the account has been
+refused Anthropic model access (support case open, `friction-log/015`), so the
+simplified track in the catalogue was written by hand and is labelled as such.
 
 ## Run it
 
@@ -52,17 +80,21 @@ Virtual Device, tests, and how to drive the device from a script.
 | `app/` | The Vega React Native app. |
 | `app/src/catalogue.ts` | The bundled catalogue, generated from published manifests by `tools/build-catalogue.mjs`. Do not hand-edit. |
 | `app/assets/` | The two media files for the synthetic demonstration title, so one title plays with no network at all; the launcher icon. |
+| `catalogue/published/` | The published caption tracks and manifests of the two full sessions, including the hand-written simplified track. |
 | `catalogue/sources.yaml` | Every title: licence, attribution, production credit, acquisition route, and the hand-measured crop where one is used. |
-| `tools/` | `build-catalogue.mjs` (regenerate the bundled catalogue from R2), `icon.swift` (draw the launcher icon from the design tokens). |
-| `infra/` | AWS CDK: S3, CloudFront, Batch on Fargate, Bedrock IAM. Synthesises without an account; not deployed — `HOSTING.md` says why. |
+| `tools/` | `build-catalogue.mjs` (regenerate the bundled catalogue), `publish-title.sh` (publish a processed title), `icon.swift` (draw the launcher icon from the design tokens). |
+| `infra/` | AWS CDK: S3, Batch on Fargate, ECR, Transcribe and Bedrock IAM, optional CloudFront. Deployed; `infra/README.md` has the state. |
 | `experiments/` | The two gate experiments, with their measurements: two decoders (passed on the VVD), extraction on real content (marginal, specifically). |
 | `friction-log/` | One entry per platform snag, written as it happened. Index in `FRICTION-LOG.md`. |
 | `CONTENT-LICENCES.md` | The acceptance rule, every title, every model, and its basis for inclusion. |
 | `HOSTING.md` | Where the media lives and the exact state of the AWS account. |
 | `notes/` | Session notes. |
 
-The format, the validator and the extraction pipeline live in the public companion
-repository, [`signed-track-manifest`](https://github.com/saeedbashir/signed-track-manifest).
+The format, the validator, the extraction pipeline and the caption aligner live in
+the public companion repository, [`signed-track-manifest`](https://github.com/saeedbashir/signed-track-manifest).
+
+Built for the Build, Ship, Shape: Amazon Developer Hackathon (2026) — Fire TV track,
+with the Open Source and AWS Builder mini challenges.
 
 ## Licence
 

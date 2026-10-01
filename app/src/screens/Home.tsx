@@ -6,17 +6,28 @@
  * A By-source rail was planned for when the catalogue had more than one
  * publisher; it does not yet.
  */
-import React, { useMemo } from 'react';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
-import { SignLanguageBadge as Badge } from '../components/Badge';
-import { Focusable } from '../components/Focusable';
-import { Body, CardTitle, Metadata, ScreenTitle, SectionHeading } from '../components/Text';
-import { colour, layout, safeArea, space } from '../design/tokens';
-import { formatDuration, isLowConfidence, type CatalogueEntry } from '../stm/types';
-import type { Preferences } from '../state/preferences';
-import { lastStorageError } from '../state/storage';
-import { DIAG } from '../diagnostics';
-import { px } from '../design/scale';
+import React, {useMemo} from 'react';
+import {Image, ScrollView, StyleSheet, View} from 'react-native';
+import {SignLanguageBadge as Badge, CaptionBadge} from '../components/Badge';
+import {BUNDLED_MANIFESTS} from '../catalogue';
+import {Focusable} from '../components/Focusable';
+import {
+  Body,
+  CardTitle,
+  Metadata,
+  ScreenTitle,
+  SectionHeading,
+} from '../components/Text';
+import {colour, layout, safeArea, space} from '../design/tokens';
+import {
+  formatDuration,
+  isLowConfidence,
+  type CatalogueEntry,
+} from '../stm/types';
+import type {Preferences} from '../state/preferences';
+import {lastStorageError} from '../state/storage';
+import {DIAG} from '../diagnostics';
+import {px} from '../design/scale';
 
 const Card = ({
   entry,
@@ -29,14 +40,16 @@ const Card = ({
   onOpen: () => void;
   first?: boolean;
 }): React.JSX.Element => {
-  const progress = resumeMs > 0 && entry.durationMs > 0 ? resumeMs / entry.durationMs : 0;
+  const progress =
+    resumeMs > 0 && entry.durationMs > 0 ? resumeMs / entry.durationMs : 0;
   return (
     <Focusable
       style={styles.card}
       onPress={onOpen}
       hasTVPreferredFocus={first}
-      accessibilityLabel={`${entry.title}, ${formatDuration(entry.durationMs)}`}
-    >
+      accessibilityLabel={`${entry.title}, ${formatDuration(
+        entry.durationMs,
+      )}`}>
       {(focused) => (
         <View>
           <View style={styles.poster}>
@@ -44,15 +57,25 @@ const Card = ({
                 title with no poster still shows its language rather than an
                 empty rectangle. */}
             <Image
-              source={{ uri: entry.poster }}
+              source={{uri: entry.poster}}
               style={[StyleSheet.absoluteFill, styles.posterImage]}
               resizeMode="cover"
               accessible={false}
             />
-            <Badge
-              languages={entry.signLanguages}
-              lowConfidence={isLowConfidence(entry)}
-            />
+            <View style={styles.badgeRow}>
+              <Badge
+                languages={entry.signLanguages}
+                lowConfidence={isLowConfidence(entry)}
+              />
+              {/* Catalogue entries carry no caption list; the bundled manifest
+                  does. A title opened by address shows no caption badge. */}
+              <View style={styles.badgeGap}>
+                <CaptionBadge
+                  captions={BUNDLED_MANIFESTS[entry.id]?.captions}
+                  compact
+                />
+              </View>
+            </View>
           </View>
           <CardTitle numberOfLines={2} dim={!focused} style={styles.cardTitle}>
             {entry.title}
@@ -60,7 +83,12 @@ const Card = ({
           <Metadata dim>{formatDuration(entry.durationMs)}</Metadata>
           {progress > 0 ? (
             <View style={styles.progressTrack}>
-              <View style={[styles.progressFill, { width: `${Math.round(progress * 100)}%` }]} />
+              <View
+                style={[
+                  styles.progressFill,
+                  {width: `${Math.round(progress * 100)}%`},
+                ]}
+              />
             </View>
           ) : null}
         </View>
@@ -136,7 +164,9 @@ export const Home = ({
           one surface where this platform lets anything be observed. */}
       {DIAG ? (
         <Metadata dim>
-          {`storage: ${lastStorageError() ?? 'ok'} · seen=${String(prefs.walkthroughSeen)} · corner=${prefs.signerCorner}`}
+          {`storage: ${lastStorageError() ?? 'ok'} · seen=${String(
+            prefs.walkthroughSeen,
+          )} · corner=${prefs.signerCorner}`}
         </Metadata>
       ) : null}
       <View style={styles.header}>
@@ -144,10 +174,16 @@ export const Home = ({
         <View style={styles.headerActions}>
           {/* The catalogue is what ships; this is what makes it a player for
               the format rather than a player for our three titles. */}
-          <Focusable style={styles.settings} onPress={onOpenUrl} scaleOnFocus={false}>
+          <Focusable
+            style={styles.settings}
+            onPress={onOpenUrl}
+            scaleOnFocus={false}>
             <Body>Open by address</Body>
           </Focusable>
-          <Focusable style={styles.settings} onPress={onSettings} scaleOnFocus={false}>
+          <Focusable
+            style={styles.settings}
+            onPress={onSettings}
+            scaleOnFocus={false}>
             <Body>Settings</Body>
           </Focusable>
         </View>
@@ -171,8 +207,11 @@ export const Home = ({
 };
 
 const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colour.bgBase },
-  content: { paddingVertical: safeArea.vertical, paddingLeft: safeArea.horizontal },
+  root: {flex: 1, backgroundColor: colour.bgBase},
+  content: {
+    paddingVertical: safeArea.vertical,
+    paddingLeft: safeArea.horizontal,
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -180,11 +219,15 @@ const styles = StyleSheet.create({
     paddingRight: safeArea.horizontal,
     marginBottom: space(4),
   },
-  headerActions: { flexDirection: 'row', alignItems: 'center' },
-  settings: { paddingHorizontal: space(3), paddingVertical: space(1.5) },
-  rail: { marginBottom: space(5) },
-  railTitle: { marginBottom: layout.railTitleGap },
-  card: { width: layout.card.width, marginRight: layout.railGutter, padding: space(1.5) },
+  headerActions: {flexDirection: 'row', alignItems: 'center'},
+  settings: {paddingHorizontal: space(3), paddingVertical: space(1.5)},
+  rail: {marginBottom: space(5)},
+  railTitle: {marginBottom: layout.railTitleGap},
+  card: {
+    width: layout.card.width,
+    marginRight: layout.railGutter,
+    padding: space(1.5),
+  },
   poster: {
     width: layout.card.width - space(3),
     height: layout.card.height,
@@ -194,20 +237,26 @@ const styles = StyleSheet.create({
     padding: space(1),
     overflow: 'hidden',
   },
-  posterImage: { borderRadius: px(8) },
-  cardTitle: { marginTop: space(1.5) },
+  posterImage: {borderRadius: px(8)},
+  badgeRow: {flexDirection: 'row', alignItems: 'flex-end'},
+  badgeGap: {marginLeft: space(1)},
+  cardTitle: {marginTop: space(1.5)},
   progressTrack: {
     height: px(6),
     backgroundColor: colour.borderSubtle,
     borderRadius: px(3),
     marginTop: space(1),
   },
-  progressFill: { height: px(6), backgroundColor: colour.accent, borderRadius: px(3) },
+  progressFill: {
+    height: px(6),
+    backgroundColor: colour.accent,
+    borderRadius: px(3),
+  },
   empty: {
     flex: 1,
     backgroundColor: colour.bgBase,
     justifyContent: 'center',
     paddingHorizontal: safeArea.horizontal,
   },
-  emptyBody: { marginTop: space(2) },
+  emptyBody: {marginTop: space(2)},
 });
