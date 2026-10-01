@@ -279,8 +279,8 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
     "video": {
       "main": {
         "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17-full/main.mp4",
-        "width": 1080,
-        "height": 1080,
+        "width": 1066,
+        "height": 758,
         "codec": "h264"
       },
       "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-bsl-2026-09-17-full/poster.jpg"
@@ -2398,8 +2398,8 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
     "video": {
       "main": {
         "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15-full/main.mp4",
-        "width": 1080,
-        "height": 1080,
+        "width": 1066,
+        "height": 758,
         "codec": "h264"
       },
       "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15-full/poster.jpg"
@@ -4378,8 +4378,8 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
     "video": {
       "main": {
         "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-ministerial-standards-bsl-2026-09-02/main.mp4",
-        "width": 1080,
-        "height": 1080,
+        "width": 1066,
+        "height": 758,
         "codec": "h264"
       },
       "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-ministerial-standards-bsl-2026-09-02/poster.jpg"
@@ -4554,8 +4554,8 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
     "video": {
       "main": {
         "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-debate-programme-government-bsl-2026-09-01/main.mp4",
-        "width": 1080,
-        "height": 1080,
+        "width": 1066,
+        "height": 758,
         "codec": "h264"
       },
       "poster": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-debate-programme-government-bsl-2026-09-01/poster.jpg"

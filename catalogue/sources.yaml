@@ -75,6 +75,9 @@ sources:
     sign_language: bfi
     language_label: British Sign Language
     crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    # The chamber picture inside the Parliament's purple broadcast frame, measured on
+    # all four sources (2026-10-01); 2 px inside the edges so no fringe survives.
+    main_rect: {x: 0, y: 110, w: 1066, h: 758}
     layout: side-panel
     verdict: candidate
     notes: >-
@@ -101,6 +104,9 @@ sources:
     # ends at x=1080 and the interpreter's panel runs to the right edge; the bands
     # above and below are Parliament branding and belong to neither.
     crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    # The chamber picture inside the Parliament's purple broadcast frame, measured on
+    # all four sources (2026-10-01); 2 px inside the edges so no fringe survives.
+    main_rect: {x: 0, y: 110, w: 1066, h: 758}
     layout: side-panel
     verdict: candidate
     notes: >-
@@ -153,6 +159,9 @@ sources:
     sign_language: bfi
     language_label: British Sign Language
     crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    # The chamber picture inside the Parliament's purple broadcast frame, measured on
+    # all four sources (2026-10-01); 2 px inside the edges so no fringe survives.
+    main_rect: {x: 0, y: 110, w: 1066, h: 758}
     layout: side-panel
     verdict: candidate
     notes: >-
@@ -173,6 +182,9 @@ sources:
     sign_language: bfi
     language_label: British Sign Language
     crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    # The chamber picture inside the Parliament's purple broadcast frame, measured on
+    # all four sources (2026-10-01); 2 px inside the edges so no fringe survives.
+    main_rect: {x: 0, y: 110, w: 1066, h: 758}
     layout: side-panel
     verdict: candidate
     notes: >-
@@ -189,6 +201,9 @@ sources:
     sign_language: bfi
     language_label: British Sign Language
     crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    # The chamber picture inside the Parliament's purple broadcast frame, measured on
+    # all four sources (2026-10-01); 2 px inside the edges so no fringe survives.
+    main_rect: {x: 0, y: 110, w: 1066, h: 758}
     layout: side-panel
     verdict: candidate
     notes: >-
@@ -205,6 +220,9 @@ sources:
     sign_language: bfi
     language_label: British Sign Language
     crop_rect: {x: 1080, y: 108, w: 840, h: 760}
+    # The chamber picture inside the Parliament's purple broadcast frame, measured on
+    # all four sources (2026-10-01); 2 px inside the edges so no fringe survives.
+    main_rect: {x: 0, y: 110, w: 1066, h: 758}
     layout: side-panel
     verdict: candidate
     notes: >-

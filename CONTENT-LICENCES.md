@@ -115,7 +115,9 @@ Two exclusions bind us as much as the grant does:
   with the interpreter-rights principle above, not treated as settled.
 - **The SPCB's Corporate Identity is not licensed.** The broadcast carries a purple
   Parliament frame. We crop to the chamber picture and the interpreter panel and never
-  reproduce the logo or wordmark as decoration.
+  reproduce the logo or wordmark as decoration. Since 2026-10-01 the programme layer is
+  cropped to the chamber picture itself (`main_rect` in `catalogue/sources.yaml`),
+  so the purple frame around it is no longer shown either.
 
 ### Caption text and timing on Scottish Parliament titles
 
