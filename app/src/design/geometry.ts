@@ -58,7 +58,9 @@ export type CaptionPlacement = { bottom: number; left: number; right: number };
  *
  * This matters more than it looks. Both layers together outperform either
  * alone — captions added to sign language interpretation raised comprehension
- * by 24% among deaf viewers in one study — so the two must coexist, not
+ * by 24% among deaf viewers in one study (PLOS ONE 2015, "A Comparison of
+ * Comprehension Processes in Sign Language Interpreter Videos with or without
+ * Captions", doi:10.1371/journal.pone.0127577) — so the two must coexist, not
  * compete for the same pixels.
  */
 export function captionPlacement(
