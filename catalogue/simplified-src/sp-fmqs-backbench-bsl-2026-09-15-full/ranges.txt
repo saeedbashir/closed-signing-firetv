@@ -1,0 +1,161 @@
+# Simplified English for First Minister's Questions (Backbench Members), 15 Sep 2026.
+# Written by hand from the Official Report by an AI assistant (Claude) in the developer's
+# editor, not by the pipeline; not checked by a person. Each line: verbatim cue range |
+# simplified text. Times come from the verbatim cues covered (tools/build-simplified.py).
+1-3|Donald MacKinnon: A committee has kept open a petition to end the guga hunt on Sula Sgeir, in my area.
+4-5|Does the First Minister agree the guga hunt matters deeply to our culture?
+6-8|Will the Government keep the law that allows licences for taking gannets from Sula Sgeir?
+9-12|The First Minister: First, I share the Presiding Officer's words about the death of Cathie Craigie, a distinguished MSP.
+13-14|I send my sympathy to her family, the Labour Party and colleagues across Parliament.
+15-17|She was generous and kind to work with, and I thank her for her work.
+18-19|On the question: the Government has no plan to change the law.
+20-21|NatureScot's decision was about the scientific evidence.
+22-25|That evidence is debated, but NatureScot was open about what it considered.
+26-28|The decision about the 2026 hunt does not rule out applications for future years.
+29-31|I hope that helps Mr MacKinnon's constituents, many of whom are worried about this.
+32|Helen McDade: Thank you, Presiding Officer. Sorry about earlier.
+33-35|There are public inquiries into NHS Tayside, where Sam Eljamel harmed patients for nearly 20 years, and into a Glasgow hospital.
+36-38|If those health boards are merged away, how will anyone be held to account?
+39-42|The First Minister: The inquiries will continue. The NHS reorganisation will not stop or limit them.
+43-46|Anything they find will be dealt with by the new NHS bodies, if Parliament agrees the reforms.
+47-50|Fulton MacGregor: A domestic abuse court advocate in Glasgow has told me about planned pay changes.
+51-52|Her salary could fall by about 23 per cent from April 2028.
+53-56|Will the First Minister talk to Glasgow City Council so these changes do not harm support for victims of domestic abuse?
+57-59|The First Minister: There are two separate issues. The first is pay and grading at Glasgow City Council.
+60-61|That is for the council to decide, as the employer.
+62-65|I know the concern about the ASSIST project, but staff pay and grading are the council's matter.
+66-68|The second issue is steady funding for groups that tackle violence against women and girls.
+69-71|As I said two weeks ago, the Government is committed to that funding.
+72|I will say more in this afternoon's debate.
+73-75|Adam Harley: Lord Jim Wallace campaigned on aortic dissection before he died of it this year. It kills over 2,000 people a year in the UK.
+76|That number is expected to double by 2050.
+77-78|Better awareness and a standard care pathway would save lives.
+79-80|Scotland has three specialist centres, so we could lead the way.
+81-83|In Jim Wallace's memory, will the Government publish national guidelines on aortic dissection?
+84-86|The First Minister: Mr Harley has paid an outstanding tribute to Jim Wallace, and I agree with him.
+87-88|I had great respect for Jim Wallace and his public service.
+89-91|When Neil Gray was health secretary, he met the trust to discuss these issues.
+92-94|Where a condition needs a clear care pathway, Scotland must have one.
+95-98|People must have access to that pathway wherever they live.
+99-101|We will consider this, and I will ask the health secretary, Angela Constance, to follow up.
+102|She would be happy to meet Mr Harley and the trust.
+103-104|Craig Hoy: Young people have been climbing onto roofs in Dumfries town centre. It is called urban exploring.
+105-106|The trend spreads on social media, worries residents and could cost lives.
+107-110|Will the First Minister help warn people of the dangers, and will the Government work with the police to tackle it?
+111-114|The First Minister: I understand the concern. It is another dangerous behaviour spread by social media.
+115-116|I share Mr Hoy's concern, and the Government will support Police Scotland.
+117-120|Local police will act, but the council and schools will need to be involved too.
+121-123|It is probably not only a problem in Dumfries. Mr Hoy is right to raise public awareness.
+124-127|Katherine Sangster: Unions say school support staff are not helped to deal with violent behaviour by primary pupils. Edinburgh paid over £250,000 in damages to support staff last year.
+128-130|The council says that, with a £650 million gap in council budgets, it cannot deal with the problem.
+131-132|What will the First Minister do so support staff do not face this alone?
+133-135|The First Minister: The answer is good behaviour in schools, for support staff, teachers and pupils alike.
+136-137|The Government has set out many measures to tackle behaviour in schools.
+138-140|We are funding councils and working with unions so staff are always supported.
+141-143|I fully agree that good behaviour in schools matters for everyone's safety.
+144-147|Maggie Chapman: NHS Tayside plans to close Kingsway care centre in Dundee in four months, moving dementia care to Forfar and cutting beds by 36 per cent.
+148|Care for other vulnerable adults will move too.
+149-151|What does the First Minister say to families who may need several bus journeys to visit loved ones with dementia?
+152-154|Will he make sure nothing changes without proper consultation and proof that care will not suffer?
+155-157|The First Minister: I expect NHS Tayside to have considered the effect on each resident before any move.
+158-160|Anyone whose care changes must have an individual assessment of their needs.
+161-162|I will ask the health secretary to make that clear to the health board.
+163-164|Sometimes services do have to be redesigned.
+165-167|From my own constituency work, I know we must sometimes modernise how services are delivered.
+168-170|But that must be centred on each patient's needs. That is what I expect here.
+171-174|Angela Ross: Thursday's gas leak at a planned battery site in Cockenzie has added to worries about big energy sites close to homes and schools.
+175-179|The leak was caused by building work, not the batteries. But should the national planning rules be reviewed so such sites are in suitable places and communities count for more?
+180-183|The First Minister: Any decision on where a facility goes must weigh every local factor and the effect on the community.
+184|That is essential in all our planning policies.
+185-189|The national planning framework sets the overall approach to land use, and all of this is considered in planning decisions.
+190-192|Also, whenever work is done on any site, the safety of the public and workers comes first.
+193-195|That includes the Health and Safety Executive using its powers where needed.
+196-198|Calum Kerr: Yesterday, the First Ministers met in Cardiff and agreed that our nations should decide their own constitutional future.
+199-201|Last week, the Prime Minister accepted that Scotland should have a referendum when people are likely to vote for independence.
+202-203|So what is the First Minister's next step after the Cardiff agreement?
+204-207|The First Minister: It was good to meet the First Ministers of Wales and Northern Ireland on the right of people here to decide their own future.
+208-209|I welcome the Prime Minister's comments last Wednesday accepting that principle.
+210-211|It is about self-determination, and I was glad to make that point yesterday.
+212-214|As for next steps: I want Scotland to be able to decide its future in an independence referendum in this parliamentary session.
+215-217|My office and the Government will work to make sure people in Scotland can decide by 2031.
+218-221|Kristopher Leask: Flights matter to the Highlands and Islands, and I was glad the transport secretary called a meeting on regional flights.
+222-224|But he is not attending his own meeting. Will the First Minister go in his place?
+225-228|The First Minister: The cabinet secretary has already stepped in, and he has kept a number of flight services running.
+229-231|Government officials will be at the meeting. Everything said there will go to ministers, who will act on it.
+232-234|Flights to our island communities matter a great deal to me, and to the cabinet secretary.
+235-238|Jenni Minto: Tomorrow a charity launches a women's health plan. Women are 50 per cent more likely than men to be misdiagnosed after a heart attack, and have worse heart outcomes.
+239-241|What is the Government doing, through its women's health plan, to improve women's heart health and reduce those inequalities?
+242-243|The First Minister: First, I recognise Jenni Minto's own work on the women's health plan when she was a minister.
+244-245|The second phase of the plan aims to tackle health inequalities for all women and girls in Scotland.
+246-248|A heart health programme has a women's strand, aimed at women who had high blood pressure in pregnancy.
+249-250|Support has been designed with charities to meet women's needs.
+251-252|Early results show the care pathway is working well.
+253-254|NHS staff have also been trained on how women's reproductive health affects later heart risk.
+255-257|Morven-May MacCallum: I declare that I am a Highland councillor.
+258-261|Sophie McNab, a young girl from Inverness, needs residential care. She has been placed in Annan, 230 miles from her family. She is not alone.
+262-264|26 Highland children live far from home, because there is no suitable care in Highland.
+265-267|Does the First Minister agree this is unacceptable? Will his Government bring them home?
+268-272|The First Minister: I agree that children are best supported in their own family when it is safe — and, if not, as close to home as possible.
+273-274|That is part of the Promise, and the Government is fully committed to it.
+275|We work closely with councils.
+276-279|As the member says, some areas may not have the right care nearby for the children who need it.
+280-282|So we must plan care across regions to meet each young person's needs.
+283-286|The children's minister, Siobhian Brown, would be happy to discuss the Highland problem with the member and the council.
+287-290|Miles Briggs: Last Monday, two promising new breast cancer drugs were approved, offering real hope.
+291-294|England has had the drugs and the genetic tests for over a year. In Scotland, patients often cannot get them, because the tests are not routinely available.
+295-297|It is not just breast cancer: since 2021, at least 15 other cancer medicines have been limited by a lack of testing.
+298-301|What interim help will there be for these patients? And does Scotland need a lasting plan for genetic testing?
+302-304|The First Minister: The health secretary is looking at access to these treatments after the approval.
+305-309|On genetic testing, last week I discussed strengthening our testing capacity, and good progress has been made.
+310-311|The chief scientist for health, Dame Anna Dominiczak, is leading major work in this area.
+312-313|The specific issue is being looked at, and testing in general is improving.
+314-315|I will write to Mr Briggs with details.
+316-319|Pauline Stafford: A 35-year-old man died in Armadale at the weekend, reportedly in a targeted attack with a gun. My thoughts are with his family.
+320-323|The police inquiry is ongoing, but can the First Minister reassure people that everything is being done to keep the community safe?
+324-326|The First Minister: I was sorry to hear about the incident, and I am glad to comment.
+327|There is a live police investigation.
+328-331|Police Scotland has all the resources it needs to investigate the case.
+332-334|I assure Pauline Stafford and her constituents that public safety comes first for the police.
+335-336|Liam McArthur: Movember has published a report on why men in Scotland die early.
+337-340|Men born in Scotland have the lowest life expectancy in the UK — 77.4 years — and poorer areas fare worse. Does the First Minister share my alarm?
+341-342|If so, what will he do to improve men's health in every community?
+343-346|The First Minister: I thank Mr McArthur. The report is a timely reminder that men's health must improve.
+347-348|The Government's programme focuses on prevention and acting early.
+349-353|That means tackling alcohol and drug use, and helping men live healthier lives to reduce the risk of heart disease, stroke, lung cancer and poor mental health.
+354-356|Shifting public services towards prevention is meant to address exactly these issues.
+357-360|Amanda Lindsay: Will the First Minister stop his Government calling the women who protested at Glasgow Green "far right", and say what he will do about the failures on women's safety that brought them there?
+361-363|The First Minister: I am leading a debate on violence against women and girls this afternoon, and I want an open, honest discussion.
+364-365|But I will never stop confronting the far right in this country.
+366-369|Lloyd Melville: Dundee and Angus College plans a new campus in Arbroath — the town's biggest ever project. The SNP promised to support it.
+370-371|Can the First Minister update us on progress with the Scottish Funding Council?
+372-373|The First Minister: The college has ambitious plans that will affect Dundee and Arbroath.
+374-376|The Government has given the Funding Council £2 million for colleges to develop plans for major investment.
+377-378|Dundee and Angus College received £700,000 of that to work out the best option.
+379-380|The Government will follow the project closely through the Funding Council.
+381-385|Martyn Day: About half of Motability appeals succeed, but tribunals take 12 to 18 months. What will ministers ask the UK Government to do to cut these delays?
+386-387|The First Minister: We have raised this important issue with the UK Government.
+388-392|For many people, a Motability car is the only way to get around, so support must come in good time.
+393-394|I will make sure the minister raises it with the UK Government again.
+395-398|Holly Bruce: The site of Scotland's first national football ground is in my constituency. Local people want to keep it as a community hub open to all.
+399-400|Should it be protected and run by the community, not sold to the highest bidder?
+401-405|The First Minister: I am sympathetic. I want to give her an accurate answer on who owns the site, so I will write to her with what the Government can do.
+406-411|David Linden: The First Minister mentioned men's health and the Movember report. Men's sheds help bring these issues to light.
+412-414|Will the First Minister visit Shettleston Men's Shed to see how such spaces help men's health?
+415|The First Minister: I would be happy to visit.
+416-418|I have visited several, most recently in Renfrew.
+419-420|Men's sheds help men meet and overcome loneliness.
+421-423|It is a great movement. I look forward to visiting Shettleston with Mr Linden.
+424-425|Michael Marra: Women in Tayside face severe problems getting gynaecology care.
+426-429|NHS Tayside says year-long waits fell from 1,348 to 11. That is simply not true — many of my constituents have waited years.
+430-432|One was told she would wait over three years for a hysterectomy. She took out a loan to go private and never made it onto the waiting list.
+433|Does the First Minister think these waits in Tayside are acceptable?
+434-437|The First Minister: Waiting times must come down everywhere. Mr Marra raises an important point about Tayside, and I want those waits cut.
+438-439|I will check the figures he doubts, because they must be accurate.
+440-442|The health secretary and I review waiting lists every week, by specialty and by area.
+443-446|Some areas wait much less than others for the same treatment.
+447-449|That is one reason the Government is reforming the NHS.
+450-452|We want to remove health board boundaries that stand in the way of fair treatment for Mr Marra's constituents.
+453-455|I will look at those figures, but the health secretary and I examine progress on waiting times every week.
+456-457|This issue matters greatly to me.
+458|The Presiding Officer: Thank you, First Minister.
+459|I apologise to the 28 backbench members I could not call today.

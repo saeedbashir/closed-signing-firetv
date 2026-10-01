@@ -4359,6 +4359,14 @@ export const BUNDLED_MANIFESTS: Record<string, TitleManifest> = {
         "language": "en",
         "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15-full/captions/verbatim.en.vtt",
         "format": "webvtt"
+      },
+      {
+        "kind": "simplified",
+        "language": "en",
+        "url": "https://pub-b84145f82da443da96042c47410ab8cd.r2.dev/titles/sp-fmqs-backbench-bsl-2026-09-15-full/captions/simplified.en.vtt",
+        "format": "webvtt",
+        "generatedBy": "claude-opus-5-5, written by hand in the developer's editor from the Official Report; not the pipeline",
+        "reviewed": false
       }
     ]
   },

@@ -29,7 +29,7 @@ Verified on the Vega Virtual Device (SDK 0.24.12044), release build:
   audio automatically (85–89 % of its words anchored to the recognised speech)
   and published unchanged. Speaker names on each change; stage directions such as
   `[Applause.]` kept. Captions move out of the interpreter's way.
-- **A simplified caption track** on the Party Leaders session — plain English for
+- **A simplified caption track** on both sessions — plain English for
   viewers whose first language is a signed one — labelled on screen as written by
   AI and not checked by a person, as the format requires.
 - **Auto-dim**: the interpreter fades a little while the interpreter is not signing
@@ -43,7 +43,7 @@ Verified on the Vega Virtual Device (SDK 0.24.12044), release build:
 | Title | Length | Captions |
 | --- | --- | --- |
 | First Minister's Questions (Party Leaders), BSL — 17 Sep 2026 | 34:08 | Verbatim (Official Report) · Simplified |
-| First Minister's Questions (Backbench Members), BSL — 15 Sep 2026 | 31:57 | Verbatim (Official Report) |
+| First Minister's Questions (Backbench Members), BSL — 15 Sep 2026 | 31:57 | Verbatim (Official Report) · Simplified |
 | Ministerial Statement and Government Debate, BSL — two excerpts | 2:00 each | — |
 | Demonstration — interpreter in a corner inset (synthetic) | 2:00 | Verbatim · Simplified |
 
