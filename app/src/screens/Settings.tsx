@@ -255,7 +255,7 @@ export const Settings = ({
           </Metadata>
           {m.captions.some((c) => c.generatedBy !== undefined && c.reviewed !== true) ? (
             <Metadata dim style={styles.attributionLine}>
-              Simplified captions written automatically; not checked by a person.
+              Simplified captions written by AI; not checked by a person.
             </Metadata>
           ) : null}
         </View>

@@ -161,7 +161,7 @@ export const CaptionMenu = ({
           text appears. Someone choosing "simplified" is deciding what to trust. */}
       {isUnreviewed(selected) ? (
         <Metadata dim style={styles.note}>
-          Simplified text is written automatically and has not been checked by a person.
+          Simplified text is written by AI and has not been checked by a person.
         </Metadata>
       ) : null}
 

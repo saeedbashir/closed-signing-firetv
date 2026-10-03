@@ -49,7 +49,7 @@ const CARDS = [
     illustration: 'captions' as Illustration,
   },
   {
-    title: 'Where would you like her?',
+    title: 'Where would you like the interpreter?',
     body: 'Choose a corner and a size now. You can change them any time while watching, with Up on the remote.',
     illustration: 'choose' as Illustration,
   },
