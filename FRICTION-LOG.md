@@ -30,3 +30,4 @@ model access.
 | [013](friction-log/013-hls-plays-from-src-although-the-readme-says-it-cannot.md) | 2026-09-22 | Vega SDK / w3cmedia | minor | HLS plays from `src`, although the README says it cannot |
 | [014](friction-log/014-qmp-qcodes-arrive-as-the-wrong-keys-use-inputd-cli.md) | 2026-09-23 | VVD | major | QMP `send-key` qcodes arrive as the wrong keys; the device's own `inputd-cli` is the injector |
 | [015](friction-log/015-bedrock-is-closed-for-the-account-and-the-form-apis-are-denied.md) | 2026-09-23 | AWS | blocker | Bedrock and the deploy services are closed by an AWS spend-limit guardrail SCP; resolved by activating advanced features and detaching it |
+| [016](friction-log/016-video-planes-stack-in-creation-order.md) | 2026-10-03 | Vega SDK / w3cmedia | major | Video planes stack in creation order, not view order: on Resume the interpreter was hidden under the programme |

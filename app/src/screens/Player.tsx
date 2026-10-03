@@ -621,7 +621,13 @@ export const Player = ({
                 height: box.height,
               },
             ]}>
-            {signer.player ? (
+            {/* Only after the programme's surface exists. Video planes stack in
+                the order they are created, not in the order of this tree: on
+                Resume both players seek first, the interpreter's smaller stream
+                is ready sooner, and a signer plane created before the main one
+                ends up underneath it — decoding, and invisible. Measured on the
+                VVD 2026-10-03. */}
+            {signer.player && main.player ? (
               <KeplerVideoView
                 style={StyleSheet.absoluteFill}
                 videoPlayer={signer.player}
