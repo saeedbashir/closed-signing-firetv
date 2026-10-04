@@ -15,6 +15,13 @@
  * media time, so a paused programme neither dims nor restores, and a seek
  * starts the count again where the viewer landed.
  *
+ * Coming back also looks ahead. The track is measured in advance, so the
+ * player knows when signing is about to resume; while dimmed it judges the
+ * activity `restoreLeadMs` ahead of the playhead, and the layer is back at
+ * full brightness as the hands start to move rather than a beat after. On
+ * the Party Leaders applause the restore moved from 0.7 s after the first
+ * visible motion to just before it (measured on the VVD, 2026-10-04).
+ *
  * The producer publishes the number; the threshold is ours. The same
  * principle as `confidence`, and for the same reason: no fixed motion scale
  * means the same thing across two broadcasters, and whether viewers want this
@@ -29,9 +36,16 @@ export type IdleRule = {
   idleAfterMs: number;
   /** Media time at or over the threshold before it restores. */
   activeAfterMs: number;
+  /** While dimmed, judge the activity this far ahead of the playhead. */
+  restoreLeadMs: number;
 };
 
-export const DEFAULT_IDLE_RULE: IdleRule = { threshold: 20, idleAfterMs: 2000, activeAfterMs: 500 };
+export const DEFAULT_IDLE_RULE: IdleRule = {
+  threshold: 20,
+  idleAfterMs: 2000,
+  activeAfterMs: 500,
+  restoreLeadMs: 700,
+};
 
 /**
  * A position jump larger than this is a seek, not playback. The transport
@@ -65,7 +79,9 @@ export class IdleDetector {
 
   /** Feed the playhead. Returns whether the layer should be dimmed now. */
   update(positionMs: number): boolean {
-    const under = activityAt(this.activity, positionMs) < this.rule.threshold;
+    // Dimming judges what has happened; restoring judges what is about to.
+    const probe = this.idle ? positionMs + this.rule.restoreLeadMs : positionMs;
+    const under = activityAt(this.activity, probe) < this.rule.threshold;
     const jumped =
       this.last !== null &&
       (positionMs < this.last || positionMs - this.last > SEEK_JUMP_MS);

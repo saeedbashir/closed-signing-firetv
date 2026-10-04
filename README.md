@@ -10,7 +10,9 @@ size chosen by whoever produced it. This player takes existing interpreted conte
 separates the interpreter into her own layer using the open
 [Signed Track Manifest](https://github.com/saeedbashir/signed-track-manifest) format,
 and plays the two layers together under the viewer's control. The ITU described this
-receiver model in 2013; no consumer TV platform has shipped it.
+receiver model in 2013 (FG AVA Technical Report Part 10; see also Report ITU-R
+BT.2448) and European broadcasters piloted it over HbbTV; no consumer TV platform
+ships it.
 
 **We never generate or synthesise sign language.** Every track in the catalogue was
 performed by a human interpreter, and the format records that with a required

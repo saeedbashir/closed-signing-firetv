@@ -62,11 +62,32 @@ describe('going idle', () => {
 
 describe('coming back', () => {
   it('restores after half a second of motion, faster than it dims', () => {
-    const d = new IdleDetector(track([0, 0, 0, 90, 90]));
+    const d = new IdleDetector(track([0, 0, 0, 90, 90]), {
+      ...DEFAULT_IDLE_RULE,
+      restoreLeadMs: 0,
+    });
     run(d, 0, 2500);
     expect(d.isIdle).toBe(true);
     expect(d.update(3000)).toBe(true); // first active sample: not yet
     expect(d.update(3500)).toBe(false); // half a second: back
+  });
+
+  it('looks ahead while dimmed, so the layer is back as the hands start to move', () => {
+    // Signing resumes at 3.0 s. With a 700 ms lead the detector sees it from
+    // 2.3 s, confirms it for half a second, and restores at 2.8 s — before the
+    // motion, not after it.
+    const d = new IdleDetector(track([0, 0, 0, 90, 90]));
+    run(d, 0, 2000);
+    expect(d.isIdle).toBe(true);
+    expect(d.update(2300)).toBe(true); // lookahead first sees motion: run starts
+    expect(d.update(2800)).toBe(false); // half a second later: back, 200 ms early
+  });
+
+  it('does not look ahead when deciding to dim', () => {
+    // Still from 0 to 3 s, then signing. Dimming must take its full two
+    // seconds judged on what has happened, not stop early because motion is coming.
+    const d = new IdleDetector(track([0, 0, 0, 90, 90]));
+    expect(run(d, 0, 2000)).toEqual([false, false, false, false, true]);
   });
 
   it('a single active blip does not restore', () => {
@@ -135,6 +156,11 @@ describe('reset', () => {
 
 describe('the shape of what ships', () => {
   it('the default rule is what the plan and the spec say', () => {
-    expect(DEFAULT_IDLE_RULE).toEqual({ threshold: 20, idleAfterMs: 2000, activeAfterMs: 500 });
+    expect(DEFAULT_IDLE_RULE).toEqual({
+      threshold: 20,
+      idleAfterMs: 2000,
+      activeAfterMs: 500,
+      restoreLeadMs: 700,
+    });
   });
 });
