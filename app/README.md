@@ -32,7 +32,7 @@ A build can exit 0 while failing; check that the `.vpkg` timestamp moved.
 ## Tests and lint
 
 ```sh
-npm test          # 180 tests: geometry, captions, the remote mapping, the idle rule, storage, …
+npm test          # 185 tests: geometry, captions, the remote mapping, the idle rule, storage, …
 npm run lint      # ESLint including the SDK's own rules
 npx tsc --noEmit
 ```
