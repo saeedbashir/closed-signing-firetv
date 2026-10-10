@@ -1,16 +1,13 @@
 # Friction log
 
-One file per snag under `friction-log/`, written as it happens, not reconstructed at
-the end. Submissions with friction logs earn up to a 10% judging bonus, and this is
-the most useful feedback the Fire TV team will get from us.
+Fifteen entries, one file each under `friction-log/`, written as each snag happened
+during the build (21 September to 3 October 2026), not reconstructed at the end.
 
-Each entry records: the task attempted, the steps taken, expected versus actual, a
-severity, any workaround, and an actionable suggestion. Copy `friction-log/TEMPLATE.md`.
-
-Log every one of: Vega SDK installation, the Vega Virtual Device, the decoder
-investigation, the Vega media player API, focus management in React Native on TV, the
-Amazon Devices Builder Tools MCP, the app manifest, the AWS credits form, Bedrock
-model access.
+Each entry records the task attempted, the steps taken, expected versus actual, a
+severity (blocker · major · minor · papercut), the workaround used, and one actionable
+suggestion. The table is in the order the snags were hit. The ones that shaped the app
+are 008, 007, 012, 016 and 011; the AWS onboarding problems are 015 and 002.
+`friction-log/TEMPLATE.md` is the form every entry follows.
 
 ## Entries
 
